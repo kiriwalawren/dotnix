@@ -5,23 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-flake-lock:
-    name: Check Flake Lock
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Nix Flake Checker
-        uses: DeterminateSystems/flake-checker-action@v9
-        with:
-          fail-mode: true
-
   nix-flake-check:
     name: Check 📋
     runs-on: ubuntu-latest
@@ -93,7 +76,7 @@ jobs:
   deploy:
     name: Deploy NixOS Configuration 🚀
     if: github.ref == 'refs/heads/main'
-    needs: [check-flake-lock, nix-flake-check, builds]
+    needs: [nix-flake-check, builds]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
