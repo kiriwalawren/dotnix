@@ -1,11 +1,11 @@
 keys:
   users:
-    - &walawren age17rp6yw32we7y7q7qjwdqdm2jt9jnv5thqultnuwrmt6w6c8mrfrss3etq4
+    - &walawren age1h63syxkrvy75452dh2s0e6qe70argnaln9v77htst8lnk3632v9q59ur5d
     - &kiri age1qssz2tujsv8v9shlt7zgxxy7j0k6jawfwhgnzyvfvmckrlpwnqeqwz9lgs
   hosts:
-    - &work-wsl age1h63syxkrvy75452dh2s0e6qe70argnaln9v77htst8lnk3632v9q59ur5d
+    - &work-wsl age1ms200mnqekyttmvt6n83en7n2hhd6elj2s0h9p264yzuselr74gq0yag7m
     - &nixos-mediaserver age14uvhrejjlxgfapyx5d3lyy2vjy4q6yf22rp0c6nuwr25gechgvdsvacjap
-    - &nixos-framework13 age1ppyqus64k2s9vhh5ltccl06uyfjgukxpvvlk3qvmtt394nce2uys330r2c
+    - &nixos-framework13 age14wppzanrflppx3sms5mmtpcrqnejnh5jtq762qckkeq28ck7jg0s79gurt
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
