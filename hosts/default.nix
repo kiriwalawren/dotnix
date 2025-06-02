@@ -99,15 +99,15 @@ in
     }
 
     {
-      name = "nixos-virtualbox";
+      name = "nixos-mediaserver";
       modules = [
         inputs.disko.nixosModules.disko
         (import ./disko.nix {
           inherit (nixpkgs) lib;
-          device = "/dev/sda";
+          device = "/dev/nvme0n1";
         })
 
-        ./hardware/nixos-virtualbox.nix
+        ./hardware/nixos-mediaserver.nix
         ../modules/nixos
 
         {
