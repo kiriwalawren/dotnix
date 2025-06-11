@@ -26,6 +26,7 @@
     mkNixosConfiguration = {
       name,
       device ? "/dev/sda",
+      efi ? true,
       modules ? [],
       system ? "x86_64-linux",
     }:
@@ -106,11 +107,16 @@
             user.name = "kiri";
 
             boot.loader = {
+              grub = {
+                enable = true;
+                device = "nodev";
+                efiSupport = true;
+              };
+
               efi = {
                 canTouchEfiVariables = true;
                 efiSysMountPoint = "/boot/efi";
               };
-              systemd-boot.enable = true;
             };
           }
         ];
@@ -126,13 +132,16 @@
             user.name = "walawren";
 
             boot.loader = {
+              grub = {
+                enable = true;
+                device = "nodev";
+                efiSupport = true;
+                efiInstallAsRemovable = false;
+              };
+
               efi = {
                 canTouchEfiVariables = true;
                 efiSysMountPoint = "/boot/efi";
-              };
-              grub = {
-                efiSupport = true;
-                device = "nodev";
               };
             };
 

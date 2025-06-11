@@ -5,7 +5,9 @@
   config,
   lib,
   ...
-}: {
+}: let
+  wan = "eth0";
+in {
   boot = {
     initrd.availableKernelModules = ["nvme" "ahci"];
     initrd.kernelModules = [];
@@ -13,13 +15,46 @@
     extraModulePackages = [];
   };
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eth0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eth1.useDHCP = lib.mkDefault true;
+  networking = {
+    useDHCP = lib.mkDefault false;
+    # ── IPv4 ───────────────────────────────────────────────
+    interfaces.${wan} = {
+      ipv4.addresses = [
+        # Main public address, /26 netmask (255.255.255.192)
+        {
+          address = "162.55.238.233";
+          prefixLength = 26;
+        }
+      ];
+
+      # Default route via the subnet gateway
+      ipv4.routes = [
+        {
+          address = "0.0.0.0";
+          prefixLength = 0;
+          via = "162.55.238.193";
+        }
+      ];
+
+      # ── IPv6 ─────────────────────────────────────────────
+      ipv6.addresses = [
+        # First usable address in your /64; feel free to pick another host ID
+        {
+          address = "2a01:4f8:271:404a::1";
+          prefixLength = 64;
+        }
+      ];
+    };
+
+    defaultGateway = "162.55.238.193";
+    # Hetzner’s switch link‑local gateway for IPv6
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = wan;
+    };
+
+    nameservers = ["185.12.64.1" "185.12.64.2"]; # Hetzner public DNS
+  };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

@@ -8,6 +8,7 @@
   mkNixosConfiguration = {
     name,
     system ? "x86_64-linux",
+    device ? "/dev/sda",
     modules,
     homeOptions ? {},
   }:
@@ -52,7 +53,6 @@ in
           system = {
             stateVersion = "23.11"; # Update when reinstalling
             docker.enable = true;
-            bootloader.grub.enable = true;
           };
 
           ui = {
@@ -83,7 +83,6 @@ in
           system = {
             stateVersion = "25.05"; # Update when reinstalling
             docker.enable = true;
-            bootloader.grub.enable = true;
           };
 
           ui = {
@@ -113,15 +112,8 @@ in
         {
           system.stateVersion = "25.05"; # Update when reinstalling
 
-          boot.loader = {
-            efi = {
-              canTouchEfiVariables = true;
-              efiSysMountPoint = "/boot/efi";
-            };
-            systemd-boot.enable = true;
-          };
-
           system = {
+            bootloader.efi = false;
             cachix-agent.enable = true;
             openssh.enable = true;
             ddns = {
