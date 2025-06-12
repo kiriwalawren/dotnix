@@ -20,6 +20,10 @@ in {
     };
 
     wayland.windowManager.hyprland.settings = {
+      env = [
+        "GRIMBLAST_EDITOR,${pkgs.pinta}/bin/pinta"
+      ];
+
       bind = [
         "CONTROLSHIFTALT,O,exec,grimblast copy area"
         "CONTROLSHIFTALT,E,exec,grimblast edit area"
