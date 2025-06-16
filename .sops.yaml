@@ -4,7 +4,7 @@ keys:
     - &kiri age1qssz2tujsv8v9shlt7zgxxy7j0k6jawfwhgnzyvfvmckrlpwnqeqwz9lgs
   hosts:
     - &work-wsl age1ms200mnqekyttmvt6n83en7n2hhd6elj2s0h9p264yzuselr74gq0yag7m
-    - &nixos-virtualbox age14uvhrejjlxgfapyx5d3lyy2vjy4q6yf22rp0c6nuwr25gechgvdsvacjap
+    - &nixos-mediaserver age14uvhrejjlxgfapyx5d3lyy2vjy4q6yf22rp0c6nuwr25gechgvdsvacjap
     - &nixos-framework13 age14wppzanrflppx3sms5mmtpcrqnejnh5jtq762qckkeq28ck7jg0s79gurt
 creation_rules:
   - path_regex: secrets.yaml$
@@ -13,5 +13,5 @@ creation_rules:
           - *walawren
           - *kiri
           - *work-wsl
-          - *nixos-virtualbox
+          - *nixos-mediaserver
           - *nixos-framework13
