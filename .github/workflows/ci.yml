@@ -19,7 +19,7 @@ jobs:
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: ecarlson94
+          name: kiriwalawren
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Run Checks
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: ecarlson94
+          name: kiriwalawren
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Build Configuration 📋
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: ecarlson94
+          name: kiriwalawren
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Deploy

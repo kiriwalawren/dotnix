@@ -6,16 +6,16 @@
   <a href='#'><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" width="600px"/></a>
   <br>
   <div>
-    <a href="https://github.com/ecarlson94/dotnix/issues">
-        <img src="https://img.shields.io/github/issues/ecarlson94/dotnix?color=f5a97f&labelColor=303446&style=for-the-badge">
+    <a href="https://github.com/kiriwalawren/dotnix/issues">
+        <img src="https://img.shields.io/github/issues/kiriwalawren/dotnix?color=f5a97f&labelColor=303446&style=for-the-badge">
     </a>
-    <a href="https://github.com/ecarlson94/dotnix/stargazers">
-        <img src="https://img.shields.io/github/stars/ecarlson94/dotnix?color=c6a0f6&labelColor=303446&style=for-the-badge">
+    <a href="https://github.com/kiriwalawren/dotnix/stargazers">
+        <img src="https://img.shields.io/github/stars/kiriwalawren/dotnix?color=c6a0f6&labelColor=303446&style=for-the-badge">
     </a>
-    <a href="https://github.com/ecarlson94/dotnix">
-        <img src="https://img.shields.io/github/repo-size/ecarlson94/dotnix?color=ea999c&labelColor=303446&style=for-the-badge">
+    <a href="https://github.com/kiriwalawren/dotnix">
+        <img src="https://img.shields.io/github/repo-size/kiriwalawren/dotnix?color=ea999c&labelColor=303446&style=for-the-badge">
     </a>
-    <a href="https://github.com/ecarlson94/dotnix/blob/main/LICENSE">
+    <a href="https://github.com/kiriwalawren/dotnix/blob/main/LICENSE">
         <img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=GPL-3&logoColor=ca9ee6&colorA=313244&colorB=a6da95"/>
     </a>
     <a href="https://nixos.org">
@@ -39,7 +39,7 @@
 
 1. Run the following command:
    ```sh
-   sudo nixos-rebuild switch --flake github:ecarlson94/dotnix/main#nixos-wsl
+   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#nixos-wsl
    ```
 
 ### [NixOS Desktop](https://nixos.org/download)
@@ -48,7 +48,7 @@
 
 1. Run the following command:
    ```sh
-   sudo nixos-rebuild switch --flake github:ecarlson94/dotnix/main#nixos-desktop
+   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#nixos-desktop
    ```
 
 ## Rebuilding
