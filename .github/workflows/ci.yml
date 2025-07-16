@@ -97,5 +97,5 @@ jobs:
           CACHIX_ACTIVATE_TOKEN: "${{ secrets.CACHIX_ACTIVATE_TOKEN }}"
         run: |
           nix build --print-build-logs .#cachix-deploy-spec
-          cachix push ecarlson94 ./result
+          cachix push kiriwalawren ./result
           cachix deploy activate --async ./result
