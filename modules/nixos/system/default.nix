@@ -56,7 +56,7 @@
   system = {
     autoUpgrade = {
       enable = true;
-      flake = "github:ecarlson94/dotnix";
+      flake = "github:kiriwalawren/dotnix";
       persistent = true;
     };
 
