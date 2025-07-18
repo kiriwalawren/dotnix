@@ -21,7 +21,7 @@ in {
         userName = "Kiri Carlson";
         userEmail = "kiri@walawren.com";
 
-        ignores = ["Session.vim" "secrets.sh" "secrets.tfvars" "local.tfvars"];
+        ignores = ["Session.vim" "secrets.sh" "secrets.tfvars" "local.tfvars" ".claude/"];
 
         extraConfig = {
           core = {

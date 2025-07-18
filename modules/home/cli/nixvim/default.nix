@@ -40,6 +40,7 @@ in {
         defaultEditor = true;
         viAlias = true;
         vimAlias = true;
+        nixpkgs.config.allowUnfree = true;
       };
     };
   };
