@@ -6,13 +6,37 @@ on:
     types: [completed]
     branches: [main]
 
+permissions:
+  contents: read
+  checks: write
+
+env:
+  JOB_NAME: Deploy NixOS Configuration 🚀
+
 jobs:
   deploy:
-    name: Deploy NixOS Configuration 🚀
+    name: ${{ env.JOB_NAME }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create check run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: '${{ env.JOB_NAME }}',
+              head_sha: '${{ github.event.workflow_run.head_sha }}',
+              status: 'in_progress',
+              started_at: new Date().toISOString(),
+              output: {
+                title: 'Deployment in progress',
+                summary: 'NixOS configuration deployment is currently running'
+              }
+            });
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -32,4 +56,53 @@ jobs:
           nix build --print-build-logs .#cachix-deploy-spec
           cachix push kiriwalawren ./result
           cachix deploy activate --async ./result
+
+      - name: Update check run
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const statusMap = {
+              'success': 'success',
+              'failure': 'failure',
+              'cancelled': 'cancelled'
+            };
+
+            const conclusion = statusMap['${{ job.status }}'] || 'neutral';
+
+            const titleMap = {
+              'success': 'Deployment successful',
+              'failure': 'Deployment failed',
+              'cancelled': 'Deployment cancelled',
+              'neutral': 'Deployment completed'
+            };
+
+            const summaryMap = {
+              'success': 'NixOS configuration has been successfully deployed',
+              'failure': 'NixOS configuration deployment encountered an error',
+              'cancelled': 'NixOS configuration deployment was cancelled',
+              'neutral': 'NixOS configuration deployment completed'
+            };
+
+            const runs = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: '${{ github.event.workflow_run.head_sha }}',
+              check_name: '${{ env.JOB_NAME }}'
+            });
+
+            if (runs.data.check_runs.length > 0) {
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: runs.data.check_runs[0].id,
+                status: 'completed',
+                conclusion: conclusion,
+                completed_at: new Date().toISOString(),
+                output: {
+                  title: titleMap[conclusion],
+                  summary: summaryMap[conclusion]
+                }
+              });
+            }
 
