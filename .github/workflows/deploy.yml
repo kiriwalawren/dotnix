@@ -10,12 +10,9 @@ permissions:
   contents: read
   checks: write
 
-env:
-  JOB_NAME: Deploy NixOS Configuration 🚀
-
 jobs:
   deploy:
-    name: ${{ env.JOB_NAME }}
+    name: Deploy NixOS Configuration 🚀
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +25,7 @@ jobs:
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: process.env.JOB_NAME,
+              name: 'Deploy NixOS Configuration 🚀',
               head_sha: '${{ github.event.workflow_run.head_sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
@@ -88,7 +85,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: '${{ github.event.workflow_run.head_sha }}',
-              check_name: process.env.JOB_NAME
+              check_name: 'Deploy NixOS Configuration 🚀'
             });
 
             if (runs.data.check_runs.length > 0) {
