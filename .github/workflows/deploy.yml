@@ -80,6 +80,8 @@ jobs:
               'cancelled': 'NixOS configuration deployment was cancelled',
               'neutral': 'NixOS configuration deployment completed'
             };
+            
+            const logsUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
 
             const runs = await github.rest.checks.listForRef({
               owner: context.repo.owner,
@@ -98,7 +100,7 @@ jobs:
                 completed_at: new Date().toISOString(),
                 output: {
                   title: titleMap[conclusion],
-                  summary: summaryMap[conclusion]
+                  summary: `${summaryMap[conclusion]}\n\n[View deployment logs](${logsUrl})`
                 }
               });
             }
