@@ -22,7 +22,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const logsUrl = `https://github.com/${context.repo.repo}/actions/runs/${conext.payload.workflow_run.id}`;
+            const logsUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.payload.workflow_run.id}`;
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -82,7 +82,7 @@ jobs:
               'neutral': 'NixOS configuration deployment completed'
             };
 
-            const logsUrl = `https://github.com/${context.repo.repo}/actions/runs/${conext.payload.workflow_run.id}`;
+            const logsUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.payload.workflow_run.id}`;
 
             const runs = await github.rest.checks.listForRef({
               owner: context.repo.owner,
