@@ -1,15 +1,10 @@
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{inputs, ...}: {
   imports = [inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series];
 
   hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
     kernelModules = [
       "i2c_hid"
       "i2c_hid_acpi"
