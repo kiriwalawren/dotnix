@@ -14,7 +14,17 @@ in {
     inputs.spicetify-nix.homeManagerModules.spicetify
   ];
 
-  options.ui.apps.spotify = {enable = mkEnableOption "spotify";};
+  meta.doc = lib.mdDoc ''
+    Spotify music streaming client with Spicetify theming and extensions.
+
+    Configures [Spotify](https://www.spotify.com/us/download/linux/) with [Spicetify](https://spicetify.app/)
+    customizations including Catppuccin theme and productivity extensions for
+    enhanced functionality and appearance.
+  '';
+
+  options.ui.apps.spotify = {
+    enable = mkEnableOption (lib.mdDoc "Spotify with Spicetify theming");
+  };
 
   config = mkIf cfg.enable {
     programs.spicetify = {

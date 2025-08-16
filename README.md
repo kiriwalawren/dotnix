@@ -59,155 +59,79 @@ If you have the repo cloned locally at `~/gitrepos/dotnix`, you can rebuild with
 nh os switch
 ```
 
-## NixOS Modules
+## Architecture
 
-### System
+This flake uses a **cascading options approach** instead of traditional manual module imports. All modules are imported into every host, and hosts simply enable what they need through options.
 
-#### [User](./modules/nixos/system/user/default.nix)
-
-Configures a user for the NixOS system using a dynamic user name that can be configured in `nixosConfiguration`.
+### Traditional Approach (Not Used)
 
 ```nix
-user.name = "kiri"; # Defaults to "walawren"
+# Traditional - manual imports everywhere
+imports = [
+  ../modules/home/cli/git.nix
+  ../modules/home/cli/fish.nix
+  ../modules/nixos/ui/gaming.nix
+  # ... many more imports
+];
 ```
 
-Each unique value used for `user.name` needs to have a corresponding SSH key added to the `private_keys` object of `secrets.yaml`.
-
-### UI
-
-#### [File Manager](./modules/nixos/ui/file-manager.nix)
-
-Configures a file explorer;
-
-#### [Gaming](./modules/nixos/ui/gaming.nix)
-
-Configures gaming for NixOS. Includes [steam](https://store.steampowered.com/about/), [protonup](https://github.com/AUNaseef/protonup), and [heroic](https://heroicgameslauncher.com/).
-
-#### [Hyprland](./modules/nixos/ui/hyprland)
-
-Bare bones installation of the [Hyprland](https://hyprland.org) dynamic tiling Wayland compositor.
-
-This is the starting point for configuring a UI for NixOS.
-
-#### [Plymouth](./modules/nixos/ui/plymouth.nix)
-
-Configures a customizable boot splash screen called [Plymouth](https://gitlab.freedesktop.org/plymouth/plymouth).
-
-#### [Sound](./modules/nixos/ui/sound.nix)
-
-Configures sound for NixOS.
-
-### [Home](./modules/nixos/home.nix)
-
-Configures Home Manager to be managed by the system for the configured user.
-
-Downside: Changes to [home modules](./modules/home) require full system rebuild.
-
-Upside: ONE COMMAND TO RULE THEM ALL (`nh os switch`).
-
-## [Home Modules](./modules/home)
-
-[Home Manager](https://github.com/nix-community/home-manager) configuration
-
-### CLI
-
-Contains toggleable modules for the following:
-
-- [btop](https://github.com/aristocratos/btop) - Resource monitor
-- [dircolors](https://www.gnu.org/software/coreutils/manual/html_node/dircolors-invocation.html#dircolors-invocation) - Folder colors for ls (and dir, etc.)
-- [direnv](https://direnv.net/) - Auto change dev environment on changing directory
-- [fish](https://fishshell.com) - Shell
-- [git](https://git-scm.com/) - Version control
-- [neovim](https://neovim.io/) - Neovim terminal text editor using [nixvim](https://github.com/nix-community/nixvim)
-- [tmux](https://github.com/tmux/tmux/wiki) - Terminal multiplexer
-
-The [cli module](./modules/home/cli/default.nix) will enable all of the above.
+### Cascading Options Approach (Used Here)
 
 ```nix
-imports = [ ./modules/home ];
-
-cli.enable = true;
+# Cascading - clean declarative interface
+cli.enable = true;        # Enables all CLI tools
+ui.gaming.enable = true;  # Just gaming
+ui.apps.firefox.enable = true;  # Individual apps
 ```
 
-Each module can be individually enabled as well.
+This keeps host declarations **concise and readable** while making all shared configuration automatically available.
 
-```nix
-imports = [ ./modules/home ];
+## Folder Structure
 
-cli.git.enable = true;
-cli.fish.enable = true;
-...
+```
+├── flake.nix              # Main flake entry point
+├── hosts/                 # Host-specific configuration
+│   ├── default.nix        # Host declarations with cascading options
+│   ├── disko.nix          # Declarative disk configuration
+│   └── hardware/          # Hardware-specific, non-shareable configs
+├── modules/               # All reusable configuration modules
+│   ├── home/              # Home Manager (~/) user environment
+│   │   ├── cli/           # Command-line tools and development
+│   │   └── ui/            # Desktop applications and theming
+│   │       ├── apps/      # Cross-platform desktop applications
+│   │       └── nixos/     # User configs for custom desktop environments
+│   └── nixos/             # System-level configuration
+│       ├── system/        # Core system services
+│       └── ui/            # Desktop environment components
+├── theme/                 # Global theming system
+│   ├── default.nix        # Theme configuration
+│   └── wallpapers/        # Background images
+├── checks/                # Nix validation (format.nix, statix.nix)
+├── scripts/               # Bootstrap and setup scripts
+├── nixos-bootstrapper/    # Minimal configs for quick SSH access
+└── secrets.yaml           # Encrypted secrets via SOPS
 ```
 
-### UI
+### Key Directories
 
-```nix
-imports = [ ./modules/home ];
+- **`hosts/`** - Small, focused host declarations that enable features
+- **`modules/home/`** - User environment managed by Home Manager
+  - **`cli/`** - Command-line tools (work everywhere)
+  - **`ui/apps/`** - Desktop applications (work on any GUI system)
+  - **`ui/nixos/`** - User configs for building desktop environments from scratch
+- **`modules/nixos/`** - System-level configuration and services
+- **`theme/`** - Centralized theming (planned migration to Stylix)
+- **`checks/`** - CI validation with `nix flake check`
 
-ui.enable = true;
+## Module Documentation
+
+Detailed documentation for each module is available in the auto-generated NixOS manual and can be viewed using:
+
+```bash
+nix-instantiate --eval --json --expr '(import <nixpkgs/nixos> {}).options' | jq
 ```
 
-Enables [CLI](#cli) and [Apps](#apps) by default.
-
-#### Apps
-
-Contains UI based app installations and configurations.
-
-The following are also installed and configured:
-
-- User settings for Hyprland
-- [Firefox](https://www.mozilla.org/en-US/firefox/new) - Browser
-- [kitty](https://sw.kovidgoyal.net/kitty)- Terminal emulator
-- [Slack](https://slack.com/) - Teams communication
-- [Spotify](https://www.spotify.com/us/download/linux/) - Music streaming client
-- [Teams for Linux](https://github.com/IsmaelMartinez/teams-for-linux) - Teams communication
-- [Vesktop](https://github.com/Vencord/Vesktop) - Custom Discord client with [Vencord](https://vencord.dev/) preinstalled
-
-```nix
-imports = [ ./modules/home ];
-
-ui.apps.enable = true;
-```
-
-Each module can be individually enabled as well.
-
-```nix
-imports = [ ./modules/home ];
-
-ui.apps.firefox.enable = true;
-ui.apps.kitty.enable = true;
-...
-```
-
-#### NixOS
-
-Contains NixOS UI user configurations.
-
-Requires [Hyprland](#hyprland) configuration first.
-
-The following are also installed and configured:
-
-- [Grimblast](https://github.com/hyprwm/contrib/tree/main/grimblast) screenshot utility
-- [Hyprlock](https://github.com/hyprwm/hyprlock) lock screen
-- [Hypridle](https://github.com/hyprwm/hypridle) idle daemon
-- [Hyprpaper](https://github.com/hyprwm/hyprpaper) wallpaper utility and selector
-- [fuzzel](https://codeberg.org/dnkl/fuzzel) app launcher
-
-```nix
-imports = [ ./modules/home ];
-
-ui.nixos.enable = true; # Defaults to true
-```
-
-Each module can be individually enabled as well.
-
-```nix
-imports = [ ./modules/home ];
-
-ui.nixos.hyprland.enable = true;
-ui.nixos.fuzzel.enable = true;
-...
-```
+Or by browsing the inline documentation in each module's source code.
 
 ### Special Thanks
 

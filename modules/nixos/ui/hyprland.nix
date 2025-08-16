@@ -7,7 +7,21 @@
 with lib; let
   cfg = config.ui.hyprland;
 in {
-  options.ui.hyprland = {enable = mkEnableOption "hyprland";};
+  meta.doc = lib.mdDoc ''
+    Hyprland Wayland compositor with complete desktop environment setup.
+
+    Configures [Hyprland](https://hyprland.org/) with:
+    - SDDM display manager with Wayland support
+    - XDG desktop portals for screen sharing and file dialogs
+    - Hardware graphics acceleration
+    - GNOME Keyring integration
+    - PAM configuration for hyprlock
+    - Increased file descriptor limits for wheel group
+  '';
+
+  options.ui.hyprland = {
+    enable = mkEnableOption (lib.mdDoc "Hyprland Wayland compositor");
+  };
 
   config = mkIf cfg.enable {
     programs = {

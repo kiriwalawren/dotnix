@@ -15,7 +15,16 @@ in {
     ./vencord
   ];
 
-  options.ui.apps = {enable = mkEnableOption "apps";};
+  meta.doc = lib.mdDoc ''
+    UI applications module that enables common desktop applications.
+
+    When enabled, automatically enables: firefox, kitty, slack, spotify, teams, and vencord.
+    Provides a curated set of applications for web browsing, terminal, communication, and media.
+  '';
+
+  options.ui.apps = {
+    enable = mkEnableOption (lib.mdDoc "common desktop applications");
+  };
 
   config = mkIf cfg.enable {
     ui.apps = {

@@ -10,7 +10,19 @@ with lib; let
   firefox-addons = inputs.firefox-addons.packages.${system};
   cfg = config.ui.apps.firefox;
 in {
-  options.ui.apps.firefox = {enable = mkEnableOption "firefox";};
+  meta.doc = lib.mdDoc ''
+    Firefox browser with privacy-focused configuration and development extensions.
+
+    Includes [Firefox](https://www.mozilla.org/en-US/firefox/new/) with:
+    - Privacy policies (disabled telemetry, studies, pocket)
+    - Vertical tabs and DuckDuckGo as default search
+    - Curated privacy and productivity extensions
+    - Custom search engines for Nix packages, options, and wiki
+  '';
+
+  options.ui.apps.firefox = {
+    enable = mkEnableOption (lib.mdDoc "Firefox browser with privacy configuration");
+  };
 
   config = mkIf cfg.enable {
     programs.firefox = {

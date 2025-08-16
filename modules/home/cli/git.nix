@@ -7,7 +7,20 @@
 with lib; let
   cfg = config.cli.git;
 in {
-  options.cli.git = {enable = mkEnableOption "git";};
+  meta.doc = lib.mdDoc ''
+    Git configuration with GitHub CLI integration and SSH key management.
+
+    Provides a complete Git development environment with:
+    - [Git](https://git-scm.com/) version control
+    - Enhanced diffs using [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy)
+    - [GitHub CLI](https://cli.github.com/) with SSH protocol
+    - Automatic SSH key linking from [SOPS](https://github.com/getsops/sops) secrets
+    - Sensible gitignore defaults for common development files
+  '';
+
+  options.cli.git = {
+    enable = mkEnableOption (lib.mdDoc "Git version control with GitHub CLI integration");
+  };
 
   config = mkIf cfg.enable {
     programs = {

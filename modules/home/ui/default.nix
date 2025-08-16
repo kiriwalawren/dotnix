@@ -16,7 +16,16 @@ in {
     ./cursors.nix
   ];
 
-  options.ui = {enable = mkEnableOption "ui";};
+  meta.doc = lib.mdDoc ''
+    UI module that enables user interface applications and theming.
+
+    When enabled, automatically enables: cli, cursors, and apps.
+    Also imports fonts and nixos UI modules for additional functionality.
+  '';
+
+  options.ui = {
+    enable = mkEnableOption (lib.mdDoc "user interface applications and theming");
+  };
 
   config = mkIf cfg.enable {
     cli.enable = true;

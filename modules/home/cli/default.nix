@@ -19,7 +19,18 @@ in {
     ./wsl.nix
   ];
 
-  options.cli = {enable = mkEnableOption "cli";};
+  meta.doc = lib.mdDoc ''
+    CLI module that enables all command-line development tools by default.
+
+    When enabled, automatically enables: btop, dircolors, direnv, fish, git, nixvim, and tmux.
+    Also includes scc (source code counter) and wl-clipboard packages.
+
+    Note: This module is automatically enabled when `hostConfig.wsl.enable` is true.
+  '';
+
+  options.cli = {
+    enable = mkEnableOption (lib.mdDoc "all CLI development tools");
+  };
 
   config = mkIf (cfg.enable
     || hostConfig.wsl.enable) {

@@ -8,7 +8,21 @@ with lib; let
   cfg = config.cli.fish;
   gitMainOrMaster = "git branch -l main master --format '%(refname:short)'";
 in {
-  options.cli.fish = {enable = mkEnableOption "fish";};
+  meta.doc = lib.mdDoc ''
+    Fish shell configuration with plugins and extensive command abbreviations.
+
+    Provides a modern shell experience with:
+    - [Fish shell](https://fishshell.com/) with vi key bindings
+    - [Hydro](https://github.com/jorgebucaran/hydro) prompt theme
+    - [Autopair](https://github.com/jorgebucaran/autopair.fish) for bracket completion
+    - [Fish completion sync](https://github.com/pfgray/fish-completion-sync) for better completions
+    - Comprehensive abbreviations for Git, Terraform, Pulumi, and Nix workflows
+    - Integration with dircolors, fzf, and kitty
+  '';
+
+  options.cli.fish = {
+    enable = mkEnableOption (lib.mdDoc "Fish shell with plugins and workflow abbreviations");
+  };
   config = mkIf cfg.enable {
     catppuccin.fish.enable = true;
 

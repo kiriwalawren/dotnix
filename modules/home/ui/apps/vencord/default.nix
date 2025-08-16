@@ -7,7 +7,17 @@
 with lib; let
   cfg = config.ui.apps.vencord;
 in {
-  options.ui.apps.vencord = {enable = mkEnableOption "vencord";};
+  meta.doc = lib.mdDoc ''
+    Vesktop Discord client with Vencord modifications and Catppuccin theming.
+
+    Configures [Vesktop](https://github.com/Vencord/Vesktop) with [Vencord](https://vencord.dev/)
+    enhancements, custom theme, and productivity plugins. Includes preconfigured
+    settings for optimal Discord experience.
+  '';
+
+  options.ui.apps.vencord = {
+    enable = mkEnableOption (lib.mdDoc "Vesktop Discord client with Vencord");
+  };
 
   config = mkIf cfg.enable {
     home.packages = [

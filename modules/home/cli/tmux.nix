@@ -8,7 +8,20 @@
 with lib; let
   cfg = config.cli.tmux;
 in {
-  options.cli.tmux = {enable = mkEnableOption "tmux";};
+  meta.doc = lib.mdDoc ''
+    Terminal multiplexer configuration with vi-style keybindings.
+
+    Provides [tmux](https://github.com/tmux/tmux/wiki) with a comprehensive setup including:
+    - Vi-style key bindings and navigation
+    - Custom pane navigation and resizing
+    - Mouse support and 24-bit color
+    - [Catppuccin](https://github.com/catppuccin/tmux) theme with custom icons
+    - Automatic window titles and 10k line history
+  '';
+
+  options.cli.tmux = {
+    enable = mkEnableOption (lib.mdDoc "terminal multiplexer with vi-style keybindings");
+  };
 
   config = mkIf cfg.enable {
     programs.tmux = {

@@ -15,7 +15,17 @@ in {
     ./waybar
   ];
 
-  options.ui.nixos = {enable = mkEnableOption "nixos";};
+  meta.doc = lib.mdDoc ''
+    NixOS-specific UI components for Wayland desktop environment.
+
+    When enabled, automatically enables: fuzzel, gtk, hyprland, mako, and waybar.
+    Also includes wf-recorder for screen recording and wl-clipboard for clipboard management.
+    Designed specifically for NixOS Wayland environments.
+  '';
+
+  options.ui.nixos = {
+    enable = mkEnableOption (lib.mdDoc "NixOS Wayland desktop environment components");
+  };
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [

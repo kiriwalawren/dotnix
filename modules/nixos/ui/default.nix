@@ -22,7 +22,17 @@ in {
     ./sound.nix
   ];
 
-  options.ui = {enable = mkEnableOption "ui";};
+  meta.doc = lib.mdDoc ''
+    NixOS UI configuration module with desktop environment components.
+
+    When enabled, automatically enables: bluetooth, file manager, hyprland, plymouth, sddm theme, and sound.
+    Also includes essential desktop applications: gnome-calculator, loupe, and zoom-us.
+    Configures Catppuccin theming across the system.
+  '';
+
+  options.ui = {
+    enable = mkEnableOption (lib.mdDoc "desktop environment with Wayland and theming");
+  };
 
   config = mkIf cfg.enable {
     catppuccin.flavor = theme.variant;

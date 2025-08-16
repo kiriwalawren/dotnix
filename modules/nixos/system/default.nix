@@ -1,9 +1,21 @@
 {
   config,
   inputs,
+  lib,
   pkgs,
   ...
 }: {
+  meta.doc = lib.mdDoc ''
+    Core NixOS system configuration with development tools and services.
+
+    Provides baseline system configuration including:
+    - WSL integration and user account setup
+    - Nix flakes and unfree package support
+    - Essential system packages (curl, wget)
+    - Timezone and locale configuration
+    - System auto-upgrade from GitHub repository
+    - Cachix binary cache and dual-function key mapping
+  '';
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
 

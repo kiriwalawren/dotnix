@@ -6,7 +6,20 @@
 with lib; let
   cfg = config.system.openssh;
 in {
-  options.system.openssh = {enable = mkEnableOption "openssh";};
+  meta.doc = lib.mdDoc ''
+    Secure SSH server configuration with Fail2Ban protection.
+
+    Configures [OpenSSH](https://www.openssh.com/) server with security hardening:
+    - Key-only authentication (no passwords)
+    - Root login disabled
+    - Ed25519 host keys only
+    - [Fail2Ban](https://www.fail2ban.org/) intrusion prevention
+    - Firewall integration on port 22
+  '';
+
+  options.system.openssh = {
+    enable = mkEnableOption (lib.mdDoc "secure SSH server with Fail2Ban");
+  };
 
   config = mkIf cfg.enable {
     services.openssh = {

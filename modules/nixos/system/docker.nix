@@ -6,7 +6,16 @@
 with lib; let
   cfg = config.system.docker;
 in {
-  options.system.docker = {enable = mkEnableOption "docker";};
+  meta.doc = lib.mdDoc ''
+    Docker containerization platform with rootless configuration.
+
+    Enables [Docker](https://www.docker.com/) with rootless mode for enhanced security.
+    Automatically adds the configured user to the docker group for container management.
+  '';
+
+  options.system.docker = {
+    enable = mkEnableOption (lib.mdDoc "Docker with rootless configuration");
+  };
 
   config = mkIf cfg.enable {
     virtualisation.docker = {

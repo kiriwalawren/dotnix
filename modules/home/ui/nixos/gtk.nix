@@ -7,7 +7,17 @@
 with lib; let
   cfg = config.ui.nixos.gtk;
 in {
-  options.ui.nixos.gtk = {enable = mkEnableOption "gtk";};
+  meta.doc = lib.mdDoc ''
+    GTK theming with Colloid theme and Catppuccin styling.
+
+    Configures [GTK](https://www.gtk.org/) with [Colloid theme](https://github.com/vinceliuice/Colloid-gtk-theme)
+    in dark, compact variant with teal accents and Catppuccin integration.
+    Includes matching [Colloid icon theme](https://github.com/vinceliuice/Colloid-icon-theme).
+  '';
+
+  options.ui.nixos.gtk = {
+    enable = mkEnableOption (lib.mdDoc "GTK theming with Colloid and Catppuccin");
+  };
 
   config = mkIf cfg.enable {
     xdg.enable = true;

@@ -7,17 +7,33 @@
 with lib; let
   pubKeys = filesystem.listFilesRecursive ./keys;
 in {
+  meta.doc = lib.mdDoc ''
+    User account configuration for NixOS systems.
+
+    Configures a user account with dynamic username support, SSH key management,
+    and Fish shell integration. Supports both minimal and full installations
+    with appropriate password handling for each scenario.
+  '';
+
   options = {
     user.name = mkOption {
       type = types.str;
       default = "walawren";
-      description = "The name to use for the user account";
+      example = "kiri";
+      description = lib.mdDoc ''
+        The name to use for the user account. Each unique value needs a
+        corresponding SSH key in the `private_keys` object of `secrets.yaml`.
+      '';
     };
 
     isMinimal = mkOption {
       type = types.bool;
       default = false;
-      description = "Used to indicate a minimal host";
+      example = true;
+      description = lib.mdDoc ''
+        Whether this is a minimal host installation. Affects password handling
+        and available features.
+      '';
     };
   };
 
