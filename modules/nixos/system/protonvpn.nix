@@ -9,7 +9,22 @@ with lib; let
   hostname = config.networking.hostName;
 in {
   options.system.protonvpn = {
-    enable = mkEnableOption "ProtonVPN configuration";
+    enable =
+      mkEnableOption "ProtonVPN configuration"
+      // {
+        description = ''
+          ProtonVPN WireGuard configuration with IPv4/IPv6 support.
+
+          Requires sops secret: protonvpn/''${hostname}/private_key
+
+          Example secrets.yaml entry:
+          ```yaml
+          protonvpn:
+            your-hostname:
+              private_key: "your-wireguard-private-key"
+          ```
+        '';
+      };
 
     serverEndpoint = mkOption {
       type = types.str;
@@ -98,7 +113,7 @@ in {
               DEFAULT_GW=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gnugrep}/bin/grep -oP 'via \K[^\s]+' | head -1)
               DEFAULT_DEV=$(${pkgs.iproute2}/bin/ip route show default | ${pkgs.gnugrep}/bin/grep -oP 'dev \K[^\s]+' | head -1)
               ${pkgs.iproute2}/bin/ip route add $VPN_SERVER_IP via $DEFAULT_GW dev $DEFAULT_DEV 2>/dev/null || true
-              
+
               # Set up routing for ProtonVPN
               ${pkgs.iproute2}/bin/ip route add default dev protonvpn table 200
               ${pkgs.iproute2}/bin/ip rule add from ${builtins.head (builtins.split "/" cfg.clientIP)} table 200
@@ -107,7 +122,7 @@ in {
                 # Set up IPv6 routing with higher priority than router
                 ${pkgs.iproute2}/bin/ip -6 route add default dev protonvpn table 200
                 ${pkgs.iproute2}/bin/ip -6 rule add from ${builtins.head (builtins.split "/" cfg.clientIPv6)} table 200
-                
+
                 # Override main table default route with higher priority VPN route
                 ${pkgs.iproute2}/bin/ip -6 route add default dev protonvpn metric 100
               ''}
@@ -130,7 +145,7 @@ in {
               # Clean up routing
               ${pkgs.iproute2}/bin/ip rule del from ${builtins.head (builtins.split "/" cfg.clientIP)} table 200 2>/dev/null || true
               ${pkgs.iproute2}/bin/ip route del default dev protonvpn table 200 2>/dev/null || true
-              
+
               ${optionalString config.networking.enableIPv6 ''
                 # Clean up IPv6 routing
                 ${pkgs.iproute2}/bin/ip -6 rule del from ${builtins.head (builtins.split "/" cfg.clientIPv6)} table 200 2>/dev/null || true
@@ -163,7 +178,6 @@ in {
     environment.systemPackages = with pkgs; [
       wireguard-tools
     ];
-
 
     systemd.services.wireguard-protonvpn = mkIf cfg.autoStart {
       wantedBy = ["multi-user.target"];
