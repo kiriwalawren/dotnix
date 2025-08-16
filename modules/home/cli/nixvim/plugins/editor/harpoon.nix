@@ -41,6 +41,16 @@
         key = "<A-u>";
         action.__raw = "function() require'harpoon':list():select(4) end";
       }
+      {
+        mode = "n";
+        key = "<leader>p";
+        action.__raw = "function() require'harpoon':list():prev() end";
+      }
+      {
+        mode = "n";
+        key = "<leader>n";
+        action.__raw = "function() require'harpoon':list():next() end";
+      }
     ];
   };
 }

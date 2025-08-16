@@ -1,5 +1,6 @@
 {
   imports = [
+    ./claude-code.nix
     ./conform-nvim.nix
     ./flash.nix
     ./gitsigns.nix

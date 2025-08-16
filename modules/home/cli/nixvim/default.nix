@@ -8,7 +8,7 @@ with lib; let
   cfg = config.cli.nixvim;
 in {
   imports = [
-    inputs.nixvim.homeManagerModules.nixvim
+    inputs.nixvim.homeModules.nixvim
     ./core
     ./plugins
   ];
@@ -40,6 +40,7 @@ in {
         defaultEditor = true;
         viAlias = true;
         vimAlias = true;
+        nixpkgs.config.allowUnfree = true;
       };
     };
   };

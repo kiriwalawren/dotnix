@@ -1,4 +1,4 @@
-name: "CI"
+name: CI
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     name: Check 📋
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: ecarlson94
+          name: kiriwalawren
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Run Checks
@@ -32,7 +32,7 @@ jobs:
       configurations: ${{ steps.configurations.outputs.configurations }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -67,35 +67,8 @@ jobs:
       - name: Setup Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: ecarlson94
+          name: kiriwalawren
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Build Configuration 📋
         run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}.config.system.build.toplevel
-
-  deploy:
-    name: Deploy NixOS Configuration 🚀
-    if: github.ref == 'refs/heads/main'
-    needs: [nix-flake-check, builds]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v16
-        with:
-          name: ecarlson94
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-
-      - name: Deploy
-        env:
-          CACHIX_ACTIVATE_TOKEN: "${{ secrets.CACHIX_ACTIVATE_TOKEN }}"
-        run: |
-          nix build --print-build-logs .#cachix-deploy-spec
-          cachix push ecarlson94 ./result
-          cachix deploy activate --async ./result

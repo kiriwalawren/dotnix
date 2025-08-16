@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -22,7 +22,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Update flake.lock
-        uses: DeterminateSystems/update-flake-lock@v25
+        uses: DeterminateSystems/update-flake-lock@v27
         with:
           pr-title: "Update flake.lock"
           pr-labels: |
@@ -46,5 +46,6 @@ jobs:
             git fetch origin && \
             git checkout update_flake_lock_action && \
             git commit --amend --no-edit && \
-            git push origin update_flake_lock_action --force
+            git push origin update_flake_lock_action --force && \
+            nix flake check
             ```

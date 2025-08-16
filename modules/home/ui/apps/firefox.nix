@@ -45,7 +45,7 @@ in {
         };
 
         extensions.packages = with firefox-addons; [
-          proton-pass
+          bitwarden
           darkreader
           firefox-color
           stylus
