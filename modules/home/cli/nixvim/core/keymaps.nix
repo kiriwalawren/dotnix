@@ -1,4 +1,20 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Comprehensive keybinding configuration for efficient Neovim navigation and editing.
+
+    Provides essential keyboard shortcuts including:
+    - File operations (save with Ctrl+S, new file, quit all)
+    - Enhanced movement (smart j/k for wrapped lines, centered navigation)
+    - Window management (split, resize, navigate between windows)
+    - Buffer management (navigate, delete, switch between buffers)
+    - Line manipulation (move lines up/down with Alt+j/k)
+    - Search improvements (centered results, clear highlighting)
+    - Visual mode enhancements (better indenting, sorting)
+
+    Optimized for productivity with vim-style navigation and modern shortcuts
+    for a seamless editing experience.
+  '';
+
   programs.nixvim.keymaps = [
     # Saving
     {

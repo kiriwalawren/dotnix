@@ -1,3 +1,15 @@
+# Theming configuration for Waybar status bar with cohesive visual design.
+#
+# Provides comprehensive CSS styling that:
+# - Integrates with the global theme system for consistent colors
+# - Applies custom fonts and sizing from theme configuration
+# - Creates smooth transitions and hover effects
+# - Implements workspace visual feedback and state indicators
+# - Maintains visual hierarchy with color-coded system modules
+# - Ensures rounded corners match the desktop theme radius
+#
+# Each module (clock, CPU, memory, network, battery) receives distinct
+# accent colors while maintaining overall design coherence.
 {theme}:
 with builtins; let
   radius = "${toString theme.radius}px";

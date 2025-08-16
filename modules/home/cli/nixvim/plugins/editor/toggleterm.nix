@@ -1,4 +1,21 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Advanced terminal management for Neovim with multiple terminal support.
+
+    Provides comprehensive terminal integration:
+    - Multiple persistent terminal instances
+    - Floating, horizontal, and vertical terminal layouts
+    - Terminal-specific keybindings for window navigation
+    - Auto-scroll and smart terminal behavior
+    - Quick terminal mode exit with 'jk'
+    - Customizable terminal appearance with curved borders
+
+    Supports up to 3 different terminal instances accessible via leader+th/tn/tf,
+    perfect for running different processes simultaneously.
+
+    Links: [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim)
+  '';
+
   programs.nixvim = {
     plugins.toggleterm = {
       enable = true;

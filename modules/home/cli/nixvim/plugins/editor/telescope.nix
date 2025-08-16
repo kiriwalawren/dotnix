@@ -1,4 +1,21 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Powerful fuzzy finder and picker for Neovim using Telescope.
+
+    Provides comprehensive search and navigation capabilities:
+    - File finding with git-aware and global search
+    - Live grep for searching within file contents
+    - Buffer and recent file navigation
+    - Git commit and status exploration
+    - Command history and help documentation search
+    - LSP symbol and workspace navigation
+    - Extensive keybinding shortcuts for efficient workflow
+
+    Includes fzf-native and ui-select extensions for enhanced performance and UI integration.
+
+    Links: [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+  '';
+
   programs.nixvim = {
     plugins.harpoon.enableTelescope = true;
 

@@ -1,4 +1,21 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Language Server Protocol (LSP) integration with comprehensive language support.
+
+    Provides intelligent code features including:
+    - Multi-language LSP servers (Elixir, TypeScript, Nix, JSON, Markdown)
+    - Code navigation (go to definition, references, type definition)
+    - Real-time diagnostics and error checking
+    - Code actions and refactoring
+    - Symbol renaming across files
+    - Hover documentation
+    - None-ls integration for additional tooling
+
+    Includes keybindings for efficient code navigation and manipulation.
+
+    Links: [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig), [none-ls](https://github.com/nvimtools/none-ls.nvim)
+  '';
+
   programs.nixvim.plugins = {
     none-ls.enable = true;
     lsp = {

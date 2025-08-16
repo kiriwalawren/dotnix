@@ -1,4 +1,20 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Fast navigation plugin for Neovim using labeled jumps and treesitter integration.
+
+    Provides lightning-fast cursor movement:
+    - Character-based jumping with visible labels
+    - Treesitter-aware navigation for code structure
+    - Remote operation support for distant targets
+    - Enhanced search functionality with treesitter
+    - Jump labels for improved visibility
+
+    Uses 's' for basic jumps, 'S' for treesitter jumps, and 'r'/'R' for remote operations.
+    Significantly speeds up navigation within buffers.
+
+    Links: [flash.nvim](https://github.com/folke/flash.nvim)
+  '';
+
   programs.nixvim = {
     plugins.flash = {
       enable = true;

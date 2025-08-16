@@ -24,7 +24,24 @@ with lib; let
     done
   '';
 in {
-  options.ui.nixos.hyprland.hyprpaper = {enable = mkEnableOption "hyprpaper";};
+  meta.doc = lib.mdDoc ''
+    Dynamic wallpaper management system for Hyprland with automatic rotation.
+
+    Provides intelligent wallpaper functionality:
+    - Random wallpaper selection from theme wallpaper collection
+    - Automatic hourly wallpaper rotation via systemd timer
+    - Multi-monitor support with synchronized wallpapers
+    - IPC integration for real-time wallpaper changes
+    - Efficient memory management with preload/unload system
+    - Seamless integration with Hyprland's wallpaper system
+
+    Features a custom wallpaper randomizer script that ensures fresh
+    desktop backgrounds throughout the day while supporting multiple displays.
+
+    Links: [hyprpaper](https://github.com/hyprwm/hyprpaper)
+  '';
+
+  options.ui.nixos.hyprland.hyprpaper = {enable = mkEnableOption (lib.mdDoc "hyprpaper dynamic wallpaper management for Hyprland");};
 
   config = mkIf cfg.enable {
     home.packages = [wallpaperRandomizer];

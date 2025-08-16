@@ -1,4 +1,19 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Intelligent autocompletion for Neovim using nvim-cmp.
+
+    Provides completion from multiple sources:
+    - LSP servers for code completion
+    - File paths for file navigation
+    - Buffer content for context-aware suggestions
+    - Command line completion
+
+    Features smart navigation with Tab/Shift-Tab and Ctrl-J/K, instant completion with Ctrl-Space,
+    and seamless integration with LSP and other completion sources.
+
+    Links: [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+  '';
+
   programs.nixvim.plugins = {
     cmp-nvim-lsp.enable = true;
     cmp-buffer.enable = true;

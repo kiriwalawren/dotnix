@@ -1,4 +1,21 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Quick file navigation system for managing frequently accessed files.
+
+    Provides efficient project navigation:
+    - Mark important files for instant access
+    - Quick menu for file list management
+    - Numbered shortcuts for up to 4 favorite files
+    - Telescope integration for enhanced file browsing
+    - Persistent file lists across sessions
+    - Navigation between marked files with prev/next
+
+    Uses leader+a to mark files, Ctrl+e for the quick menu, and Alt+a/o/e/u for slots 1-4.
+    Essential for efficient project-based development workflow.
+
+    Links: [harpoon](https://github.com/ThePrimeagen/harpoon)
+  '';
+
   programs.nixvim = {
     plugins.harpoon = {
       enable = true;

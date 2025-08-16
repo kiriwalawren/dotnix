@@ -1,4 +1,20 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Core Neovim configuration options for optimal editing experience.
+
+    Provides comprehensive editor settings including:
+    - Modern interface options (line numbers, cursor line, true colors)
+    - Smart editing behavior (auto-indent, smart case, clipboard integration)
+    - Search enhancements (incremental search, case-insensitive with smart case)
+    - File management (auto-write, undo persistence, session options)
+    - Visual improvements (list characters, sign column, status line)
+    - Performance optimizations (update time, timeout settings)
+    - Leader key configuration and LazyVim root detection
+
+    Establishes a solid foundation for productive development with
+    sensible defaults and modern Neovim features.
+  '';
+
   programs.nixvim = {
     globals = {
       mapleader = " ";

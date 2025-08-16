@@ -1,4 +1,19 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Modern file explorer for Neovim that treats directories like buffers.
+
+    Provides an intuitive file management experience:
+    - Edit directories like normal Neovim buffers
+    - Floating window interface for quick access
+    - Hidden file support for complete directory visibility
+    - Seamless integration with Neovim's editing capabilities
+    - Replaces netrw as the default file explorer
+
+    Accessible via leader+e for instant file navigation and manipulation.
+
+    Links: [oil.nvim](https://github.com/stevearc/oil.nvim)
+  '';
+
   programs.nixvim = {
     plugins.oil = {
       enable = true;

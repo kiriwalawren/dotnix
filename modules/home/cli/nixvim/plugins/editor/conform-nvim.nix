@@ -10,6 +10,24 @@
     stop_after_first = true;
   };
 in {
+  meta.doc = lib.mdDoc ''
+    Automatic code formatting for multiple languages using conform.nvim.
+
+    Provides format-on-save functionality for:
+    - JavaScript/TypeScript with prettierd/prettier
+    - Nix with alejandra or nixpkgs-fmt
+    - Elixir with mix format
+    - Go with gofmt
+    - Shell scripts with shfmt
+    - C# with csharpier
+    - CSS, HTML, and Markdown with prettier
+
+    Features automatic formatting on save with LSP fallback, configurable timeout,
+    and smart formatter selection with fallback options for reliable formatting.
+
+    Links: [conform.nvim](https://github.com/stevearc/conform.nvim)
+  '';
+
   config.home.packages = lib.mkIf config.programs.nixvim.enable (with pkgs; [shfmt prettierd]);
 
   config.programs.nixvim.plugins.conform-nvim = {

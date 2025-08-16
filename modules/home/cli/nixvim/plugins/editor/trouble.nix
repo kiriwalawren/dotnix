@@ -1,4 +1,21 @@
-{
+{lib, ...}: {
+  meta.doc = lib.mdDoc ''
+    Enhanced diagnostic and problem management for Neovim development.
+
+    Provides comprehensive issue tracking and navigation:
+    - Unified diagnostics view for all project issues
+    - Buffer-specific diagnostic filtering
+    - LSP symbol and reference navigation
+    - Integration with quickfix and location lists
+    - Document symbol browsing and workspace navigation
+    - Efficient problem resolution workflow
+
+    Features extensive keybindings for quick access to diagnostics, symbols,
+    and references, making debugging and code navigation seamless.
+
+    Links: [trouble.nvim](https://github.com/folke/trouble.nvim)
+  '';
+
   programs.nixvim = {
     plugins.trouble = {
       enable = true;
