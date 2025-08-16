@@ -13,7 +13,21 @@ in {
     ./plugins
   ];
 
-  options.cli.nixvim = {enable = mkEnableOption "nixvim";};
+  meta.doc = lib.mdDoc ''
+    Neovim configuration using Nixvim with comprehensive plugin setup.
+    
+    Provides [Neovim](https://neovim.io/) via [Nixvim](https://github.com/nix-community/nixvim) with:
+    - Complete core configuration (autocmds, keymaps, options, theme)
+    - LSP and completion plugins for development
+    - Editor plugins for enhanced functionality
+    - Treesitter for syntax highlighting and navigation
+    - Supporting tools: ripgrep, fd, and fzf for file operations
+    - Set as default editor with vi/vim aliases
+  '';
+
+  options.cli.nixvim = {
+    enable = mkEnableOption (lib.mdDoc "Neovim with comprehensive plugin configuration");
+  };
 
   config = mkIf cfg.enable {
     programs = {

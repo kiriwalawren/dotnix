@@ -41,7 +41,21 @@ in {
     ./hyprpaper.nix
   ];
 
-  options.ui.nixos.hyprland = {enable = mkEnableOption "hyprland";};
+  meta.doc = lib.mdDoc ''
+    Hyprland user configuration with complete window management setup.
+    
+    Provides [Hyprland](https://hyprland.org/) user-level configuration including:
+    - Custom keybindings using Meh (Ctrl+Shift+Alt) and Hyper modifiers
+    - Workspace navigation and window management for 8 workspaces
+    - Theme-aware borders, gaps, and animations
+    - Media keys and volume control integration
+    - Mouse gestures and adaptive input sensitivity
+    - Integrated utilities: grimblast, hypridle, hyprlock, hyprpaper
+  '';
+
+  options.ui.nixos.hyprland = {
+    enable = mkEnableOption (lib.mdDoc "Hyprland user configuration with custom keybindings");
+  };
 
   config = mkIf cfg.enable {
     ui.nixos.hyprland = {

@@ -8,7 +8,22 @@
 with lib; let
   cfg = config.ui.nixos.waybar;
 in {
-  options.ui.nixos.waybar = {enable = mkEnableOption "waybar";};
+  meta.doc = lib.mdDoc ''
+    Waybar status bar configuration for Hyprland.
+    
+    Provides [Waybar](https://github.com/Alexays/Waybar) with:
+    - Hyprland workspace integration with click-to-activate
+    - System monitoring: CPU, memory, battery, network status
+    - Audio control with volume adjustment and pavucontrol integration
+    - Date/time display with calendar tooltip
+    - System tray for applications
+    - Custom styling integrated with global theme
+    - Systemd integration for proper session management
+  '';
+
+  options.ui.nixos.waybar = {
+    enable = mkEnableOption (lib.mdDoc "Waybar status bar for Hyprland");
+  };
 
   config = mkIf cfg.enable {
     ui.fonts.enable = true;

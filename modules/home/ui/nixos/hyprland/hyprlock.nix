@@ -11,7 +11,20 @@ with lib; let
   inherit (hostConfig.ui) fingerprint;
   cfg = config.ui.nixos.hyprland.hyprlock;
 in {
-  options.ui.nixos.hyprland.hyprlock = {enable = mkEnableOption "hyprlock";};
+  meta.doc = lib.mdDoc ''
+    Hyprlock screen locker with theme integration and automatic suspend locking.
+    
+    Provides [Hyprlock](https://github.com/hyprwm/hyprlock) with:
+    - Theme-aware lock screen with wallpaper background and colored elements
+    - Optional fingerprint authentication support
+    - Automatic locking before system suspend via D-Bus monitoring
+    - Custom keybinding (Super+Ctrl+Shift+Alt+N) for manual locking
+    - GNOME Polkit integration for fingerprint authentication
+  '';
+
+  options.ui.nixos.hyprland.hyprlock = {
+    enable = mkEnableOption (lib.mdDoc "Hyprlock screen locker with theming");
+  };
 
   config = mkIf cfg.enable {
     home.packages = mkIf fingerprint.enable [pkgs.polkit_gnome];

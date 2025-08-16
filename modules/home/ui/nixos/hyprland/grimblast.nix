@@ -8,7 +8,18 @@
 with lib; let
   cfg = config.ui.nixos.hyprland.grimblast;
 in {
-  options.ui.nixos.hyprland.grimblast = {enable = mkEnableOption "grimblast";};
+  meta.doc = lib.mdDoc ''
+    Grimblast screenshot utility for Hyprland.
+    
+    Provides [Grimblast](https://github.com/hyprwm/contrib/tree/main/grimblast) with:
+    - Screenshot keybindings: Ctrl+Shift+Alt+O (copy area), Ctrl+Shift+Alt+E (edit area)
+    - [Pinta](https://pinta-project.com/) integration for screenshot editing
+    - Environment variable configuration for consistent editor usage
+  '';
+
+  options.ui.nixos.hyprland.grimblast = {
+    enable = mkEnableOption (lib.mdDoc "Grimblast screenshot utility");
+  };
 
   config = mkIf cfg.enable {
     home.packages = [
