@@ -1,6 +1,5 @@
 {
   config,
-  hostConfig,
   lib,
   pkgs,
   ...
@@ -17,7 +16,6 @@ in {
       terminal = "xterm-256color";
       baseIndex = 1;
       keyMode = "vi"; # VI Mode
-      customPaneNavigationAndResize = true; # Override hjkl and HJKL bindings for pane navigation and resizing VI Mode
       historyLimit = 10000;
       mouse = true;
 
@@ -28,6 +26,10 @@ in {
 
         # Enable 24-bit "True color" support
         set-option -ga terminal-overrides ",xterm-256color:Tc"
+
+        # Easy last-window
+        bind -T prefix -r C-a last-window
+        set -g repeat-time 300   # milliseconds; adjust to taste
       '';
 
       plugins = with pkgs; [
