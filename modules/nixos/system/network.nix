@@ -9,6 +9,7 @@
 
       networkmanager.enable = !config.wsl.enable;
       firewall.enable = true;
+      enableIPv6 = true;
     };
   };
 }
