@@ -8,6 +8,7 @@
   mkNixosConfiguration = {
     name,
     system ? "x86_64-linux",
+    device ? "/dev/sda",
     modules,
     homeOptions ? {},
   }:
@@ -52,7 +53,6 @@ in
           system = {
             stateVersion = "23.11"; # Update when reinstalling
             docker.enable = true;
-            bootloader.grub.enable = true;
           };
 
           ui = {
@@ -105,29 +105,22 @@ in
     }
 
     {
-      name = "nixos-virtualbox";
+      name = "nixos-mediaserver";
       modules = [
         inputs.disko.nixosModules.disko
         (import ./disko.nix {
           inherit (nixpkgs) lib;
-          device = "/dev/sda";
+          device = "/dev/nvme0n1";
         })
 
-        ./hardware/nixos-virtualbox.nix
+        ./hardware/nixos-mediaserver.nix
         ../modules/nixos
 
         {
           system.stateVersion = "25.05"; # Update when reinstalling
 
-          boot.loader = {
-            efi = {
-              canTouchEfiVariables = true;
-              efiSysMountPoint = "/boot/efi";
-            };
-            systemd-boot.enable = true;
-          };
-
           system = {
+            bootloader.efi = false;
             cachix-agent.enable = true;
             openssh.enable = true;
             ddns = {
