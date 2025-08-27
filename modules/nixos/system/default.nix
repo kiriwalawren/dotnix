@@ -7,12 +7,12 @@
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
 
+    ./bootloader.nix
     ./cachix.nix
     ./cachix-agent.nix
     ./ddns.nix
     ./docker.nix
     ./dual-function-keys.nix
-    ./grub.nix
     ./network.nix
     ./nix-helper.nix
     ./openssh.nix
