@@ -30,6 +30,9 @@ in {
         # Easy last-window
         bind -T prefix -r C-a last-window
         set -g repeat-time 300   # milliseconds; adjust to taste
+
+        # Allow (n)vim to see TMUX focus events
+        set -g focus-events on
       '';
 
       plugins = with pkgs; [
