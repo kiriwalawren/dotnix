@@ -15,6 +15,7 @@
     };
 
     opts = {
+      autoread = true; # Enable auto reload of buffers (caveats resolved as auto commands)
       autowrite = true; # Enable auto write
       clipboard = "unnamedplus"; # Sync with system clipboard
       completeopt = "menu,menuone,noselect";
