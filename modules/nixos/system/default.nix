@@ -34,7 +34,10 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnfreePredicate = _: true;
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix = {
+    settings.experimental-features = ["nix-command" "flakes"];
+    optimise.automatic = true;
+  };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
