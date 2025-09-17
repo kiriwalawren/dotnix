@@ -35,12 +35,12 @@ in {
           "sidebar.verticalTabs" = true; # use vertical tabs
 
           # Privacy Settings
-          "extensions.pocket.enabled" = false;
-          "browser.topsites.contile.enabled" = false;
-          "browser.newtabpage.pinned" = "";
           "browser.newtabpage.activity-stream.showSponsored" = false;
-          "browser.newtabpage.activity-stream.system.showSponsored" = false;
           "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+          "browser.newtabpage.activity-stream.system.showSponsored" = false;
+          "browser.newtabpage.pinned" = "";
+          "browser.topsites.contile.enabled" = false;
+          "extensions.pocket.enabled" = false;
           "signon.rememberSignons" = false;
         };
 
