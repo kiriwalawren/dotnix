@@ -45,4 +45,12 @@ in {
     chown ${user}:users /run/secrets-for-users/${user}_ssh_key
     chmod 0400 /run/secrets-for-users/${user}_ssh_key
   '';
+
+  # Symlink SSH key to user's home directory for home-manager
+  system.activationScripts.linkUserSshKey.text = ''
+    mkdir -p /home/${user}/.ssh
+    ln -sf /run/secrets-for-users/${user}_ssh_key /home/${user}/.ssh/${user}_ssh_key
+    chown ${user}:users /home/${user}/.ssh
+    chmod 0700 /home/${user}/.ssh
+  '';
 }
