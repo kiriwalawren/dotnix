@@ -6,6 +6,7 @@ keys:
     - &work-wsl age1ms200mnqekyttmvt6n83en7n2hhd6elj2s0h9p264yzuselr74gq0yag7m
     - &nixos-virtualbox age14uvhrejjlxgfapyx5d3lyy2vjy4q6yf22rp0c6nuwr25gechgvdsvacjap
     - &nixos-framework13 age14wppzanrflppx3sms5mmtpcrqnejnh5jtq762qckkeq28ck7jg0s79gurt
+    - &nixos-desktop age127hehudj6cpxyphdrzx7mj9tmk0xem0dufec34wgdnqnpw9ha40sn8uf93
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
@@ -15,3 +16,4 @@ creation_rules:
           - *work-wsl
           - *nixos-virtualbox
           - *nixos-framework13
+          - *nixos-desktop

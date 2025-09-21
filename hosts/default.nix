@@ -46,13 +46,21 @@ in
     {
       name = "nixos-desktop";
       modules = [
+        inputs.disko.nixosModules.disko
+        (import ./disko.nix {
+          inherit (nixpkgs) lib;
+          device = "/dev/nvme1n1";
+        })
+
         ./hardware/nixos-desktop.nix
+
         ../modules/nixos
         {
           system = {
-            stateVersion = "23.11"; # Update when reinstalling
+            stateVersion = "25.05"; # Update when reinstalling
             docker.enable = true;
             bootloader.grub.enable = true;
+            openssh.enable = true;
           };
 
           ui = {
