@@ -42,6 +42,13 @@ in {
           "browser.topsites.contile.enabled" = false;
           "extensions.pocket.enabled" = false;
           "signon.rememberSignons" = false;
+
+          # Disable autofill for addresses and payment methods
+          "extensions.formautofill.addresses.enabled" = false;
+          "extensions.formautofill.creditCards.enabled" = false;
+
+          # Enable "Tell websites not to sell or share my data"
+          "privacy.globalprivacycontrol.enabled" = true;
         };
 
         extensions.packages = with firefox-addons; [
