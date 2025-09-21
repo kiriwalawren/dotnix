@@ -31,8 +31,20 @@ in {
         settings = {
           "browser.search.defaultenginename" = "ddg";
           "browser.startup.page" = 3; # remember tabs
-          "browser.tabs.inTitlebar" = 0; # start with tabs sidebar open
-          "sidebar.verticalTabs" = true; # use vertical tabs
+          "browser.tabs.inTitlebar" = 0;
+          
+          # Sidebar configuration
+          "sidebar.verticalTabs" = true; # enable vertical tabs
+          "sidebar.revamp" = true; # use new sidebar
+          "sidebar.backupState" = builtins.toJSON {
+            command = "";
+            panelOpen = false;
+            launcherWidth = 0;
+            launcherExpanded = false;
+            launcherVisible = false; # sidebar collapsed by default
+          };
+          # Disable "Hide tabs and sidebar" auto-hide behavior
+          "sidebar.visibility.hide-sidebar-and-tabs" = false;
 
           # Privacy Settings
           "browser.newtabpage.activity-stream.showSponsored" = false;
@@ -49,6 +61,54 @@ in {
 
           # Enable "Tell websites not to sell or share my data"
           "privacy.globalprivacycontrol.enabled" = true;
+
+          # Toolbar layout configuration
+          "browser.uiCustomization.state" = builtins.toJSON {
+            placements = {
+              widget-overflow-fixed-list = [];
+              unified-extensions-area = [
+                "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action"
+                "ublock0_raymondhill_net-browser-action"
+                "addon_darkreader_org-browser-action"
+                "firefoxcolor_mozilla_com-browser-action"
+                "_7a7a4a92-a2a0-41d1-9fd7-1e92480d612d_-browser-action"
+              ];
+              nav-bar = [
+                "back-button"
+                "forward-button"
+                "stop-reload-button"
+                "urlbar-container"
+                "vertical-spacer"
+                "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action"
+                "unified-extensions-button"
+                "sidebar-button"
+              ];
+              toolbar-menubar = ["menubar-items"];
+              TabsToolbar = [];
+              vertical-tabs = ["tabbrowser-tabs"];
+              PersonalToolbar = ["import-button" "personal-bookmarks"];
+            };
+            seen = [
+              "developer-button"
+              "screenshot-button"
+              "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action"
+              "addon_darkreader_org-browser-action"
+              "firefoxcolor_mozilla_com-browser-action"
+              "_7a7a4a92-a2a0-41d1-9fd7-1e92480d612d_-browser-action"
+              "ublock0_raymondhill_net-browser-action"
+              "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action"
+            ];
+            dirtyAreaCache = [
+              "nav-bar"
+              "TabsToolbar"
+              "vertical-tabs"
+              "PersonalToolbar"
+              "unified-extensions-area"
+              "toolbar-menubar"
+            ];
+            currentVersion = 23;
+            newElementCount = 4;
+          };
         };
 
         extensions.packages = with firefox-addons; [
