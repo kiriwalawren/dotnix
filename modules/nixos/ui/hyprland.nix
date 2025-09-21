@@ -17,9 +17,12 @@ in {
       };
     };
 
-    environment.sessionVariables = {
-      # Hint electron apps to use wayland
-      NIXOS_OZONE_WL = "1";
+    environment = {
+      systemPackages = [pkgs.brightnessctl]; # For controllings screen brightness
+      sessionVariables = {
+        # Hint electron apps to use wayland
+        NIXOS_OZONE_WL = "1";
+      };
     };
 
     hardware.graphics.enable = true;
