@@ -46,12 +46,15 @@ in
     {
       name = "nixos-desktop";
       modules = [
-        ./hardware/nixos-desktop.nix
-        ../modules/nixos
+        inputs.disko.nixosModules.disko
         (import ./disko.nix {
           inherit (nixpkgs) lib;
           device = "/dev/nvme1n1";
         })
+
+        ./hardware/nixos-desktop.nix
+
+        ../modules/nixos
         {
           system = {
             stateVersion = "23.11"; # Update when reinstalling
