@@ -32,7 +32,7 @@ in {
           "browser.search.defaultenginename" = "ddg";
           "browser.startup.page" = 3; # remember tabs
           "browser.tabs.inTitlebar" = 0;
-          
+
           # Sidebar configuration
           "sidebar.verticalTabs" = true; # enable vertical tabs
           "sidebar.revamp" = true; # use new sidebar
