@@ -27,7 +27,10 @@
     wget
   ];
 
-  wsl.defaultUser = config.user.name;
+  wsl = {
+    defaultUser = config.user.name;
+    interop.includePath = false;
+  };
   programs.dconf.enable = true; # Configuration System & Setting Management - required for Home Manager
 
   # Allow unfree packages
