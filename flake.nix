@@ -85,9 +85,24 @@
         });
 
     pkgsFor = lib.genAttrs systems (
-      system:
+      system: let
+        extraFirefoxAddons = (inputs.firefox-addons.packages or {}).${system} or {};
+        extraHyprlandContrib = (inputs.hyprland-contrib.packages or {}).${system} or {};
+
+        addonOverlay = final: prev: let
+          # call function-valued attributes with the current pkgs (prev)
+          callIfFn = val:
+            if builtins.isFunction val
+            then val prev
+            else val;
+        in {
+          firefox-addons = lib.mapAttrs (_name: val: callIfFn val) extraFirefoxAddons;
+          hyprland-contrib = lib.mapAttrs (_name: val: callIfFn val) extraHyprlandContrib;
+        };
+      in
         import nixpkgs {
           inherit system;
+          overlays = [addonOverlay];
           config.allowUnfree = true;
           config.allowUnfreePredicate = _: true;
         }

@@ -1,7 +1,6 @@
 {
   config,
   inputs,
-  system,
   theme,
   homeOptions ? {},
   ...
@@ -25,7 +24,7 @@
     # Optionally, use home-manager.extraSpecialArgs to pass
     # arguments to home.nix
     extraSpecialArgs = {
-      inherit inputs system theme;
+      inherit inputs theme;
       hostConfig = config;
     };
   };

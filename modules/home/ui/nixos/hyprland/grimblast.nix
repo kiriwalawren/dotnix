@@ -1,6 +1,5 @@
 {
   pkgs,
-  inputs,
   lib,
   config,
   ...
@@ -12,7 +11,7 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+      pkgs.hyprland-contrib.grimblast
     ];
 
     home.sessionVariables = {
