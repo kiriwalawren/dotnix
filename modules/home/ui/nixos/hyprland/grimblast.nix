@@ -11,7 +11,7 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = [
-      pkgs.hyprland-contrib.grimblast
+      pkgs.grimblast
     ];
 
     home.sessionVariables = {

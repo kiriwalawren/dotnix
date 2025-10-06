@@ -4,9 +4,6 @@
   theme,
   ...
 }: {
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnfreePredicate = _: true;
-
   imports = [
     ./cli
     ./sops.nix

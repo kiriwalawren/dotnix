@@ -76,6 +76,11 @@
       "aarch64-darwin"
     ];
 
+    overlays = [
+      inputs.firefox-addons.overlays.default
+      inputs.hyprland-contrib.overlays.default
+    ];
+
     forEachSystem = f:
       lib.genAttrs systems (system:
         f rec {
@@ -85,24 +90,9 @@
         });
 
     pkgsFor = lib.genAttrs systems (
-      system: let
-        extraFirefoxAddons = (inputs.firefox-addons.packages or {}).${system} or {};
-        extraHyprlandContrib = (inputs.hyprland-contrib.packages or {}).${system} or {};
-
-        addonOverlay = final: prev: let
-          # call function-valued attributes with the current pkgs (prev)
-          callIfFn = val:
-            if builtins.isFunction val
-            then val prev
-            else val;
-        in {
-          firefox-addons = lib.mapAttrs (_name: val: callIfFn val) extraFirefoxAddons;
-          hyprland-contrib = lib.mapAttrs (_name: val: callIfFn val) extraHyprlandContrib;
-        };
-      in
+      system:
         import nixpkgs {
-          inherit system;
-          overlays = [addonOverlay];
+          inherit system overlays;
           config.allowUnfree = true;
           config.allowUnfreePredicate = _: true;
         }
@@ -128,7 +118,7 @@
     nixosModules = import ./modules/nixos;
     homeManagerModules.dotnix = import ./modules/home;
 
-    nixosConfigurations = import ./hosts inputs;
+    nixosConfigurations = import ./hosts (inputs // {inherit overlays;});
 
     packages = forEachSystem ({
       cachix-deploy-lib,
