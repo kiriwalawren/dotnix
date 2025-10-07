@@ -1,13 +1,10 @@
 {
-  inputs,
   lib,
   config,
   pkgs,
-  system,
   ...
 }:
 with lib; let
-  firefox-addons = inputs.firefox-addons.packages.${system};
   cfg = config.ui.apps.firefox;
 in {
   options.ui.apps.firefox = {enable = mkEnableOption "firefox";};
@@ -111,7 +108,7 @@ in {
           };
         };
 
-        extensions.packages = with firefox-addons; [
+        extensions.packages = with pkgs.firefox-addons; [
           bitwarden
           darkreader
           firefox-color

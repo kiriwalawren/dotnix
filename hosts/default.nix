@@ -1,6 +1,7 @@
 {
   nixpkgs,
   self,
+  overlays,
   ...
 }: let
   inherit (self) inputs;
@@ -12,7 +13,17 @@
     homeOptions ? {},
   }:
     nixpkgs.lib.nixosSystem {
-      inherit system modules;
+      inherit system;
+      modules =
+        [
+          {
+            nixpkgs = {
+              inherit overlays;
+              config.allowUnfree = true;
+            };
+          }
+        ]
+        ++ modules;
       specialArgs = {
         inherit inputs system name homeOptions;
         theme = import ../theme;

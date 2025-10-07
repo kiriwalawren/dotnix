@@ -76,6 +76,11 @@
       "aarch64-darwin"
     ];
 
+    overlays = [
+      inputs.firefox-addons.overlays.default
+      inputs.hyprland-contrib.overlays.default
+    ];
+
     forEachSystem = f:
       lib.genAttrs systems (system:
         f rec {
@@ -87,7 +92,7 @@
     pkgsFor = lib.genAttrs systems (
       system:
         import nixpkgs {
-          inherit system;
+          inherit system overlays;
           config.allowUnfree = true;
           config.allowUnfreePredicate = _: true;
         }
@@ -113,7 +118,7 @@
     nixosModules = import ./modules/nixos;
     homeManagerModules.dotnix = import ./modules/home;
 
-    nixosConfigurations = import ./hosts inputs;
+    nixosConfigurations = import ./hosts (inputs // {inherit overlays;});
 
     packages = forEachSystem ({
       cachix-deploy-lib,

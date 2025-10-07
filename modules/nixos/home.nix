@@ -1,7 +1,6 @@
 {
   config,
   inputs,
-  system,
   theme,
   homeOptions ? {},
   ...
@@ -12,7 +11,7 @@
 
   home-manager = {
     backupFileExtension = "backup";
-    useGlobalPkgs = false;
+    useGlobalPkgs = true;
     useUserPackages = true;
     users.${config.user.name} =
       {
@@ -25,7 +24,7 @@
     # Optionally, use home-manager.extraSpecialArgs to pass
     # arguments to home.nix
     extraSpecialArgs = {
-      inherit inputs system theme;
+      inherit inputs theme;
       hostConfig = config;
     };
   };
