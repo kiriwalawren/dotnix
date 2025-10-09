@@ -28,6 +28,7 @@ in {
         cs = ["csharpier"];
         css = prettierd_with_fallback;
         elixir = ["mix"];
+        go = ["gofmt"];
         html = prettierd_with_fallback;
         javascript = prettierd_with_fallback;
         javascriptreact = prettierd_with_fallback;
@@ -37,9 +38,9 @@ in {
           __unkeyed-2 = "nixpkgs-fmt";
           stop_after_first = true;
         };
+        python = ["black"];
         typescript = prettierd_with_fallback;
         typescriptreact = prettierd_with_fallback;
-        go = ["gofmt"];
         sh = ["shfmt"];
       };
 

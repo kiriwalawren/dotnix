@@ -5,7 +5,7 @@
       enable = true;
 
       servers = {
-        # dockerls.enable = true;
+        bashls.enable = true; # Bash
         elixirls = {
           enable = true;
           settings = {
@@ -13,12 +13,11 @@
             elixirLS.dialyzerEnabled = true;
           };
         };
-        # gopls.enable = true;
         jsonls.enable = true;
         marksman.enable = true;
         nil_ls.enable = true; # Nix
+        pylsp.enable = true; # Python
         ts_ls.enable = true;
-        # omnisharp.enable = true;
       };
       keymaps = {
         lspBuf = {
