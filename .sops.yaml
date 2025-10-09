@@ -4,7 +4,7 @@ keys:
     - &kiri age1qssz2tujsv8v9shlt7zgxxy7j0k6jawfwhgnzyvfvmckrlpwnqeqwz9lgs
   hosts:
     - &work-wsl age1ms200mnqekyttmvt6n83en7n2hhd6elj2s0h9p264yzuselr74gq0yag7m
-    - &nixos-virtualbox age14uvhrejjlxgfapyx5d3lyy2vjy4q6yf22rp0c6nuwr25gechgvdsvacjap
+    - &nixos-virtualbox age1jqngw2w24xc6tvgepxlf9vngpuqc6h6p2luzvdj73lltz7vmf30sqmf0tq
     - &nixos-framework13 age14wppzanrflppx3sms5mmtpcrqnejnh5jtq762qckkeq28ck7jg0s79gurt
     - &nixos-desktop age12hq78w6tmgjlt3nzg4drwnr9p990wclra6rr4k8s2qxnn0aghs0s3zwpl7
 creation_rules:
