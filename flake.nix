@@ -24,9 +24,9 @@
     cachix-deploy-flake = {
       url = "github:cachix/cachix-deploy-flake";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
         disko.follows = "disko";
         home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -52,7 +52,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    catppuccin.url = "github:catppuccin/nix";
+    catppuccin = {
+      url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
