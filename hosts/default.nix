@@ -103,12 +103,6 @@ in
             stateVersion = "25.05"; # Update when reinstalling
             docker.enable = true;
             bootloader.grub.enable = true;
-
-            protonvpn = {
-              enable = true;
-              autoStart = true;
-              killSwitch = false;
-            };
           };
 
           ui = {
