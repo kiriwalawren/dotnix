@@ -16,6 +16,7 @@
     ./network.nix
     ./nix-helper.nix
     ./openssh.nix
+    ./power-profiles.nix
     ./protonvpn.nix
     ./sops.nix
     ./ssh.nix

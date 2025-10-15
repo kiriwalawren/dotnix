@@ -72,6 +72,7 @@ in
             docker.enable = true;
             bootloader.grub.enable = true;
             openssh.enable = true;
+            power-profiles.enable = true;
           };
 
           ui = {
@@ -103,6 +104,7 @@ in
             stateVersion = "25.05"; # Update when reinstalling
             docker.enable = true;
             bootloader.grub.enable = true;
+            power-profiles.enable = true;
           };
 
           ui = {
