@@ -34,7 +34,9 @@ in
     #battery,
     #pulseaudio,
     #window,
-    #tray {
+    #tray,
+    #bluetooth,
+    #power-profiles-daemon {
       border-radius: ${radius};
       background: #${base};
       color: #${primaryAccent};
@@ -76,6 +78,14 @@ in
       color: #${red};
     }
 
+    #bluetooth {
+      color: #${sky};
+    }
+
+    #power-profiles-daemon {
+      color: #${peach};
+    }
+
     #workspaces button label {
       color: #${secondaryAccent};
     }
@@ -88,7 +98,7 @@ in
     #workspaces button:hover {
       box-shadow: #${secondaryAccent} 0 0 0 1.5px;
       background-color: #${base};
-      min-width: 50px;
+      min-width: 35px;
     }
 
     #workspaces {
@@ -108,7 +118,7 @@ in
     }
 
     #workspaces button.active {
-      min-width: 50px;
+      min-width: 35px;
       box-shadow: rgba(0, 0, 0, 0.288) 1px 1px 2px 2px;
       background-color: #${primaryAccent};
       background-size: 400% 400%;

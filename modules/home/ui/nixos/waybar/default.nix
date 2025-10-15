@@ -26,18 +26,21 @@ in {
           layer = "top";
           position = "top";
           mod = "dock";
-          height = 48;
+          height = 26;
+          spacing = 0;
 
           modules-left = ["hyprland/workspaces"];
 
+          modules-center = ["clock"];
+
           modules-right = [
             "tray"
+            "bluetooth"
             "network"
             "pulseaudio"
-            "memory"
             "cpu"
+            "power-profiles-daemon"
             "battery"
-            "clock"
           ];
 
           "hyprland/workspaces" = {
@@ -71,12 +74,6 @@ in {
             on-click = "kill $(pgrep pavucontrol) || ${pkgs.pavucontrol}/bin/pavucontrol";
           };
 
-          memory = {
-            format = "󰍛 {percentage}%";
-            format-alt = "󰍛 {used}/{total} GiB";
-            interval = 5;
-          };
-
           cpu = {
             format = "󰻠 {usage}%";
             format-alt = "󰻠 {avg_frequency} GHz";
@@ -97,10 +94,31 @@ in {
           };
 
           clock = {
-            format = "󰥔  {:%a, %d %b, %I:%M %p}";
+            format = "{:%a, %I:%M %p}";
             tooltip = "true";
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-            format-alt = "   {:%d/%m}";
+            format-alt = "{:%d/%m - Week %V}";
+          };
+          bluetooth = {
+            format = "";
+            format-disabled = "";
+            format-connected = " {num_connections}";
+            tooltip-format = "{controller_alias}\t{controller_address}";
+            tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{device_enumerate}";
+            tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
+            on-click = "${pkgs.blueman}/bin/blueman-manager";
+          };
+
+          "power-profiles-daemon" = {
+            format = "{icon}";
+            tooltip-format = "Power profile: {profile}\nDriver: {driver}";
+            tooltip = true;
+            format-icons = {
+              default = "󰓅";
+              performance = "󰓅";
+              balanced = "󰾅";
+              power-saver = "󰾆";
+            };
           };
         };
       };
