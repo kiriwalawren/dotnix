@@ -1,5 +1,9 @@
-{ pkgs, lib, config, ... }:
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   options = {
     system.power-profiles.enable = lib.mkEnableOption "automatic power profile switching";
   };
