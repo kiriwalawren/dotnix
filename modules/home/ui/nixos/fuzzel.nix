@@ -42,7 +42,7 @@ in {
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "CONTROLSHIFTALT,A,exec,fuzzel"
+        "SUPER,Space,exec,fuzzel"
       ];
     };
   };
