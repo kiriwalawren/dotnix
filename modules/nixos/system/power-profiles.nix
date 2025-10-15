@@ -23,7 +23,7 @@
     # These will only trigger on systems with batteries
     services.udev.extraRules = ''
       # When AC adapter is unplugged, switch to balanced
-      SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.bash}/bin/bash -c '${pkgs.power-profiles-daemon}/bin/powerprofilesctl set power-save'"
+      SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.bash}/bin/bash -c '${pkgs.power-profiles-daemon}/bin/powerprofilesctl set power-saver'"
 
       # When AC adapter is plugged in, switch to performance
       SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${pkgs.bash}/bin/bash -c '${pkgs.power-profiles-daemon}/bin/powerprofilesctl set performance'"
