@@ -30,6 +30,8 @@
       };
     };
 
+    secrets.url = "git+ssh://git@github.com/kiriwalawren/secrets.git?ref=main&shallow=1";
+
     # User configuration dependencies
     home-manager = {
       url = "github:nix-community/home-manager";

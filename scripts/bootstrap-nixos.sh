@@ -31,7 +31,7 @@ nix_src_path="gitrepos" # destination dir on target for rsync
 
 # dotnix paths
 git_root=$(git rev-parse --show-toplevel)
-nix_secrets_dir=${NIX_SECRETS_DIR:-"${git_root}"/../dotnix}
+nix_secrets_dir=${NIX_SECRETS_DIR:-"${git_root}/../secrets"}
 nix_secrets_yaml="${nix_secrets_dir}/secrets.yaml"
 
 ################
@@ -185,6 +185,8 @@ if yes_or_no "Sync the dotnix repo to $target_hostname?"; then
   ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >>~/.ssh/known_hosts || true
   green "Syncing dotnix repository to $target_hostname:$nix_src_path"
   sync "$target_user" "$git_root"
+  green "Syncing secrets repository to $target_hostname:$nix_src_path"
+  sync "$target_user" "$nix_secrets_dir"
 fi
 
 #########################################################
@@ -196,6 +198,10 @@ if yes_or_no "Stage, commit, and push all changes to Git?"; then
   git -C "$git_root" add -A
   git -C "$git_root" commit -m "bootstrap: $target_hostname initial setup" || true
   git -C "$git_root" push || true
+
+  git -C "$nix_secrets_dir" add -A
+  git -C "$nix_secrets_dir" commit -m "bootstrap: $target_hostname initial setup" || true
+  git -C "$nix_secrets_dir" push || true
 fi
 
 ########################

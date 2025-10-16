@@ -1,3 +1,5 @@
 /result
 .pre-commit-config.yaml
 .direnv/
+.sops.yaml
+secrets.yaml
