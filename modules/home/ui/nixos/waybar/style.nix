@@ -43,7 +43,7 @@ in
       margin-left: 2px;
       margin-right: 2px;
       margin: 0px 2px;
-      padding: 0px 10px;
+      padding: 0px 15px;
       transition: all 0.3s ease;
       font-weight: bold;
     }
