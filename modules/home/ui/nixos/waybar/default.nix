@@ -71,7 +71,7 @@ in {
               default = ["󰕿" "󰖀" "󰕾"];
             };
             scroll-step = 5;
-            on-click = "kill $(pgrep pavucontrol) || ${pkgs.pavucontrol}/bin/pavucontrol";
+            on-click = "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
           };
 
           cpu = {

@@ -102,6 +102,12 @@ in {
           preserve_split = "yes";
         };
 
+        windowrulev2 = [
+          "float,class:(wiremix)"
+          "center,class:(wiremix)"
+          "size 800 600,class:(wiremix)"
+        ];
+
         bind =
           [
             ",XF86MonBrightnessUp,exec,brightnessctl set +10%"

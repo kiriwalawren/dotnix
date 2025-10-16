@@ -1,5 +1,4 @@
 {
-  pkgs,
   lib,
   config,
   ...
@@ -10,10 +9,6 @@ in {
   options.ui.sound = {enable = mkEnableOption "sound";};
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      pavucontrol # PulseAudio Volume Control
-    ];
-
     programs.noisetorch.enable = true; # Mic Noise Filter
 
     security.rtkit.enable = true;
