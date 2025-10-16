@@ -61,6 +61,10 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    secrets = {
+      url = "git+ssh://git@github.com/kiriwalawren/secrets.git?ref=main&shallow=1";
+    };
   };
 
   outputs = {

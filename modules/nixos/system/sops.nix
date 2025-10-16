@@ -9,7 +9,7 @@ in {
   imports = [inputs.sops-nix.nixosModules.sops];
 
   sops = {
-    defaultSopsFile = ../../../secrets/secrets.yaml;
+    defaultSopsFile = "${inputs.secrets}/secrets.yaml";
     validateSopsFiles = false;
 
     age = {
