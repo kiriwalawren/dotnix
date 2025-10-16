@@ -131,7 +131,7 @@ in
     .modules-center,
     .modules-right {
       background-color: transparent;
-      padding: 2px 0px;
+      padding: 1px 0px;
       margin-top: 3px;
     }
   ''
