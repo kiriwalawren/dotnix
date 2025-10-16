@@ -39,6 +39,7 @@ in {
             "network"
             "pulseaudio"
             "cpu"
+            "memory"
             "power-profiles-daemon"
             "battery"
           ];
@@ -59,13 +60,13 @@ in {
           };
 
           network = {
-            format-wifi = "  {essid} {signalStrength}%";
+            format-wifi = "   {signalStrength}%";
             format-ethernet = "󰈀";
             format-disconnected = "󰈂";
           };
 
           pulseaudio = {
-            format = "{icon} {volume}%";
+            format = "{icon}  {volume}%";
             format-muted = "󰝟";
             format-icons = {
               default = ["󰕿" "󰖀" "󰕾"];
@@ -75,8 +76,14 @@ in {
           };
 
           cpu = {
-            format = "󰻠 {usage}%";
-            format-alt = "󰻠 {avg_frequency} GHz";
+            format = "󰻠  {usage}%";
+            format-alt = "󰻠  {avg_frequency} GHz";
+            interval = 5;
+          };
+
+          memory = {
+            format = "󰍛  {percentage}%";
+            format-alt = "󰍛  {used}G/{total}G";
             interval = 5;
           };
 
