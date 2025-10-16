@@ -8,11 +8,11 @@ with lib; let
   cfg = config.ui.nixos;
 in {
   imports = [
-    ./fuzzel.nix
     ./gtk.nix
     ./hyprland
     ./mako.nix
     ./waybar
+    ./wofi.nix
   ];
 
   options.ui.nixos = {enable = mkEnableOption "nixos";};
@@ -24,7 +24,7 @@ in {
     ];
 
     ui.nixos = {
-      fuzzel.enable = true; # Application launcher
+      wofi.enable = true; # Application launcher
       gtk.enable = true;
       hyprland.enable = true; # Wayland Compositor (Tiling)
       mako.enable = true; # Notification daemon

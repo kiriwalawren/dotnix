@@ -24,8 +24,8 @@ in {
       };
 
       iconTheme = {
-        package = pkgs.colloid-icon-theme;
-        name = "Colloid-dark";
+        package = pkgs.yaru-theme;
+        name = "Yaru-dark";
       };
     };
   };
