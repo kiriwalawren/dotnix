@@ -8,24 +8,17 @@
 with lib; let
   cfg = config.ui.nixos.impala-launcher;
 
-  # Catppuccin Mocha colors
-  inherit (theme.colors) text subtext0 base mantle crust;
-  teal = theme.colors.teal;
-  mauve = theme.colors.mauve;
-  lavender = theme.colors.lavender;
-  blue = theme.colors.blue;
-
   impalaLauncher = pkgs.writeShellScriptBin "impala-launcher" ''
     # Clear screen and show help
     clear
 
     # Catppuccin Mocha color codes (converted to ANSI escape codes)
-    TEAL='\033[38;2;148;226;213m'      # ${teal}
-    MAUVE='\033[38;2;203;166;247m'     # ${mauve}
-    LAVENDER='\033[38;2;180;190;254m'  # ${lavender}
-    BLUE='\033[38;2;137;180;250m'      # ${blue}
-    TEXT='\033[38;2;205;214;244m'      # ${text}
-    SUBTEXT='\033[38;2;166;173;200m'   # ${subtext0}
+    TEAL='\033[38;2;148;226;213m'      # ${theme.colors.teal}
+    MAUVE='\033[38;2;203;166;247m'     # ${theme.colors.mauve}
+    LAVENDER='\033[38;2;180;190;254m'  # ${theme.colors.lavender}
+    BLUE='\033[38;2;137;180;250m'      # ${theme.colors.blue}
+    TEXT='\033[38;2;205;214;244m'      # ${theme.colors.text}
+    SUBTEXT='\033[38;2;166;173;200m'   # ${theme.colors.subtext0}
     NC='\033[0m' # No Color
 
     # Get terminal dimensions
