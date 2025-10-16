@@ -58,8 +58,8 @@ in {
       ];
 
       bind = [
-        "CONTROLSHIFTALT,O,exec,grimblast copy area"
-        "CONTROLSHIFTALT,E,exec,grimblast edit area"
+        "SUPER,C,exec,grimblast copy area"
+        "SUPER,E,exec,grimblast edit area"
       ];
     };
   };

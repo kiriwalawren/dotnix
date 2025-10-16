@@ -8,9 +8,6 @@
 with lib; let
   cfg = config.ui.nixos.hyprland;
 
-  meh = "CONTROLSHIFTALT";
-  hyper = "SUPERCONTROLSHIFTALT";
-
   pamixer = "${pkgs.pamixer}/bin/pamixer";
   playerctl = "${pkgs.playerctl}/bin/playerctl";
 
@@ -27,8 +24,8 @@ with lib; let
       i: let
         workspace = builtins.toString (i + 1);
       in [
-        "${meh}, ${workspace}, workspace, ${workspace}"
-        "${hyper}, ${workspace}, movetoworkspace, ${workspace}"
+        "SUPER, ${workspace}, workspace, ${workspace}"
+        "SHIFTSUPER, ${workspace}, movetoworkspace, ${workspace}"
       ]
     )
     8
@@ -106,30 +103,34 @@ in {
           "float,class:(wiremix)"
           "center,class:(wiremix)"
           "size 800 600,class:(wiremix)"
+
+          "float,class:(impala)"
+          "center,class:(impala)"
+          "size 800 700,class:(impala)"
         ];
 
         bind =
           [
             ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
             ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
-            "${meh},Q,killactive"
-            "${meh},F, fullscreen"
+            "SUPER,Q,killactive"
+            "SUPER,F, fullscreen"
 
-            "${meh},H,movefocus,l"
-            "${meh},L,movefocus,r"
-            "${meh},K,movefocus,u"
-            "${meh},J,movefocus,d"
+            "SUPER,H,movefocus,l"
+            "SUPER,L,movefocus,r"
+            "SUPER,K,movefocus,u"
+            "SUPER,J,movefocus,d"
 
-            "${hyper},H,movewindow,l"
-            "${hyper},L,movewindow,r"
-            "${hyper},K,movewindow,u"
-            "${hyper},J,movewindow,d"
+            "SHIFTSUPER,H,movewindow,l"
+            "SHIFTSUPER,L,movewindow,r"
+            "SHIFTSUPER,K,movewindow,u"
+            "SHIFTSUPER,J,movewindow,d"
           ]
           ++ workspaces;
 
         bindm = [
-          "${meh},mouse:272,movewindow"
-          "${meh},mouse:273,resizewindow"
+          "SUPER,mouse:272,movewindow"
+          "SUPER,mouse:273,resizewindow"
         ];
 
         binde = [

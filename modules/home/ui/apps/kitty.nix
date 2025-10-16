@@ -32,7 +32,7 @@ in {
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER,T,exec,kitty"
+        "SUPER,Return,exec,kitty"
       ];
     };
   };
