@@ -40,8 +40,10 @@ in
       border-radius: ${radius};
       background: #${base};
       color: #${primaryAccent};
-      margin: 5px 2px 0px 2px;
-      padding: 3px 13px;
+      margin-left: 2px;
+      margin-right: 2px;
+      margin: 0px 2px;
+      padding: 0px 10px;
       transition: all 0.3s ease;
       font-weight: bold;
     }
@@ -68,6 +70,7 @@ in
 
     #battery {
       color: #${green};
+      margin-right: 10px;
     }
 
     #battery.warning {
@@ -104,8 +107,6 @@ in
     #workspaces {
       background-color: transparent;
       border-radius: ${radius};
-      padding: 5px 0px;
-      margin-top: 3px;
     }
 
     #workspaces button {
@@ -124,5 +125,13 @@ in
       background-size: 400% 400%;
       transition: all 0.3s ease-in-out;
       background-size: 300% 300%;
+    }
+
+    .modules-left,
+    .modules-center,
+    .modules-right {
+      background-color: transparent;
+      padding: 2px 0px;
+      margin-top: 3px;
     }
   ''
