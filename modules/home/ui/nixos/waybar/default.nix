@@ -63,7 +63,6 @@ in {
             format-wifi = "   {signalStrength}%";
             format-ethernet = "󰈀";
             format-disconnected = "󰈂";
-            on-click = "pkill impala || ${pkgs.kitty}/bin/kitty --class=impala ${pkgs.impala}/bin/impala";
           };
 
           pulseaudio = {
