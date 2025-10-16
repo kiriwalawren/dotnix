@@ -40,11 +40,6 @@ in {
     };
 
     services = {
-      displayManager.sddm = {
-        enable = true; # Display manager, initial login screen
-        wayland.enable = true;
-      };
-
       xserver = {
         enable = true;
 

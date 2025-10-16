@@ -16,9 +16,9 @@ in {
     ./file-manager.nix
     ./fingerprint.nix
     ./gaming.nix
+    ./greetd.nix
     ./hyprland.nix
     ./plymouth.nix
-    ./sddm-theme.nix
     ./sound.nix
   ];
 
@@ -36,9 +36,9 @@ in {
     ui = {
       bluetooth.enable = true;
       fileManager.enable = true;
+      greetd.enable = true; # greetd + tuigreet Display Manager
       hyprland.enable = true; # Tiling Manager
       plymouth.enable = true; # Boot Splash Screen
-      sddmTheme.enable = true; # SDDM Display Manager Theme
       sound.enable = true;
     };
   };
