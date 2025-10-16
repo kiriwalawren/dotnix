@@ -117,6 +117,7 @@ in {
             ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
             "SUPER,Q,killactive"
             "SUPER,F, fullscreen"
+            "SHIFTSUPER,P,exec,${pkgs.hyprpicker}/bin/hyprpicker -a"
 
             "SUPER,H,movefocus,l"
             "SUPER,L,movefocus,r"
