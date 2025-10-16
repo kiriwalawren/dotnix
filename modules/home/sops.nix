@@ -8,7 +8,7 @@
   imports = [inputs.sops-nix.homeManagerModules.sops];
 
   sops = {
-    defaultSopsFile = ../../secrets.yaml;
+    defaultSopsFile = ../../secrets/secrets.yaml;
     validateSopsFiles = false;
 
     age = {

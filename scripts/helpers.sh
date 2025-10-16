@@ -58,7 +58,8 @@ function no_or_yes() {
 }
 
 ### SOPS helpers
-nix_secrets_dir=${NIX_SECRETS_DIR:-"$(dirname "${BASH_SOURCE[0]}")/.."}
+git_root="$(dirname "${BASH_SOURCE[0]}")/.."
+nix_secrets_dir=${NIX_SECRETS_DIR:-"${git_root}/secrets"}
 SOPS_FILE="${nix_secrets_dir}/.sops.yaml"
 
 # Updates the .sops.yaml file with a new host or user age key.
