@@ -114,7 +114,7 @@ in
           ui = {
             enable = true;
             fingerprint.enable = true;
-            virtualbox.enable = false;
+            virtualbox.enable = true;
           };
         }
       ];
