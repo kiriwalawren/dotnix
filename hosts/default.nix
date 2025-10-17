@@ -108,10 +108,7 @@ in
             bootloader.grub.enable = true;
             power-profiles.enable = true;
             tailscale.enable = true;
-            vpn = {
-              enable = true;
-              address = "10.68.91.123/32,fc00:bbbb:bbbb:bb01::5:5b7a/128";
-            };
+            vpn.enable = true;
           };
 
           ui = {

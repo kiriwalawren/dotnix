@@ -2,6 +2,7 @@
   pkgs,
   config,
   lib,
+  inputs,
   ...
 }:
 with lib; let
@@ -16,12 +17,6 @@ in {
   options.system.vpn = {
     enable = mkEnableOption "vpn";
 
-    address = mkOption {
-      type = types.str;
-      example = "10.64.123.45/32";
-      description = "The WireGuard tunnel IP address assigned by Mullvad for your private key";
-    };
-
     dns = mkOption {
       type = types.listOf types.str;
       default = ["194.242.2.4"];
@@ -33,7 +28,7 @@ in {
   config = mkIf cfg.enable {
     services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
-    sops.secrets.mullvad-private-key = {};
+    sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
     systemd.services.mullvad-select = {
       description = "Select nearest Mullvad server and bring up WireGuard";
@@ -42,9 +37,9 @@ in {
       serviceConfig = {
         Type = "oneshot";
         Environment = [
-          "PRIVATE_KEY_FILE=${config.sops.secrets.mullvad-private-key.path}"
+          "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
           "MEASURE_METHOD=ping"
-          "VPN_ADDRESS=${cfg.address}"
+          "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
           "VPN_DNS=${concatStringsSep "," cfg.dns}"
         ];
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
@@ -55,16 +50,15 @@ in {
       };
     };
 
-    # systemd.timers.mullvad-select-timer = {
-    #   wantedBy = ["timers.target"];
-    #   timerConfig = {
-    #     OnBootSec = "30s";
-    #     OnUnitActiveSec = "10m"; # re-evaluate every 10 minutes
-    #     Unit = "mullvad-select.service";
-    #   };
-    # };
+    systemd.timers.mullvad-select-timer = {
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnBootSec = "30s";
+        OnUnitActiveSec = "10m"; # re-evaluate every 10 minutes
+        Unit = "mullvad-select.service";
+      };
+    };
 
-    # Example: keep tailscale from hijacking routes
     services.tailscale.extraUpFlags = ["--accept-routes=false"];
   };
 }
