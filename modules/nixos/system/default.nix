@@ -17,9 +17,9 @@
     ./nix-helper.nix
     ./openssh.nix
     ./power-profiles.nix
-    ./protonvpn.nix
     ./sops.nix
     ./ssh.nix
+    ./tailscale-client.nix
     ./user
   ];
 

@@ -194,14 +194,15 @@ fi
 #########################################################
 
 if yes_or_no "Stage, commit, and push all changes to Git?"; then
-  nix fmt
-  git -C "$git_root" add -A
-  git -C "$git_root" commit -m "bootstrap: $target_hostname initial setup" || true
-  git -C "$git_root" push || true
-
   git -C "$nix_secrets_dir" add -A
   git -C "$nix_secrets_dir" commit -m "bootstrap: $target_hostname initial setup" || true
   git -C "$nix_secrets_dir" push || true
+
+  nix fmt
+  nix flake update secrets
+  git -C "$git_root" add -A
+  git -C "$git_root" commit -m "bootstrap: $target_hostname initial setup" || true
+  git -C "$git_root" push || true
 fi
 
 ########################
