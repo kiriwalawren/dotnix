@@ -3,6 +3,11 @@
   name,
   ...
 }: {
+  imports = [
+    ./ddns.nix
+    ./tailscale.nix
+  ];
+
   config = {
     networking = {
       hostName = name;

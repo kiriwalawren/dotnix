@@ -7,19 +7,17 @@
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
 
-    ./cachix.nix
     ./cachix-agent.nix
-    ./ddns.nix
+    ./cachix.nix
     ./docker.nix
     ./dual-function-keys.nix
     ./grub.nix
-    ./network.nix
+    ./network
     ./nix-helper.nix
     ./openssh.nix
     ./power-profiles.nix
     ./sops.nix
     ./ssh.nix
-    ./tailscale-client.nix
     ./user
   ];
 

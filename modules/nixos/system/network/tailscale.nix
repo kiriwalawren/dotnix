@@ -4,9 +4,9 @@
   ...
 }:
 with lib; let
-  cfg = config.system.tailscale-client;
+  cfg = config.system.tailscale;
 in {
-  options.system.tailscale-client = {enable = mkEnableOption "tailscale-client";};
+  options.system.tailscale = {enable = mkEnableOption "tailscale";};
 
   config = mkIf cfg.enable {
     sops.secrets.tailscale-auth-key = {};

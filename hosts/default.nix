@@ -47,7 +47,7 @@ in
           system = {
             stateVersion = "23.11"; # Update when reinstalling
             docker.enable = true;
-            tailscale-client.enable = true;
+            tailscale.enable = true;
           };
 
           wsl.enable = true;
@@ -74,7 +74,7 @@ in
             bootloader.grub.enable = true;
             openssh.enable = true;
             power-profiles.enable = true;
-            tailscale-client.enable = true;
+            tailscale.enable = true;
           };
 
           ui = {
@@ -107,7 +107,7 @@ in
             docker.enable = true;
             bootloader.grub.enable = true;
             power-profiles.enable = true;
-            tailscale-client.enable = true;
+            tailscale.enable = true;
           };
 
           ui = {
