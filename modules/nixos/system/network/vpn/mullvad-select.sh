@@ -32,6 +32,41 @@ if [ ! -r "$PRIVATE_KEY_FILE" ]; then
   exit 2
 fi
 
+# Self-healing: Check if VPN interface exists but connection is dead
+force_reselection=false
+if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
+  # Check if we have a valid handshake (connection is working)
+  latest_handshake=$(wg show "$WG_IFACE" latest-handshakes | awk '{print $2}')
+  current_time=$(date +%s)
+
+  if [ -n "$latest_handshake" ] && [ "$latest_handshake" != "0" ]; then
+    time_since_handshake=$((current_time - latest_handshake))
+    # Allow ~3 minutes without handshake (rekey interval ~2min + slack)
+    if [ "$time_since_handshake" -gt 180 ]; then
+      log "VPN interface exists but no handshake in ${time_since_handshake}s - connection is dead, forcing reselection"
+      force_reselection=true
+      wg-quick down "$WG_IFACE" || true
+    fi
+  else
+    # No handshake at all - try to bring it up with current config
+    if [ -f "$WG_CONF_PATH" ]; then
+      log "VPN interface exists but no handshake - attempting to reconnect with existing config"
+      wg-quick down "$WG_IFACE" || true
+      if wg-quick up "$WG_IFACE" 2>/dev/null; then
+        log "Successfully reconnected VPN"
+        exit 0
+      else
+        log "Failed to reconnect with existing config, will select new server"
+        force_reselection=true
+      fi
+    else
+      log "VPN interface exists but no config file found, will create new config"
+      wg-quick down "$WG_IFACE" || true
+      force_reselection=true
+    fi
+  fi
+fi
+
 # Fetch Mullvad relays JSON (cache locally for a short time to avoid rates)
 # systemd CacheDirectory creates /var/cache/mullvad
 # Cache timeout aligns with systemd timer (10 minutes)
@@ -164,7 +199,7 @@ log "Best server candidate: $best_host ($best_ip) latency ${best_latency}ms"
 current_endpoint=""
 current_pubkey=""
 current_latency=""
-if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
+if ! $force_reselection && ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
   # Get current peer info
   current_pubkey=$(wg show "$WG_IFACE" peers | head -1)
   current_endpoint=$(wg show "$WG_IFACE" endpoints | awk '{print $2}' | cut -d: -f1)
@@ -190,6 +225,8 @@ if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
       log "New server is ${latency_improvement}ms faster (threshold: ${SWITCH_THRESHOLD_MS}ms), switching servers"
     fi
   fi
+elif $force_reselection; then
+  log "Force reselection enabled - will select new server"
 fi
 
 log "Configuring VPN to use $best_host ($best_ip) latency ${best_latency}ms"
