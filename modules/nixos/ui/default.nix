@@ -20,6 +20,7 @@ in {
     ./hyprland.nix
     ./plymouth.nix
     ./sound.nix
+    ./virtualbox.nix
   ];
 
   options.ui = {enable = mkEnableOption "ui";};

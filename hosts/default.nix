@@ -78,6 +78,7 @@ in
           ui = {
             enable = true;
             gaming.enable = true;
+            virtualbox.enable = true;
           };
         }
       ];
@@ -110,6 +111,7 @@ in
           ui = {
             enable = true;
             fingerprint.enable = true;
+            virtualbox.enable = true;
           };
         }
       ];
