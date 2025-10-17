@@ -10,9 +10,9 @@ WG_IFACE="${WG_IFACE:-vpn0}"
 VPN_DNS="${VPN_DNS:-}" # comma-separated DNS servers (optional)
 WG_CONF_PATH="${WG_CONF_PATH:-/etc/wireguard/${WG_IFACE}.conf}"
 MULLVAD_API="${MULLVAD_API:-https://api.mullvad.net/www/relays/wireguard/}"
-PING_TIMEOUT="${PING_TIMEOUT:-1}"       # seconds for ping
-TCP_TIMEOUT="${TCP_TIMEOUT:-1}"         # seconds for tcp connect test
-MEASURE_METHOD="${MEASURE_METHOD:-tcp}" # tcp or ping
+PING_TIMEOUT="${PING_TIMEOUT:-1}"                # seconds for ping
+TCP_TIMEOUT="${TCP_TIMEOUT:-1}"                  # seconds for tcp connect test
+MEASURE_METHOD="${MEASURE_METHOD:-tcp}"          # tcp or ping
 SWITCH_THRESHOLD_MS="${SWITCH_THRESHOLD_MS:-15}" # only switch if new server is this many ms faster
 
 # helpers
