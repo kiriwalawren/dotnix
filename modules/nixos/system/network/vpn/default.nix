@@ -44,9 +44,7 @@ in {
         ];
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
         ExecStart = "${myScript}/bin/mullvad-select";
-        ExecStop = "${pkgs.wireguard-tools}/bin/wg-quick down vpn0";
         CacheDirectory = "mullvad";
-        RemainAfterExit = true;
       };
     };
 
@@ -54,7 +52,7 @@ in {
       wantedBy = ["timers.target"];
       timerConfig = {
         OnBootSec = "30s";
-        OnUnitActiveSec = "10m"; # re-evaluate every 10 minutes
+        OnUnitActiveSec = "10m";
         Unit = "mullvad-select.service";
       };
     };

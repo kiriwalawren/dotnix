@@ -13,6 +13,7 @@ MULLVAD_API="${MULLVAD_API:-https://api.mullvad.net/www/relays/wireguard/}"
 PING_TIMEOUT="${PING_TIMEOUT:-1}"       # seconds for ping
 TCP_TIMEOUT="${TCP_TIMEOUT:-1}"         # seconds for tcp connect test
 MEASURE_METHOD="${MEASURE_METHOD:-tcp}" # tcp or ping
+SWITCH_THRESHOLD_MS="${SWITCH_THRESHOLD_MS:-15}" # only switch if new server is this many ms faster
 
 # helpers
 log() { echo "$(date -Iseconds) [mullvad-select] $*"; }
@@ -157,7 +158,41 @@ best_pub="${rest%%|*}"
 rest="${rest#*|}"
 best_host="${rest%%|*}"
 
-log "Using best server $best_host ($best_ip) latency ${best_latency}ms"
+log "Best server candidate: $best_host ($best_ip) latency ${best_latency}ms"
+
+# Check if we're already connected and if so, should we switch?
+current_endpoint=""
+current_pubkey=""
+current_latency=""
+if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
+  # Get current peer info
+  current_pubkey=$(wg show "$WG_IFACE" peers | head -1)
+  current_endpoint=$(wg show "$WG_IFACE" endpoints | awk '{print $2}' | cut -d: -f1)
+
+  if [ -n "$current_endpoint" ]; then
+    # Measure current server's latency
+    current_latency=$(measure_latency "$current_endpoint")
+    log "Currently connected to endpoint $current_endpoint (pubkey: ${current_pubkey:0:20}...) with latency ${current_latency}ms"
+
+    # Check if we should switch
+    # Convert latencies to integers for comparison (remove decimal points)
+    best_latency_int=${best_latency%%.*}
+    current_latency_int=${current_latency%%.*}
+    latency_improvement=$((current_latency_int - best_latency_int))
+
+    if [ "$current_pubkey" = "$best_pub" ]; then
+      log "Already connected to best server, no change needed"
+      exit 0
+    elif [ "$latency_improvement" -lt "$SWITCH_THRESHOLD_MS" ]; then
+      log "New server only ${latency_improvement}ms faster (threshold: ${SWITCH_THRESHOLD_MS}ms), staying with current server"
+      exit 0
+    else
+      log "New server is ${latency_improvement}ms faster (threshold: ${SWITCH_THRESHOLD_MS}ms), switching servers"
+    fi
+  fi
+fi
+
+log "Configuring VPN to use $best_host ($best_ip) latency ${best_latency}ms"
 
 # Create wg-quick file. We will route 0.0.0.0/0 and ::/0, use PersistentKeepalive on selected peer
 # Build DNS line if VPN_DNS is set
