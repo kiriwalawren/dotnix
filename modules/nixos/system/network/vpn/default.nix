@@ -30,23 +30,6 @@ in {
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
-    # Exclude Tailscale traffic from VPN by adding routing rules
-    # Policy routing: send Tailscale IPs to Tailscale's table (52) before VPN catches them
-    # Must use priority LOWER than VPN's 5099 rule (lower number = higher priority)
-    networking.firewall.extraCommands = mkIf config.services.tailscale.enable ''
-      # Add rules with priority 5050/5051 (before VPN's 5099) to route Tailscale traffic outside the tunnel
-      ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
-      ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup 52 priority 5050
-      ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
-      ${pkgs.iproute2}/bin/ip rule add from 100.64.0.0/10 lookup 52 priority 5051
-    '';
-
-    networking.firewall.extraStopCommands = mkIf config.services.tailscale.enable ''
-      # Clean up routing rules when firewall stops
-      ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
-      ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
-    '';
-
     systemd.services.mullvad-select = {
       description = "Select nearest Mullvad server and bring up WireGuard";
       wantedBy = ["multi-user.target"];
@@ -62,8 +45,23 @@ in {
         ];
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
         ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
-        ExecStop = "-${pkgs.wireguard-tools}/bin/wg-quick down vpn0";
+        ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
+          # Add routing rules to exclude Tailscale traffic from VPN
+          ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
+          ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup 52 priority 5050
+          ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
+          ${pkgs.iproute2}/bin/ip rule add from 100.64.0.0/10 lookup 52 priority 5051
+        '');
+        ExecStop = mkIf config.services.tailscale.enable (pkgs.writeShellScript "stop-vpn" ''
+          # Remove Tailscale routing rules
+          ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
+          ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
+          # Bring down VPN
+          ${pkgs.wireguard-tools}/bin/wg-quick down vpn0 || true
+        '');
         RemainAfterExit = true;
+        Restart = "on-failure";
+        RestartSec = "5s";
         CacheDirectory = "mullvad";
       };
     };
@@ -106,5 +104,6 @@ in {
     };
 
     services.tailscale.extraUpFlags = ["--accept-routes=false"];
+    systemd.services.tailscaled.after = ["mullvad-select.service"];
   };
 }
