@@ -47,6 +47,7 @@ in
           system = {
             stateVersion = "23.11"; # Update when reinstalling
             docker.enable = true;
+            tailscale-client.enable = true;
           };
 
           wsl.enable = true;
@@ -73,12 +74,12 @@ in
             bootloader.grub.enable = true;
             openssh.enable = true;
             power-profiles.enable = true;
+            tailscale-client.enable = true;
           };
 
           ui = {
             enable = true;
             gaming.enable = true;
-            virtualbox.enable = true;
           };
         }
       ];
@@ -106,12 +107,13 @@ in
             docker.enable = true;
             bootloader.grub.enable = true;
             power-profiles.enable = true;
+            tailscale-client.enable = true;
           };
 
           ui = {
             enable = true;
             fingerprint.enable = true;
-            virtualbox.enable = true;
+            virtualbox.enable = false;
           };
         }
       ];
