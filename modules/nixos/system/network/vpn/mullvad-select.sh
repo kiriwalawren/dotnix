@@ -8,7 +8,6 @@ WG_IFACE="${WG_IFACE:-vpn0}"
 : "${PRIVATE_KEY_FILE:?PRIVATE_KEY_FILE must be set (path to your SOPS-encrypted WireGuard key)}"
 : "${VPN_ADDRESS:?VPN_ADDRESS must be set (your Mullvad-assigned IP address)}"
 VPN_DNS="${VPN_DNS:-}" # comma-separated DNS servers (optional)
-VPN_ALLOWED_IPS="${VPN_ALLOWED_IPS:-0.0.0.0/0, ::/0}" # IP ranges to route through VPN
 WG_CONF_PATH="${WG_CONF_PATH:-/etc/wireguard/${WG_IFACE}.conf}"
 MULLVAD_API="${MULLVAD_API:-https://api.mullvad.net/www/relays/wireguard/}"
 PING_TIMEOUT="${PING_TIMEOUT:-1}"                # seconds for ping
@@ -250,7 +249,7 @@ ListenPort = 51820
 
 [Peer]
 PublicKey = ${best_pub}
-AllowedIPs = ${VPN_ALLOWED_IPS}
+AllowedIPs = 0.0.0.0/0, ::/0
 Endpoint = ${best_ip}:51820
 PersistentKeepalive = 25
 EOF
