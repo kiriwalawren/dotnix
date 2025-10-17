@@ -49,6 +49,7 @@ in {
 
     systemd.services.mullvad-select = {
       description = "Select nearest Mullvad server and bring up WireGuard";
+      wantedBy = ["multi-user.target"];
       wants = ["network-online.target" "nss-lookup.target" "mullvad-select-run.timer"];
       after = ["network-online.target" "nss-lookup.target"];
       serviceConfig = {
