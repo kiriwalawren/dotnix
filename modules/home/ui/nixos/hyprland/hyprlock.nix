@@ -76,7 +76,7 @@ in {
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER,L,exec,hyprlock"
+        "SUPER,N,exec,hyprlock"
       ];
       exec-once = [
         (mkIf fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
