@@ -30,76 +30,80 @@ in {
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
-    systemd.services.mullvad-select = {
-      description = "Select nearest Mullvad server and bring up WireGuard";
-      wantedBy = ["multi-user.target"];
-      wants = ["network-online.target" "nss-lookup.target" "mullvad-select-run.timer"];
-      after = ["network-online.target" "nss-lookup.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        Environment = [
-          "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
-          "MEASURE_METHOD=ping"
-          "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
-          "VPN_DNS=${concatStringsSep "," cfg.dns}"
-        ];
-        ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
-        ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
-        ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
-          # Add routing rules to exclude Tailscale traffic from VPN
-          ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
-          ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup 52 priority 5050
-          ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
-          ${pkgs.iproute2}/bin/ip rule add from 100.64.0.0/10 lookup 52 priority 5051
-        '');
-        ExecStop = mkIf config.services.tailscale.enable (pkgs.writeShellScript "stop-vpn" ''
-          # Remove Tailscale routing rules
-          ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
-          ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
-          # Bring down VPN
-          ${pkgs.wireguard-tools}/bin/wg-quick down vpn0 || true
-        '');
-        RemainAfterExit = true;
-        Restart = "on-failure";
-        RestartSec = "5s";
-        CacheDirectory = "mullvad";
-      };
-    };
+    systemd = {
+      services = {
+        mullvad-select = {
+          description = "Select nearest Mullvad server and bring up WireGuard";
+          wantedBy = ["multi-user.target"];
+          wants = ["network-online.target" "nss-lookup.target" "mullvad-select-run.timer"];
+          after = ["network-online.target" "nss-lookup.target"];
+          serviceConfig = {
+            Type = "oneshot";
+            Environment = [
+              "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
+              "MEASURE_METHOD=ping"
+              "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
+              "VPN_DNS=${concatStringsSep "," cfg.dns}"
+            ];
+            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
+            ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
+            ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
+              # Add routing rules to exclude Tailscale traffic from VPN
+              ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup 52 priority 5050
+              ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule add from 100.64.0.0/10 lookup 52 priority 5051
+            '');
+            ExecStop = mkIf config.services.tailscale.enable (pkgs.writeShellScript "stop-vpn" ''
+              # Remove Tailscale routing rules
+              ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
+              # Bring down VPN
+              ${pkgs.wireguard-tools}/bin/wg-quick down vpn0 || true
+            '');
+            RemainAfterExit = true;
+            Restart = "on-failure";
+            RestartSec = "5s";
+            CacheDirectory = "mullvad";
+          };
+        };
 
-    # runner service that simply executes the script (no ExecStop)
-    systemd.services.mullvad-select-run = {
-      description = "Run mullvad-select script (periodic runner)";
-      partOf = ["mullvad-select.service"];
-      wants = ["network-online.target" "nss-lookup.target"];
-      after = ["network-online.target" "nss-lookup.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        Environment = [
-          "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
-          "MEASURE_METHOD=ping"
-          "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
-          "VPN_DNS=${concatStringsSep "," cfg.dns}"
-        ];
-        ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
-        ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
-        RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
-        # no ExecStop so it won't take down wg
-        CacheDirectory = "mullvad";
+        # runner service that simply executes the script (no ExecStop)
+        mullvad-select-run = {
+          description = "Run mullvad-select script (periodic runner)";
+          partOf = ["mullvad-select.service"];
+          wants = ["network-online.target" "nss-lookup.target"];
+          after = ["network-online.target" "nss-lookup.target"];
+          serviceConfig = {
+            Type = "oneshot";
+            Environment = [
+              "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
+              "MEASURE_METHOD=ping"
+              "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
+              "VPN_DNS=${concatStringsSep "," cfg.dns}"
+            ];
+            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
+            ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
+            RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
+            # no ExecStop so it won't take down wg
+            CacheDirectory = "mullvad";
+          };
+        };
       };
-    };
 
-    # timer that triggers the runner (use OnCalendar or OnUnitActiveSec/OnActiveSec)
-    systemd.timers.mullvad-select-run = {
-      wantedBy = ["timers.target"];
-      partOf = ["mullvad-select.service"];
-      timerConfig = {
-        OnBootSec = "30s";
-        # Use OnActiveSec (relative to the timer itself) or OnCalendar for wall-clock schedule.
-        # OnActiveSec will schedule every N after the runner finishes — good for periodic runs.
-        OnActiveSec = "10m";
-        AccuracySec = "1m";
-        Unit = "mullvad-select-run.service";
-        Persistent = true;
+      # timer that triggers the runner (use OnCalendar or OnUnitActiveSec/OnActiveSec)
+      timers.mullvad-select-run = {
+        wantedBy = ["timers.target"];
+        partOf = ["mullvad-select.service"];
+        timerConfig = {
+          OnBootSec = "30s";
+          # Use OnActiveSec (relative to the timer itself) or OnCalendar for wall-clock schedule.
+          # OnActiveSec will schedule every N after the runner finishes — good for periodic runs.
+          OnActiveSec = "10m";
+          AccuracySec = "1m";
+          Unit = "mullvad-select-run.service";
+          Persistent = true;
+        };
       };
     };
 
