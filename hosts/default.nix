@@ -113,7 +113,7 @@ in
           ui = {
             enable = true;
             fingerprint.enable = true;
-            virtualbox.enable = false;
+            virtualisation.enable = true;
           };
         }
       ];
