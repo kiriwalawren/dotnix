@@ -26,7 +26,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
