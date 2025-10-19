@@ -154,6 +154,11 @@ in
               enable = true;
               domains = ["walawren.com"];
             };
+            vpn.enable = true;
+            tailscale = {
+              enable = true;
+              mode = "server";
+            };
           };
 
           user.name = "kiri";

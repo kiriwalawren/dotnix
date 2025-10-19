@@ -49,15 +49,34 @@ in {
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
               # Add routing rules to exclude Tailscale traffic from VPN
+              # See: https://tailscale.com/kb/1082/firewall-ports
+
+              # Exclude Tailscale peer traffic (CGNAT range)
               ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
               ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup 52 priority 5050
               ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
               ${pkgs.iproute2}/bin/ip rule add from 100.64.0.0/10 lookup 52 priority 5051
+
+              # Exclude Tailscale control plane & DERP servers (IPv4)
+              ${pkgs.iproute2}/bin/ip rule del to 192.200.0.0/24 lookup 52 priority 5052 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule add to 192.200.0.0/24 lookup 52 priority 5052
+              ${pkgs.iproute2}/bin/ip rule del to 199.165.136.0/24 lookup 52 priority 5053 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule add to 199.165.136.0/24 lookup 52 priority 5053
+
+              # Exclude Tailscale control plane & DERP servers (IPv6)
+              ${pkgs.iproute2}/bin/ip -6 rule del to 2606:b740:49::/48 lookup 52 priority 5054 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip -6 rule add to 2606:b740:49::/48 lookup 52 priority 5054
+              ${pkgs.iproute2}/bin/ip -6 rule del to 2606:b740:1::/48 lookup 52 priority 5055 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip -6 rule add to 2606:b740:1::/48 lookup 52 priority 5055
             '');
             ExecStop = mkIf config.services.tailscale.enable (pkgs.writeShellScript "stop-vpn" ''
               # Remove Tailscale routing rules
               ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup 52 priority 5050 2>/dev/null || true
               ${pkgs.iproute2}/bin/ip rule del from 100.64.0.0/10 lookup 52 priority 5051 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule del to 192.200.0.0/24 lookup 52 priority 5052 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip rule del to 199.165.136.0/24 lookup 52 priority 5053 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip -6 rule del to 2606:b740:49::/48 lookup 52 priority 5054 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip -6 rule del to 2606:b740:1::/48 lookup 52 priority 5055 2>/dev/null || true
               # Bring down VPN
               ${pkgs.wireguard-tools}/bin/wg-quick down vpn0 || true
             '');
