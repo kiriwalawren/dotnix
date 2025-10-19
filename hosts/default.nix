@@ -108,7 +108,6 @@ in
             bootloader.grub.enable = true;
             power-profiles.enable = true;
             tailscale.enable = true;
-            vpn.enable = true;
           };
 
           ui = {
