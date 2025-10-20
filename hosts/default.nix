@@ -170,7 +170,7 @@ in
             };
           };
 
-          user.name = "kiri";
+          user.name = "walawren";
         }
       ];
 
