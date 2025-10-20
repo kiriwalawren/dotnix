@@ -33,6 +33,7 @@ nix_src_path="gitrepos" # destination dir on target for rsync
 git_root=$(git rev-parse --show-toplevel)
 nix_secrets_dir=${NIX_SECRETS_DIR:-"${git_root}/../secrets"}
 nix_secrets_yaml="${nix_secrets_dir}/secrets.yaml"
+nix_secrets_config="${nix_secrets_dir}/.sops.yaml"
 
 ################
 # Temp staging #
@@ -136,7 +137,13 @@ if [[ $host_age_key != age1* ]]; then
   exit 1
 fi
 sops_update_age_key hosts "$target_hostname" "$host_age_key"
+ln -s "$nix_secrets_config" ./.sops.yaml
 sops updatekeys -y "$nix_secrets_yaml"
+rm ./.sops.yaml
+git -C "$nix_secrets_dir" add -A
+git -C "$nix_secrets_dir" commit -m "bootstrap: $target_hostname initial setup" || true
+git -C "$nix_secrets_dir" push || true
+nix flake update secrets
 
 green "Age recipient added; secrets re‑encrypted"
 
@@ -194,12 +201,7 @@ fi
 #########################################################
 
 if yes_or_no "Stage, commit, and push all changes to Git?"; then
-  git -C "$nix_secrets_dir" add -A
-  git -C "$nix_secrets_dir" commit -m "bootstrap: $target_hostname initial setup" || true
-  git -C "$nix_secrets_dir" push || true
-
   nix fmt
-  nix flake update secrets
   git -C "$git_root" add -A
   git -C "$git_root" commit -m "bootstrap: $target_hostname initial setup" || true
   git -C "$git_root" push || true
