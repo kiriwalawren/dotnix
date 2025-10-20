@@ -127,9 +127,11 @@ in
       name = "nixos-virtualbox";
       modules = [
         inputs.disko.nixosModules.disko
-        (import ./disko.nix {
+        (import ./disko-raid.nix {
           inherit (nixpkgs) lib;
-          device = "/dev/sda";
+          device = "/dev/vda";
+          raidDevice1 = "/dev/vdb";
+          raidDevice2 = "/dev/vdc";
         })
 
         ./hardware/nixos-virtualbox.nix
@@ -144,6 +146,14 @@ in
               efiSysMountPoint = "/boot/efi";
             };
             systemd-boot.enable = true;
+          };
+
+          # Configure mdadm for RAID
+          boot.swraid = {
+            enable = true;
+            mdadmConf = ''
+              MAILADDR root
+            '';
           };
 
           system = {
