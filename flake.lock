@@ -445,10 +445,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1761065123,
-        "narHash": "sha256-EH6VvsGey88MPbhrvdipZBV4X6Ko07LCidPhZP+Vge4=",
+        "lastModified": 1761078338,
+        "narHash": "sha256-wnw6PTotnRnHZSzRZv9gpxKceiGSY5WwGemBeERa/Mg=",
         "ref": "main",
-        "rev": "6b4f24fdae013ad46fb153b11c5cc0b37977fd5e",
+        "rev": "895768d883bb5eea175a2fa1645df35de8c59969",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
