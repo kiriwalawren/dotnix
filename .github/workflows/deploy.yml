@@ -10,6 +10,12 @@ permissions:
   contents: read
   checks: write
 
+# one in progress and one in queue
+# newest pipeline replaces the queued pipeline
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Deploy NixOS Configuration 🚀
