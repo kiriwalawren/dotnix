@@ -24,7 +24,7 @@ in {
 
       exitNode = mkOption {
         type = types.str;
-        default = "nixos-virtualbox";
+        default = "virtualbox";
         description = "The Tailscale exit node to use";
       };
     };

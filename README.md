@@ -48,7 +48,7 @@
 
 1. Run the following command:
    ```sh
-   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#nixos-desktop
+   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#desktop
    ```
 
 ## Rebuilding
