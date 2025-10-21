@@ -15,6 +15,7 @@
 
     {
       system.stateVersion = "25.05"; # Update when reinstalling
+      user.name = "walawren";
 
       boot.loader = {
         efi = {
@@ -45,8 +46,6 @@
           mode = "server";
         };
       };
-
-      user.name = "walawren";
     }
   ];
 
