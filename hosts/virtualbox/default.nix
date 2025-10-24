@@ -9,6 +9,7 @@
         device = "/dev/vda";
         raidDevice1 = "/dev/vdb";
         raidDevice2 = "/dev/vdc";
+        encryptedDataDrive = true;
       })
 
     ../../modules/nixos
@@ -47,6 +48,12 @@
         };
       };
     }
+
+    ({config, ...}: {
+      # RAID encryption auto-unlock
+      sops.secrets.raid-encryption-key = {};
+      boot.initrd.luks.devices."cryptraid".keyFile = config.sops.secrets.raid-encryption-key.path;
+    })
   ];
 
   homeOptions.cli = {

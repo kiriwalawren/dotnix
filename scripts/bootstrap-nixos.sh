@@ -163,6 +163,18 @@ if no_or_yes "Capture hardware-configuration.nix before install?"; then
   fi
 fi
 
+###############################################
+# 1.5. Extract RAID encryption key if present #
+###############################################
+
+if sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "raid-encryption-key:"; then
+  blue "Extracting RAID encryption key from secrets"
+  install -d -m755 "$temp/tmp"
+  sops -d --extract '["raid-encryption-key"]' "$nix_secrets_yaml" >"$temp/tmp/raid-secret.key"
+  chmod 600 "$temp/tmp/raid-secret.key"
+  green "RAID encryption key ready for installation"
+fi
+
 #################################################
 # 2. Run nixos-anywhere install (build locally) #
 #################################################
