@@ -65,23 +65,27 @@
 
       # Unlock RAID after boot using systemd
       systemd.services.unlock-raid = {
-        description = "Unlock encrypted RAID array";
+        description = "Unlock and mount encrypted RAID array";
         wantedBy = ["multi-user.target"];
-        after = ["sops-nix.service" "mdmonitor.service"];
-        requires = ["sops-nix.service"];
+        after = ["mdmonitor.service"];
+        unitConfig = {
+          ConditionPathExists = config.sops.secrets.raid-encryption-key.path;
+        };
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
           ExecStart = "${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}";
-          ExecStop = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
+          ExecStartPost = "${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data";
+          ExecStop = "-${pkgs.util-linux}/bin/umount /data";
+          ExecStopPost = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
         };
       };
 
-      # Mount the RAID after unlocking
+      # Define mount point (but don't auto-mount - let the service handle it)
       fileSystems."/data" = {
         device = "/dev/mapper/cryptraid";
         fsType = "ext4";
-        options = ["nofail"];
+        options = ["noauto" "nofail"];
       };
     })
   ];
