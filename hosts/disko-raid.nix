@@ -5,6 +5,8 @@
   raidDevice2 ? "/dev/sdc",
   withSwap ? false,
   swapSize ? 4,
+  encryptedDataDrive ? false,
+  encryptionPasswordFile ? "/tmp/raid-secret.key",
   ...
 }: {
   disko.devices = {
@@ -104,11 +106,25 @@
           partitions = {
             primary = {
               size = "100%";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/data";
-              };
+              content =
+                if encryptedDataDrive
+                then {
+                  type = "luks";
+                  name = "cryptraid";
+                  settings = {
+                    allowDiscards = true;
+                  };
+                  passwordFile = encryptionPasswordFile;
+                  content = {
+                    type = "filesystem";
+                    format = "ext4";
+                  };
+                }
+                else {
+                  type = "filesystem";
+                  format = "ext4";
+                  mountpoint = "/data";
+                };
             };
           };
         };

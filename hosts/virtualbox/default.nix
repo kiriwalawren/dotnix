@@ -9,6 +9,7 @@
         device = "/dev/vda";
         raidDevice1 = "/dev/vdb";
         raidDevice2 = "/dev/vdc";
+        encryptedDataDrive = true;
       })
 
     ../../modules/nixos
@@ -47,6 +48,46 @@
         };
       };
     }
+
+    ({
+      config,
+      pkgs,
+      lib,
+      ...
+    }: {
+      # RAID encryption auto-unlock
+      sops.secrets.raid-encryption-key = {
+        mode = "0400";
+      };
+
+      # Prevent auto-detection of LUKS device in initrd
+      boot.initrd.luks.devices = lib.mkForce {};
+
+      # Unlock RAID after boot using systemd
+      systemd.services.unlock-raid = {
+        description = "Unlock and mount encrypted RAID array";
+        wantedBy = ["multi-user.target"];
+        after = ["mdmonitor.service"];
+        unitConfig = {
+          ConditionPathExists = config.sops.secrets.raid-encryption-key.path;
+        };
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}";
+          ExecStartPost = "${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data";
+          ExecStop = "-${pkgs.util-linux}/bin/umount /data";
+          ExecStopPost = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
+        };
+      };
+
+      # Define mount point (but don't auto-mount - let the service handle it)
+      fileSystems."/data" = {
+        device = "/dev/mapper/cryptraid";
+        fsType = "ext4";
+        options = ["noauto" "nofail"];
+      };
+    })
   ];
 
   homeOptions.cli = {
