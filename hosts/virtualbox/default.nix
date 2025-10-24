@@ -49,10 +49,40 @@
       };
     }
 
-    ({config, ...}: {
+    ({
+      config,
+      pkgs,
+      lib,
+      ...
+    }: {
       # RAID encryption auto-unlock
-      sops.secrets.raid-encryption-key = {};
-      boot.initrd.luks.devices."cryptraid".keyFile = config.sops.secrets.raid-encryption-key.path;
+      sops.secrets.raid-encryption-key = {
+        mode = "0400";
+      };
+
+      # Prevent auto-detection of LUKS device in initrd
+      boot.initrd.luks.devices = lib.mkForce {};
+
+      # Unlock RAID after boot using systemd
+      systemd.services.unlock-raid = {
+        description = "Unlock encrypted RAID array";
+        wantedBy = ["multi-user.target"];
+        after = ["sops-nix.service" "mdmonitor.service"];
+        requires = ["sops-nix.service"];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}";
+          ExecStop = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
+        };
+      };
+
+      # Mount the RAID after unlocking
+      fileSystems."/data" = {
+        device = "/dev/mapper/cryptraid";
+        fsType = "ext4";
+        options = ["nofail"];
+      };
     })
   ];
 

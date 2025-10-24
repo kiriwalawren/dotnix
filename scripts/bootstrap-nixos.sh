@@ -167,11 +167,13 @@ fi
 # 1.5. Extract RAID encryption key if present #
 ###############################################
 
+raid_encryption_key_file=""
 if sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "raid-encryption-key:"; then
   blue "Extracting RAID encryption key from secrets"
   install -d -m755 "$temp/tmp"
   sops -d --extract '["raid-encryption-key"]' "$nix_secrets_yaml" >"$temp/tmp/raid-secret.key"
   chmod 600 "$temp/tmp/raid-secret.key"
+  raid_encryption_key_file="$temp/tmp/raid-secret.key"
   green "RAID encryption key ready for installation"
 fi
 
@@ -185,14 +187,23 @@ blue "[2/5] Running nixos-anywhere (build locally)"
 sed -i "/$target_hostname/d; /$target_destination/d" ~/.ssh/known_hosts || true
 ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null >>~/.ssh/known_hosts || true
 
+# Build nixos-anywhere command
+nixos_anywhere_args=(
+  --ssh-port "$ssh_port"
+  --post-kexec-ssh-port "$ssh_port"
+  --extra-files "$temp"
+  --flake ".#$target_hostname"
+  --target-host "root@$target_destination"
+)
+
+# Add disk encryption key if present
+if [[ -n "$raid_encryption_key_file" ]]; then
+  nixos_anywhere_args+=(--disk-encryption-keys /tmp/raid-secret.key "$raid_encryption_key_file")
+fi
+
 (
   cd "$git_root"
-  SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- \
-    --ssh-port "$ssh_port" \
-    --post-kexec-ssh-port "$ssh_port" \
-    --extra-files "$temp" \
-    --flake .#"$target_hostname" \
-    --target-host root@"$target_destination"
+  SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- "${nixos_anywhere_args[@]}"
 )
 
 #################################################
