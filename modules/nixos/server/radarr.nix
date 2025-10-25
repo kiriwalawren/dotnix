@@ -96,7 +96,6 @@ in {
         # Read secrets
         API_KEY=$(cat ${config.sops.secrets."radarr/api_key".path})
         AUTH_USER=$(cat ${config.sops.secrets."radarr/auth/username".path})
-        AUTH_PASS=$(cat ${config.sops.secrets."radarr/auth/password".path})
 
         # Backup config
         cp "$configFile" "$configFile.bak"
@@ -123,20 +122,23 @@ in {
         # Set username and password in database (using PBKDF2)
         dbFile="${stateDir}/radarr.db"
 
-        # Generate PBKDF2 hash using Python
-        read SALT HASHED_PASSWORD <<< $(echo -n "$AUTH_PASS" | ${pkgs.python3}/bin/python3 -c "
+        # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
+        read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
 import base64
 import hashlib
 import secrets
 import sys
 
-password = sys.stdin.read()
+# Read password directly from file to avoid bash variable expansion issues
+with open('${config.sops.secrets."radarr/auth/password".path}', 'rb') as f:
+    password = f.read()
+
 salt = secrets.token_bytes(16)
 iterations = 10000
 num_bytes = 32
 
 # PBKDF2-HMAC-SHA512
-hashed = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, iterations, dklen=num_bytes)
+hashed = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, dklen=num_bytes)
 
 print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
 ")
