@@ -8,27 +8,9 @@
 with lib; let
   cfg = config.system.vpn;
 
-  # Fake sudo for wg-quick (we already have CAP_NET_ADMIN capabilities)
-  # wg-quick passes huge commands through sudo, use sh -c to avoid arg limits
-  fakeSudo = pkgs.writeShellScriptBin "sudo" ''
-    #!/bin/sh
-    # wg-quick typically calls: sudo sh -c 'command'
-    # Just strip sudo flags and execute via sh
-    while [ $# -gt 0 ]; do
-      case "$1" in
-        -p|-u|-g|-C|-T|-r|-t) shift 2 ;;
-        -n|-E|-H|-S|-b|-i|-s|-k|-K|-V|-h|-l|-v) shift ;;
-        --) shift; break ;;
-        -*) shift ;;
-        *) break ;;
-      esac
-    done
-    exec "$@"
-  '';
-
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
-    runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk fakeSudo];
+    runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk];
     text = builtins.readFile ./mullvad-select.sh;
   };
 in {
@@ -50,34 +32,51 @@ in {
         default = true;
         description = "Whether to allow traffic to local network (RFC1918 addresses) when VPN is down";
       };
+
+      fallbackRelays = mkOption {
+        type = types.listOf (types.submodule {
+          options = {
+            ip = mkOption {
+              type = types.str;
+              description = "IPv4 address of the fallback relay";
+            };
+            pubkey = mkOption {
+              type = types.str;
+              description = "WireGuard public key of the fallback relay";
+            };
+            hostname = mkOption {
+              type = types.str;
+              description = "Hostname of the fallback relay";
+            };
+            country = mkOption {
+              type = types.str;
+              description = "Country where the relay is located";
+            };
+          };
+        });
+        default = [
+          {
+            ip = "193.32.127.66";
+            pubkey = "wGxVyRjNKWba7RidWKab0jPpdNKQAgeLFzwx/bz3CWQ=";
+            hostname = "ch-zrh-wg-001";
+            country = "Switzerland";
+          }
+          {
+            ip = "45.83.223.196";
+            pubkey = "IR4ZTWn7TBujt2nMDoB9xYISoVigWYTRyaG8mHLji1o=";
+            hostname = "us-atl-wg-303";
+            country = "USA";
+          }
+        ];
+        description = "Fallback relays used for initial connection and when cache is unavailable";
+      };
     };
   };
 
   config = mkIf cfg.enable {
     services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
-
-    # Create dedicated user for VPN service (principle of least privilege)
-    users.users.mullvad-vpn = {
-      isSystemUser = true;
-      group = "mullvad-vpn";
-      extraGroups = ["wireguard"];
-      description = "Mullvad VPN service user";
-    };
-    users.groups.mullvad-vpn = {};
-    users.groups.wireguard = {};
-
-    # Configure SOPS secret to be readable by VPN service user
-    sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {
-      owner = "mullvad-vpn";
-      group = "mullvad-vpn";
-    };
-
-    # Create /etc/wireguard directory with wireguard group write access
-    # The setgid bit (2) ensures new files inherit the wireguard group
-    systemd.tmpfiles.rules = [
-      "d /etc/wireguard 2770 root wireguard -"
-    ];
+    sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
     # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
     networking.firewall = mkIf cfg.killSwitch.enable {
@@ -107,20 +106,24 @@ in {
         iptables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
         ''}
 
-        # Allow traffic on VPN interface
+        # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
         iptables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
 
-        # Allow traffic needed to establish VPN connection (before vpn0 exists)
-        # ONLY from the mullvad-vpn service user - prevents general traffic leaks
-        # DNS queries (for resolving api.mullvad.net and server hostnames)
-        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 53 -j ACCEPT
-        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 53 -j ACCEPT
-        # HTTPS for Mullvad API (api.mullvad.net)
-        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 443 -j ACCEPT
-        # WireGuard port (for establishing connection to Mullvad servers)
-        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 51820 -j ACCEPT
-        # ICMP for ping measurements (latency testing)
-        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p icmp -j ACCEPT
+        # Allow WireGuard and ICMP to fallback relays (for bootstrap and emergency)
+        ${concatMapStringsSep "\n" (relay: ''
+        iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p udp --dport 51820 -j ACCEPT
+        iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p icmp -j ACCEPT
+        '') cfg.killSwitch.fallbackRelays}
+
+        # Allow WireGuard and ICMP to cached relay IPs (if cache exists)
+        if [ -f /var/cache/mullvad/relays-persistent.json ]; then
+          ${pkgs.jq}/bin/jq -r '.[].ipv4_addr_in // .[].ipv4_addr // empty' /var/cache/mullvad/relays-persistent.json | while read -r ip; do
+            if [ -n "$ip" ] && [ "$ip" != "null" ]; then
+              iptables -w -A nixos-vpn-killswitch -d "$ip" -p udp --dport 51820 -j ACCEPT
+              iptables -w -A nixos-vpn-killswitch -d "$ip" -p icmp -j ACCEPT
+            fi
+          done
+        fi
 
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
         # Allow local network traffic (RFC1918)
@@ -149,18 +152,17 @@ in {
         ip6tables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
         ''}
 
-        # Allow traffic on VPN interface
+        # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
         ip6tables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
 
-        # Allow traffic needed to establish VPN connection (before vpn0 exists)
-        # ONLY from the mullvad-vpn service user - prevents general traffic leaks
-        # DNS queries (for resolving api.mullvad.net and server hostnames)
-        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 53 -j ACCEPT
-        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 53 -j ACCEPT
-        # HTTPS for Mullvad API (api.mullvad.net)
-        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 443 -j ACCEPT
-        # WireGuard port (for establishing connection to Mullvad servers)
-        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 51820 -j ACCEPT
+        # Allow WireGuard to cached relay IPs (if cache exists and has IPv6 addresses)
+        if [ -f /var/cache/mullvad/relays-persistent.json ]; then
+          ${pkgs.jq}/bin/jq -r '.[].ipv6_addr_in // .[].ipv6_addr // empty' /var/cache/mullvad/relays-persistent.json | while read -r ip; do
+            if [ -n "$ip" ] && [ "$ip" != "null" ]; then
+              ip6tables -w -A nixos-vpn-killswitch -d "$ip" -p udp --dport 51820 -j ACCEPT
+            fi
+          done
+        fi
 
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
         # Allow local network traffic (ULA and link-local)
@@ -171,7 +173,7 @@ in {
         # Allow DHCPv6
         ip6tables -w -A nixos-vpn-killswitch -p udp --dport 546:547 -j ACCEPT
 
-        # Allow ICMPv6 (required for IPv6 to function)
+        # Allow ICMPv6 (required for IPv6 to function - includes ping6)
         ip6tables -w -A nixos-vpn-killswitch -p ipv6-icmp -j ACCEPT
 
         # Drop everything else
@@ -204,16 +206,12 @@ in {
           after = ["network-online.target" "nss-lookup.target"];
           serviceConfig = {
             Type = "oneshot";
-            User = "mullvad-vpn";
-            Group = "mullvad-vpn";
-            # Grant network capabilities so non-root user can configure interfaces
-            AmbientCapabilities = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
-            CapabilityBoundingSet = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
             Environment = [
               "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
+              "FALLBACK_RELAYS=${builtins.toJSON cfg.killSwitch.fallbackRelays}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
@@ -264,15 +262,12 @@ in {
           after = ["network-online.target" "nss-lookup.target"];
           serviceConfig = {
             Type = "oneshot";
-            User = "mullvad-vpn";
-            Group = "mullvad-vpn";
-            AmbientCapabilities = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
-            CapabilityBoundingSet = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
             Environment = [
               "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
+              "FALLBACK_RELAYS=${builtins.toJSON cfg.killSwitch.fallbackRelays}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             RemainAfterExit = "no"; # runner should exit so timer scheduling is sane

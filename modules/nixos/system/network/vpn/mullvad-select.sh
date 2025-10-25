@@ -67,21 +67,68 @@ if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
   fi
 fi
 
-# Fetch Mullvad relays JSON (cache locally for a short time to avoid rates)
-# systemd CacheDirectory creates /var/cache/mullvad
-# Cache timeout aligns with systemd timer (10 minutes)
+# Fetch Mullvad relays JSON with persistent caching for kill switch security
+# Persistent cache lasts 7 days and is used even when VPN is down
+# API calls only happen when VPN is UP (secure)
 CACHE_DIR="${CACHE_DIRECTORY:-/var/cache/mullvad}"
-CACHE_TIMEOUT_MINS="${CACHE_TIMEOUT_MINS:-10}"
-TMP_JSON="$CACHE_DIR/relays.json"
+PERSISTENT_CACHE="$CACHE_DIR/relays-persistent.json"
+CACHE_TIMEOUT_DAYS="${CACHE_TIMEOUT_DAYS:-7}"
+FALLBACK_RELAYS="${FALLBACK_RELAYS:-}" # JSON array of fallback relays (set by NixOS)
+
 mkdir -p "$CACHE_DIR"
-if [ -f "$TMP_JSON" ] && [ "$(find "$TMP_JSON" -mmin -"$CACHE_TIMEOUT_MINS" -print)" ]; then
-  RELAYS_JSON="$(cat "$TMP_JSON")"
+
+# Check if persistent cache exists and is recent
+cache_valid=false
+if [ -f "$PERSISTENT_CACHE" ]; then
+  if [ "$(find "$PERSISTENT_CACHE" -mtime -"$CACHE_TIMEOUT_DAYS" -print 2>/dev/null)" ]; then
+    cache_valid=true
+    log "Using persistent cache (age: $(( ($(date +%s) - $(stat -c %Y "$PERSISTENT_CACHE")) / 86400 )) days)"
+  else
+    log "Persistent cache exists but is stale (>$CACHE_TIMEOUT_DAYS days)"
+  fi
+fi
+
+# Determine if we should fetch from API (only if VPN is UP for security)
+should_fetch_api=false
+vpn_is_up=false
+if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
+  # VPN interface exists, check if it's actually connected
+  if wg show "$WG_IFACE" latest-handshakes | awk '{if ($2 != "0") exit 0; else exit 1}'; then
+    vpn_is_up=true
+  fi
+fi
+
+if $vpn_is_up && (! $cache_valid || $force_reselection); then
+  should_fetch_api=true
+  log "VPN is UP - will fetch fresh relay list from API"
+fi
+
+# Fetch relay data
+if $should_fetch_api; then
+  # VPN is up, safe to fetch from API (goes through tunnel)
+  log "Fetching relay list from Mullvad API through VPN tunnel"
+  if RELAYS_JSON="$(curl -fsS "$MULLVAD_API" 2>/dev/null)"; then
+    echo "$RELAYS_JSON" >"$PERSISTENT_CACHE"
+    log "Updated persistent cache with fresh relay data"
+  else
+    log "WARNING: Failed to fetch from API, will use cache or fallback"
+    if $cache_valid; then
+      RELAYS_JSON="$(cat "$PERSISTENT_CACHE")"
+    fi
+  fi
+elif $cache_valid; then
+  # Use persistent cache
+  RELAYS_JSON="$(cat "$PERSISTENT_CACHE")"
 else
-  RELAYS_JSON="$(curl -fsS "$MULLVAD_API")" || {
-    log "ERROR: failed to fetch Mullvad API"
+  # No cache and VPN is down - use fallback relays
+  log "No cache available and VPN is down - using fallback relays"
+  if [ -n "$FALLBACK_RELAYS" ]; then
+    RELAYS_JSON="$FALLBACK_RELAYS"
+    log "Loaded $(echo "$RELAYS_JSON" | jq -r 'length') fallback relay(s)"
+  else
+    log "ERROR: No fallback relays configured and no cache available"
     exit 3
-  }
-  echo "$RELAYS_JSON" >"$TMP_JSON"
+  fi
 fi
 
 # Filter relays by REGION_FILTER
