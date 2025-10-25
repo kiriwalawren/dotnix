@@ -56,8 +56,9 @@ in {
     };
 
     # Create /etc/wireguard directory with wireguard group write access
+    # The setgid bit (2) ensures new files inherit the wireguard group
     systemd.tmpfiles.rules = [
-      "d /etc/wireguard 0770 root wireguard -"
+      "d /etc/wireguard 2770 root wireguard -"
     ];
 
     # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
