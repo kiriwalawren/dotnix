@@ -78,8 +78,8 @@
           RemainAfterExit = true;
           ExecStart = "${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}";
           ExecStartPost = "${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data";
-          ExecStopPre = "-${pkgs.util-linux}/bin/umount /data";
-          ExecStop = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
+          ExecStop = "-${pkgs.util-linux}/bin/umount /data";
+          ExecStopPost = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
         };
       };
 
