@@ -69,8 +69,7 @@ in {
 
       serviceConfig = {
         Type = "oneshot";
-        User = globals.radarr.user;
-        Group = globals.radarr.group;
+        RemainAfterExit = true;
       };
 
       script = ''
@@ -97,15 +96,30 @@ in {
         AUTH_USER=$(cat ${config.sops.secrets."radarr/auth/username".path})
         AUTH_PASS=$(cat ${config.sops.secrets."radarr/auth/password".path})
 
-        # Update config.xml using xmlstarlet
-        ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L \
-          -u "//ApiKey" -v "$API_KEY" \
-          -u "//AuthenticationMethod" -v "Forms" \
-          -u "//AuthenticationRequired" -v "Enabled" \
-          -u "//Username" -v "$AUTH_USER" \
-          -u "//Password" -v "$AUTH_PASS" \
-          -u "//UrlBase" -v "/radarr" \
-          "$configFile"
+        # Backup config
+        cp "$configFile" "$configFile.bak"
+
+        # Helper function to update or insert XML elements
+        update_or_insert() {
+          local field=$1
+          local value=$2
+          if ${pkgs.xmlstarlet}/bin/xmlstarlet sel -t -v "//$field" "$configFile" &>/dev/null; then
+            ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//$field" -v "$value" "$configFile"
+          else
+            ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
+          fi
+        }
+
+        # Update all fields
+        update_or_insert "ApiKey" "$API_KEY"
+        update_or_insert "AuthenticationMethod" "Forms"
+        update_or_insert "AuthenticationRequired" "Enabled"
+        update_or_insert "Username" "$AUTH_USER"
+        update_or_insert "Password" "$AUTH_PASS"
+        update_or_insert "UrlBase" "/radarr"
+
+        # Change ownership back to radarr
+        chown ${globals.radarr.user}:${globals.radarr.group} "$configFile"
 
         # Restart radarr to pick up the new config
         systemctl restart radarr.service
