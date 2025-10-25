@@ -181,9 +181,8 @@ measure_latency() {
 }
 
 # Build candidate list with measured latency
-temp_dir="$(mktemp -d)"
+candidates_tmp="$(mktemp)"
 pids=()
-temp_files=()
 while IFS= read -r line; do
   ip=$(echo "$line" | jq -r '.ipv4_addr_in // .ipv4_addr')
   host=$(echo "$line" | jq -r '.hostname')
@@ -193,28 +192,20 @@ while IFS= read -r line; do
   if [ -z "$ip" ] || [ "$ip" = "null" ]; then
     continue
   fi
-  # Each background job writes to its own unique temp file to avoid race conditions
-  temp_out="$temp_dir/result_$$_${#pids[@]}.txt"
-  temp_files+=("$temp_out")
+  # Each background job writes to its own temp file to avoid race conditions
   (
     latency=$(measure_latency "$ip")
+    temp_out="$(mktemp)"
     printf '%s\t%s\t%s\t%s\t%s\n' "$latency" "$ip" "$pub" "$host" "$city,$country" >"$temp_out"
+    cat "$temp_out" >>"$candidates_tmp"
+    rm -f "$temp_out"
   ) &
-  pids+=("$!")
+  pids+=($!)
 done <<<"$RELAYS"
 # Wait for all measurement jobs to complete
 for pid in "${pids[@]}"; do
   wait "$pid"
 done
-
-# Combine all results into a single file
-candidates_tmp="$(mktemp)"
-for temp_file in "${temp_files[@]}"; do
-  if [ -f "$temp_file" ]; then
-    cat "$temp_file" >>"$candidates_tmp"
-  fi
-done
-rm -rf "$temp_dir"
 
 # sort and pick top N
 mapfile -t sorted < <(sort -n "$candidates_tmp")
