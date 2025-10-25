@@ -124,13 +124,13 @@ in {
         dbFile="${stateDir}/radarr.db"
 
         # Generate PBKDF2 hash using Python
-        read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
+        read SALT HASHED_PASSWORD <<< $(echo -n "$AUTH_PASS" | ${pkgs.python3}/bin/python3 -c "
 import base64
 import hashlib
-import os
 import secrets
+import sys
 
-password = '''$AUTH_PASS'''
+password = sys.stdin.read()
 salt = secrets.token_bytes(16)
 iterations = 10000
 
