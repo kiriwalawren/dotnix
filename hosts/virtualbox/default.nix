@@ -47,6 +47,8 @@
           mode = "server";
         };
       };
+
+      server.enable = true;
     }
 
     ({
