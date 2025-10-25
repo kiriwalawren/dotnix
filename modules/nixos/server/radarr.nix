@@ -133,9 +133,10 @@ import sys
 password = sys.stdin.read()
 salt = secrets.token_bytes(16)
 iterations = 10000
+num_bytes = 32
 
-# PBKDF2-HMAC-SHA256
-hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations)
+# PBKDF2-HMAC-SHA512
+hashed = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, iterations, dklen=num_bytes)
 
 print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
 ")
