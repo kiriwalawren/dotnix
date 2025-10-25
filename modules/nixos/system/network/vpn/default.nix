@@ -86,7 +86,15 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.resolved.enable = true;
+    services.resolved = {
+      enable = true;
+      # Configure DNS routing: Tailscale domains bypass VPN DNS
+      domains = mkIf config.services.tailscale.enable [
+        # Route Tailscale control plane and DERP domains through system DNS, not VPN DNS
+        "~tailscale.com"
+        "~tailscale.io"
+      ];
+    };
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
