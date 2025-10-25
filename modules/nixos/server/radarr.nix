@@ -40,6 +40,8 @@ in {
     };
 
     systemd.tmpfiles.rules = [
+      "d '${server.stateDir}'                0755 root root - -"
+      "d '${stateDir}'                       0755 ${globals.radarr.user} ${globals.radarr.group} - -"
       "d '${server.mediaDir}/library'        0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
       "d '${server.mediaDir}/library/movies' 0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
     ];
