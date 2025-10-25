@@ -5,9 +5,9 @@
   ...
 }:
 with lib; let
+  inherit (config) server;
+  inherit (server) globals;
   cfg = config.server.radarr;
-  globals = config.server.globals;
-  server = config.server;
   port = 7878;
   stateDir = "${server.stateDir}/radarr";
 in {
@@ -23,20 +23,22 @@ in {
   };
 
   config = mkIf (server.enable && cfg.enable) {
-    sops.secrets."radarr/api_key" = {
-      owner = globals.radarr.user;
-      group = globals.radarr.group;
-      mode = "0440";
-    };
-    sops.secrets."radarr/auth/username" = {
-      owner = globals.radarr.user;
-      group = globals.radarr.group;
-      mode = "0440";
-    };
-    sops.secrets."radarr/auth/password" = {
-      owner = globals.radarr.user;
-      group = globals.radarr.group;
-      mode = "0440";
+    sops.secrets = {
+      "radarr/api_key" = {
+        inherit (globals.radarr) group;
+        owner = globals.radarr.user;
+        mode = "0440";
+      };
+      "radarr/auth/username" = {
+        inherit (globals.radarr) group;
+        owner = globals.radarr.user;
+        mode = "0440";
+      };
+      "radarr/auth/password" = {
+        inherit (globals.radarr) group;
+        owner = globals.radarr.user;
+        mode = "0440";
+      };
     };
 
     systemd.tmpfiles.rules = [
@@ -49,16 +51,15 @@ in {
     users = {
       groups.${globals.radarr.group}.gid = globals.gids.${globals.radarr.group};
       users.${globals.radarr.user} = {
+        inherit (globals.radarr) group;
         isSystemUser = true;
-        group = globals.radarr.group;
         uid = globals.uids.${globals.radarr.user};
       };
     };
 
     services.radarr = {
-      enable = cfg.enable;
-      user = globals.radarr.user;
-      group = globals.radarr.group;
+      inherit (cfg) enable;
+      inherit (globals.radarr) user group;
       settings.server.port = port;
       dataDir = stateDir;
     };
@@ -124,24 +125,24 @@ in {
 
         # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
         read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
-import base64
-import hashlib
-import secrets
-import sys
+        import base64
+        import hashlib
+        import secrets
+        import sys
 
-# Read password directly from file to avoid bash variable expansion issues
-with open('${config.sops.secrets."radarr/auth/password".path}', 'rb') as f:
-    password = f.read()
+        # Read password directly from file to avoid bash variable expansion issues
+        with open('${config.sops.secrets."radarr/auth/password".path}', 'rb') as f:
+            password = f.read()
 
-salt = secrets.token_bytes(16)
-iterations = 10000
-num_bytes = 32
+        salt = secrets.token_bytes(16)
+        iterations = 10000
+        num_bytes = 32
 
-# PBKDF2-HMAC-SHA512
-hashed = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, dklen=num_bytes)
+        # PBKDF2-HMAC-SHA512
+        hashed = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, dklen=num_bytes)
 
-print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
-")
+        print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
+        ")
 
         # Insert or replace user in database
         ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "

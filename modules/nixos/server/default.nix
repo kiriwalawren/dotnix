@@ -4,8 +4,8 @@
   ...
 }:
 with lib; let
+  inherit (config.server) globals;
   cfg = config.server;
-  globals = config.server.globals;
 in {
   imports = [./globals.nix ./radarr.nix];
 

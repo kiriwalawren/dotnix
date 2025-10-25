@@ -4,7 +4,7 @@
   ...
 }:
 with lib; let
-  globals = config.server.globals;
+  inherit (config.server) globals;
 in {
   options.server.globals = mkOption {
     type = types.attrs;
@@ -44,44 +44,44 @@ in {
       group = "autobrr";
     };
     bazarr = {
+      inherit (globals.libraryOwner) group;
       user = "bazarr";
-      group = globals.libraryOwner.group;
     };
     jellyfin = {
+      inherit (globals.libraryOwner) group;
       user = "jellyfin";
-      group = globals.libraryOwner.group;
     };
     jellyseerr = {
       user = "jellyseerr";
       group = "jellyseerr";
     };
     lidarr = {
+      inherit (globals.libraryOwner) group;
       user = "lidarr";
-      group = globals.libraryOwner.group;
     };
     prowlarr = {
       user = "prowlarr";
       group = "prowlarr";
     };
     radarr = {
+      inherit (globals.libraryOwner) group;
       user = "radarr";
-      group = globals.libraryOwner.group;
     };
     recyclarr = {
       user = "recyclarr";
       group = "recyclarr";
     };
     sabnzbd = {
+      inherit (globals.libraryOwner) group;
       user = "sabnzbd";
-      group = globals.libraryOwner.group;
     };
     sonarr = {
+      inherit (globals.libraryOwner) group;
       user = "sonarr";
-      group = globals.libraryOwner.group;
     };
     transmission = {
+      inherit (globals.libraryOwner) group;
       user = "transmission";
-      group = globals.libraryOwner.group;
     };
     cross-seed = {
       user = "cross-seed";
