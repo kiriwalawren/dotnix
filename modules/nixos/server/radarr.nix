@@ -99,24 +99,23 @@ in {
         # Backup config
         cp "$configFile" "$configFile.bak"
 
-        # Helper function to update or insert XML elements
-        update_or_insert() {
+        # Helper function to set XML elements (delete existing, then insert)
+        set_element() {
           local field=$1
           local value=$2
-          if ${pkgs.xmlstarlet}/bin/xmlstarlet sel -t -v "//$field" "$configFile" &>/dev/null; then
-            ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -u "//$field" -v "$value" "$configFile"
-          else
-            ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
-          fi
+          # Delete all existing instances of the field
+          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -d "//Config/$field" "$configFile" || true
+          # Insert the new value
+          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
         }
 
-        # Update all fields
-        update_or_insert "ApiKey" "$API_KEY"
-        update_or_insert "AuthenticationMethod" "Forms"
-        update_or_insert "AuthenticationRequired" "Enabled"
-        update_or_insert "Username" "$AUTH_USER"
-        update_or_insert "Password" "$AUTH_PASS"
-        update_or_insert "UrlBase" "/radarr"
+        # Set all fields
+        set_element "ApiKey" "$API_KEY"
+        set_element "AuthenticationMethod" "Forms"
+        set_element "AuthenticationRequired" "Enabled"
+        set_element "Username" "$AUTH_USER"
+        set_element "Password" "$AUTH_PASS"
+        set_element "UrlBase" "/radarr"
 
         # Change ownership back to radarr
         chown ${globals.radarr.user}:${globals.radarr.group} "$configFile"
