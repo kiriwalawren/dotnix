@@ -8,6 +8,16 @@
 with lib; let
   cfg = config.system.vpn;
 
+  # Convert fallback relays to Mullvad API format
+  fallbackRelaysJson = builtins.toJSON (map (relay: {
+    hostname = relay.hostname;
+    country_code = relay.country;
+    ipv4_addr_in = relay.ip;
+    pubkey = relay.pubkey;
+    active = true;
+    owned = true;
+  }) cfg.killSwitch.fallbackRelays);
+
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
     runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk];
@@ -50,7 +60,7 @@ in {
             };
             country = mkOption {
               type = types.str;
-              description = "Country where the relay is located";
+              description = "Country code where the relay is located (e.g., 'us', 'ch', 'se')";
             };
           };
         });
@@ -59,13 +69,13 @@ in {
             ip = "193.32.127.66";
             pubkey = "wGxVyRjNKWba7RidWKab0jPpdNKQAgeLFzwx/bz3CWQ=";
             hostname = "ch-zrh-wg-001";
-            country = "Switzerland";
+            country = "ch";
           }
           {
             ip = "45.83.223.196";
             pubkey = "IR4ZTWn7TBujt2nMDoB9xYISoVigWYTRyaG8mHLji1o=";
             hostname = "us-atl-wg-303";
-            country = "USA";
+            country = "us";
           }
         ];
         description = "Fallback relays used for initial connection and when cache is unavailable";
@@ -211,7 +221,7 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
-              "FALLBACK_RELAYS=${builtins.toJSON cfg.killSwitch.fallbackRelays}"
+              "FALLBACK_RELAYS=${fallbackRelaysJson}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
@@ -267,7 +277,7 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
-              "FALLBACK_RELAYS=${builtins.toJSON cfg.killSwitch.fallbackRelays}"
+              "FALLBACK_RELAYS=${fallbackRelaysJson}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
