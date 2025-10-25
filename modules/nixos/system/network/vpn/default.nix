@@ -67,13 +67,13 @@ in {
         });
         default = [
           {
-            ip = "193.32.127.66";
-            pubkey = "wGxVyRjNKWba7RidWKab0jPpdNKQAgeLFzwx/bz3CWQ=";
-            hostname = "ch-zrh-wg-001";
-            country = "ch";
+            ip = "143.244.47.65";
+            pubkey = "IzqkjVCdJYC1AShILfzebchTlKCqVCt/SMEXolaS3Uc=";
+            hostname = "us-nyc-wg-301";
+            country = "us";
           }
           {
-            ip = "45.83.223.196";
+            ip = "67.213.209.118";
             pubkey = "IR4ZTWn7TBujt2nMDoB9xYISoVigWYTRyaG8mHLji1o=";
             hostname = "us-atl-wg-303";
             country = "us";
