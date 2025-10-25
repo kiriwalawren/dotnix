@@ -73,7 +73,7 @@ fi
 CACHE_DIR="${CACHE_DIRECTORY:-/var/cache/mullvad}"
 PERSISTENT_CACHE="$CACHE_DIR/relays-persistent.json"
 CACHE_TIMEOUT_DAYS="${CACHE_TIMEOUT_DAYS:-7}"
-FALLBACK_RELAYS="${FALLBACK_RELAYS:-}" # JSON array of fallback relays (set by NixOS)
+FALLBACK_RELAYS_FILE="${FALLBACK_RELAYS_FILE:-}" # Path to fallback relays JSON file (set by NixOS)
 
 mkdir -p "$CACHE_DIR"
 
@@ -122,8 +122,8 @@ elif $cache_valid; then
 else
   # No cache and VPN is down - use fallback relays
   log "No cache available and VPN is down - using fallback relays"
-  if [ -n "$FALLBACK_RELAYS" ]; then
-    RELAYS_JSON="$FALLBACK_RELAYS"
+  if [ -n "$FALLBACK_RELAYS_FILE" ] && [ -f "$FALLBACK_RELAYS_FILE" ]; then
+    RELAYS_JSON="$(cat "$FALLBACK_RELAYS_FILE")"
     log "Loaded $(echo "$RELAYS_JSON" | jq -r 'length') fallback relay(s)"
   else
     log "ERROR: No fallback relays configured and no cache available"

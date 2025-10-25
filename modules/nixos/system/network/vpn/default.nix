@@ -8,15 +8,16 @@
 with lib; let
   cfg = config.system.vpn;
 
-  # Convert fallback relays to Mullvad API format
-  fallbackRelaysJson = builtins.toJSON (map (relay: {
-    hostname = relay.hostname;
-    country_code = relay.country;
-    ipv4_addr_in = relay.ip;
-    pubkey = relay.pubkey;
-    active = true;
-    owned = true;
-  }) cfg.killSwitch.fallbackRelays);
+  # Convert fallback relays to Mullvad API format and write to a file
+  fallbackRelaysFile = pkgs.writeText "mullvad-fallback-relays.json"
+    (builtins.toJSON (map (relay: {
+      hostname = relay.hostname;
+      country_code = relay.country;
+      ipv4_addr_in = relay.ip;
+      pubkey = relay.pubkey;
+      active = true;
+      owned = true;
+    }) cfg.killSwitch.fallbackRelays));
 
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
@@ -221,7 +222,7 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
-              "FALLBACK_RELAYS=${fallbackRelaysJson}"
+              "FALLBACK_RELAYS_FILE=${fallbackRelaysFile}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
@@ -277,7 +278,7 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
-              "FALLBACK_RELAYS=${fallbackRelaysJson}"
+              "FALLBACK_RELAYS_FILE=${fallbackRelaysFile}"
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
