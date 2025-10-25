@@ -159,8 +159,7 @@ measure_latency() {
   if [ "$MEASURE_METHOD" = "ping" ]; then
     # Use ping; may require root capabilities for raw sockets but usually allowed
     # Capture output once to avoid running ping twice
-    ping_output=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" 2>&1)
-    if [ $? -eq 0 ]; then
+    if ping_output=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" 2>&1); then
       # extract RTT
       rtt=$(echo "$ping_output" | awk -F'/' 'END{print $5}')
       echo "${rtt:-999}"
