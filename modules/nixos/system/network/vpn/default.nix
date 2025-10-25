@@ -9,7 +9,30 @@ with lib; let
   cfg = config.system.vpn;
 
   # Fake sudo for wg-quick (we already have CAP_NET_ADMIN capabilities)
+  # Strip sudo-specific flags and execute the command directly
   fakeSudo = pkgs.writeShellScriptBin "sudo" ''
+    # Skip sudo flags and just execute the actual command
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        -p|-n|-E|-H|-S|-b|-u|-g|-P|-C|-T)
+          # Flags that take an argument
+          shift 2
+          ;;
+        --)
+          # End of options
+          shift
+          break
+          ;;
+        -*)
+          # Other flags without arguments
+          shift
+          ;;
+        *)
+          # Found the actual command
+          break
+          ;;
+      esac
+    done
     exec "$@"
   '';
 
