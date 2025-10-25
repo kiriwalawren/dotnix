@@ -8,9 +8,14 @@
 with lib; let
   cfg = config.system.vpn;
 
+  # Fake sudo for wg-quick (we already have CAP_NET_ADMIN capabilities)
+  fakeSudo = pkgs.writeShellScriptBin "sudo" ''
+    exec "$@"
+  '';
+
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
-    runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk];
+    runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk fakeSudo];
     text = builtins.readFile ./mullvad-select.sh;
   };
 in {
