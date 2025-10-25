@@ -38,7 +38,20 @@ in {
   config = mkIf cfg.enable {
     services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
-    sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
+
+    # Create dedicated user for VPN service (principle of least privilege)
+    users.users.mullvad-vpn = {
+      isSystemUser = true;
+      group = "mullvad-vpn";
+      description = "Mullvad VPN service user";
+    };
+    users.groups.mullvad-vpn = {};
+
+    # Configure SOPS secret to be readable by VPN service user
+    sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {
+      owner = "mullvad-vpn";
+      group = "mullvad-vpn";
+    };
 
     # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
     networking.firewall = mkIf cfg.killSwitch.enable {
@@ -71,6 +84,18 @@ in {
         # Allow traffic on VPN interface
         iptables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
 
+        # Allow traffic needed to establish VPN connection (before vpn0 exists)
+        # ONLY from the mullvad-vpn service user - prevents general traffic leaks
+        # DNS queries (for resolving api.mullvad.net and server hostnames)
+        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 53 -j ACCEPT
+        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 53 -j ACCEPT
+        # HTTPS for Mullvad API (api.mullvad.net)
+        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 443 -j ACCEPT
+        # WireGuard port (for establishing connection to Mullvad servers)
+        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 51820 -j ACCEPT
+        # ICMP for ping measurements (latency testing)
+        iptables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p icmp -j ACCEPT
+
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
         # Allow local network traffic (RFC1918)
         iptables -w -A nixos-vpn-killswitch -d 192.168.0.0/16 -j ACCEPT
@@ -100,6 +125,16 @@ in {
 
         # Allow traffic on VPN interface
         ip6tables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
+
+        # Allow traffic needed to establish VPN connection (before vpn0 exists)
+        # ONLY from the mullvad-vpn service user - prevents general traffic leaks
+        # DNS queries (for resolving api.mullvad.net and server hostnames)
+        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 53 -j ACCEPT
+        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 53 -j ACCEPT
+        # HTTPS for Mullvad API (api.mullvad.net)
+        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p tcp --dport 443 -j ACCEPT
+        # WireGuard port (for establishing connection to Mullvad servers)
+        ip6tables -w -A nixos-vpn-killswitch -m owner --uid-owner mullvad-vpn -p udp --dport 51820 -j ACCEPT
 
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
         # Allow local network traffic (ULA and link-local)
@@ -143,6 +178,11 @@ in {
           after = ["network-online.target" "nss-lookup.target"];
           serviceConfig = {
             Type = "oneshot";
+            User = "mullvad-vpn";
+            Group = "mullvad-vpn";
+            # Grant network capabilities so non-root user can configure interfaces
+            AmbientCapabilities = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
+            CapabilityBoundingSet = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
             Environment = [
               "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
               "MEASURE_METHOD=ping"
@@ -199,6 +239,10 @@ in {
           after = ["network-online.target" "nss-lookup.target"];
           serviceConfig = {
             Type = "oneshot";
+            User = "mullvad-vpn";
+            Group = "mullvad-vpn";
+            AmbientCapabilities = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
+            CapabilityBoundingSet = ["CAP_NET_ADMIN" "CAP_NET_RAW"];
             Environment = [
               "PRIVATE_KEY_FILE=${config.sops.secrets."mullvad-private-keys/${config.networking.hostName}".path}"
               "MEASURE_METHOD=ping"
