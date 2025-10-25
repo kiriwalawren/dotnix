@@ -43,15 +43,22 @@ in {
     users.users.mullvad-vpn = {
       isSystemUser = true;
       group = "mullvad-vpn";
+      extraGroups = ["wireguard"];
       description = "Mullvad VPN service user";
     };
     users.groups.mullvad-vpn = {};
+    users.groups.wireguard = {};
 
     # Configure SOPS secret to be readable by VPN service user
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {
       owner = "mullvad-vpn";
       group = "mullvad-vpn";
     };
+
+    # Create /etc/wireguard directory with wireguard group write access
+    systemd.tmpfiles.rules = [
+      "d /etc/wireguard 0770 root wireguard -"
+    ];
 
     # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
     networking.firewall = mkIf cfg.killSwitch.enable {
@@ -189,7 +196,6 @@ in {
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
             ];
-            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
               # Add routing rules to exclude Tailscale traffic from VPN
@@ -249,7 +255,6 @@ in {
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
             ];
-            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
             # no ExecStop so it won't take down wg
