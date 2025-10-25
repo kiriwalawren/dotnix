@@ -158,10 +158,9 @@ measure_latency() {
   local ip="$1"
   if [ "$MEASURE_METHOD" = "ping" ]; then
     # Use ping; may require root capabilities for raw sockets but usually allowed
-    # Capture output once to avoid running ping twice
-    if ping_output=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" 2>&1); then
+    if ping -c 1 -W "$PING_TIMEOUT" "$ip" >/dev/null 2>&1; then
       # extract RTT
-      rtt=$(echo "$ping_output" | awk -F'/' 'END{print $5}')
+      rtt=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" | awk -F'/' 'END{print $5}')
       echo "${rtt:-999}"
     else
       echo "9999"
@@ -169,7 +168,7 @@ measure_latency() {
   else
     # TCP connect measurement: try connecting to 51820 (WireGuard) with timeout via bash
     start=$(date +%s%3N)
-    timeout "$TCP_TIMEOUT" bash -c "echo >/dev/tcp/$ip/51820" >/dev/null 2>&1 && success=0 || success=1
+    (echo >/dev/tcp/"$ip"/51820) >/dev/null 2>&1 && success=0 || success=1
     stop=$(date +%s%3N)
     if [ "$success" -eq 0 ]; then
       latency=$((stop - start))
