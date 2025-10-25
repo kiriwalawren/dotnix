@@ -23,12 +23,116 @@ in {
       example = ["194.242.2.4"];
       description = "DNS servers to use with the VPN. Defaults to Mullvad's base DNS (blocks ads, trackers, and malware).";
     };
+
+    killSwitch = {
+      enable = mkEnableOption "VPN kill switch - blocks all non-Tailscale traffic when VPN is down";
+
+      allowLocalNetwork = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether to allow traffic to local network (RFC1918 addresses) when VPN is down";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
     services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
+
+    # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
+    networking.firewall = mkIf cfg.killSwitch.enable {
+      # Allow forwarding for Tailscale and VPN
+      checkReversePath = "loose";
+
+      extraCommands = ''
+        # Flush any existing rules in the killswitch chain
+        iptables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -X nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -X nixos-vpn-killswitch 2>/dev/null || true
+
+        # Create killswitch chain
+        iptables -w -N nixos-vpn-killswitch
+        ip6tables -w -N nixos-vpn-killswitch
+
+        # IPv4 Rules
+        # Allow loopback
+        iptables -w -A nixos-vpn-killswitch -o lo -j ACCEPT
+
+        # Allow established/related connections
+        iptables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+        ${optionalString config.services.tailscale.enable ''
+        # Allow traffic on Tailscale interface
+        iptables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+        ''}
+
+        # Allow traffic on VPN interface
+        iptables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
+
+        ${optionalString cfg.killSwitch.allowLocalNetwork ''
+        # Allow local network traffic (RFC1918)
+        iptables -w -A nixos-vpn-killswitch -d 192.168.0.0/16 -j ACCEPT
+        iptables -w -A nixos-vpn-killswitch -d 10.0.0.0/8 -j ACCEPT
+        iptables -w -A nixos-vpn-killswitch -d 172.16.0.0/12 -j ACCEPT
+        # Allow link-local
+        iptables -w -A nixos-vpn-killswitch -d 169.254.0.0/16 -j ACCEPT
+        ''}
+
+        # Allow DHCP (for getting initial connection)
+        iptables -w -A nixos-vpn-killswitch -p udp --dport 67:68 -j ACCEPT
+
+        # Drop everything else
+        iptables -w -A nixos-vpn-killswitch -j DROP
+
+        # IPv6 Rules
+        # Allow loopback
+        ip6tables -w -A nixos-vpn-killswitch -o lo -j ACCEPT
+
+        # Allow established/related connections
+        ip6tables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+        ${optionalString config.services.tailscale.enable ''
+        # Allow traffic on Tailscale interface
+        ip6tables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+        ''}
+
+        # Allow traffic on VPN interface
+        ip6tables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
+
+        ${optionalString cfg.killSwitch.allowLocalNetwork ''
+        # Allow local network traffic (ULA and link-local)
+        ip6tables -w -A nixos-vpn-killswitch -d fc00::/7 -j ACCEPT
+        ip6tables -w -A nixos-vpn-killswitch -d fe80::/10 -j ACCEPT
+        ''}
+
+        # Allow DHCPv6
+        ip6tables -w -A nixos-vpn-killswitch -p udp --dport 546:547 -j ACCEPT
+
+        # Allow ICMPv6 (required for IPv6 to function)
+        ip6tables -w -A nixos-vpn-killswitch -p ipv6-icmp -j ACCEPT
+
+        # Drop everything else
+        ip6tables -w -A nixos-vpn-killswitch -j DROP
+
+        # Insert killswitch chain at the beginning of OUTPUT chain
+        iptables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -I OUTPUT 1 -j nixos-vpn-killswitch
+        ip6tables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -I OUTPUT 1 -j nixos-vpn-killswitch
+      '';
+
+      extraStopCommands = ''
+        # Clean up killswitch rules
+        iptables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -X nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -X nixos-vpn-killswitch 2>/dev/null || true
+      '';
+    };
 
     systemd = {
       services = {

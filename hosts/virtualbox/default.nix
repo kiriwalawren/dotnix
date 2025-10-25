@@ -41,7 +41,10 @@
           enable = true;
           domains = ["walawren.com"];
         };
-        vpn.enable = true;
+        vpn = {
+          enable = true;
+          killSwitch.enable = true;
+        };
         tailscale = {
           enable = true;
           mode = "server";
