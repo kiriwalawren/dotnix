@@ -111,16 +111,41 @@ in {
           ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
         }
 
-        # Set all fields
+        # Set all fields (Username/Password are NOT stored in config.xml)
         set_element "ApiKey" "$API_KEY"
         set_element "AuthenticationMethod" "Forms"
         set_element "AuthenticationRequired" "Enabled"
-        set_element "Username" "$AUTH_USER"
-        set_element "Password" "$AUTH_PASS"
         set_element "UrlBase" "/radarr"
 
         # Change ownership back to radarr
         chown ${globals.radarr.user}:${globals.radarr.group} "$configFile"
+
+        # Set username and password in database (using PBKDF2)
+        dbFile="${stateDir}/radarr.db"
+
+        # Generate PBKDF2 hash using Python
+        read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
+import base64
+import hashlib
+import os
+import secrets
+
+password = '''$AUTH_PASS'''
+salt = secrets.token_bytes(16)
+iterations = 10000
+
+# PBKDF2-HMAC-SHA256
+hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations)
+
+print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
+")
+
+        # Insert or replace user in database
+        ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
+          DELETE FROM Users;
+          INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
+          VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
+        "
 
         # Restart radarr to pick up the new config
         systemctl restart radarr.service
