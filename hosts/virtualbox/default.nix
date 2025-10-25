@@ -47,6 +47,8 @@
           mode = "server";
         };
       };
+
+      server.enable = true;
     }
 
     ({
@@ -69,7 +71,10 @@
         wantedBy = ["multi-user.target"];
         after = ["mdmonitor.service"];
         unitConfig = {
-          ConditionPathExists = config.sops.secrets.raid-encryption-key.path;
+          ConditionPathExists = [
+            config.sops.secrets.raid-encryption-key.path
+            "!/dev/mapper/cryptraid"
+          ];
         };
         serviceConfig = {
           Type = "oneshot";
