@@ -67,21 +67,68 @@ if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
   fi
 fi
 
-# Fetch Mullvad relays JSON (cache locally for a short time to avoid rates)
-# systemd CacheDirectory creates /var/cache/mullvad
-# Cache timeout aligns with systemd timer (10 minutes)
+# Fetch Mullvad relays JSON with persistent caching for kill switch security
+# Persistent cache lasts 7 days and is used even when VPN is down
+# API calls only happen when VPN is UP (secure)
 CACHE_DIR="${CACHE_DIRECTORY:-/var/cache/mullvad}"
-CACHE_TIMEOUT_MINS="${CACHE_TIMEOUT_MINS:-10}"
-TMP_JSON="$CACHE_DIR/relays.json"
+PERSISTENT_CACHE="$CACHE_DIR/relays-persistent.json"
+CACHE_TIMEOUT_DAYS="${CACHE_TIMEOUT_DAYS:-7}"
+FALLBACK_RELAYS_FILE="${FALLBACK_RELAYS_FILE:-}" # Path to fallback relays JSON file (set by NixOS)
+
 mkdir -p "$CACHE_DIR"
-if [ -f "$TMP_JSON" ] && [ "$(find "$TMP_JSON" -mmin -"$CACHE_TIMEOUT_MINS" -print)" ]; then
-  RELAYS_JSON="$(cat "$TMP_JSON")"
+
+# Check if persistent cache exists and is recent
+cache_valid=false
+if [ -f "$PERSISTENT_CACHE" ]; then
+  if [ "$(find "$PERSISTENT_CACHE" -mtime -"$CACHE_TIMEOUT_DAYS" -print 2>/dev/null)" ]; then
+    cache_valid=true
+    log "Using persistent cache (age: $((($(date +%s) - $(stat -c %Y "$PERSISTENT_CACHE")) / 86400)) days)"
+  else
+    log "Persistent cache exists but is stale (>$CACHE_TIMEOUT_DAYS days)"
+  fi
+fi
+
+# Determine if we should fetch from API (only if VPN is UP for security)
+should_fetch_api=false
+vpn_is_up=false
+if ip link show dev "$WG_IFACE" >/dev/null 2>&1; then
+  # VPN interface exists, check if it's actually connected
+  if wg show "$WG_IFACE" latest-handshakes | awk '{if ($2 != "0") exit 0; else exit 1}'; then
+    vpn_is_up=true
+  fi
+fi
+
+if $vpn_is_up && (! $cache_valid || $force_reselection); then
+  should_fetch_api=true
+  log "VPN is UP - will fetch fresh relay list from API"
+fi
+
+# Fetch relay data
+if $should_fetch_api; then
+  # VPN is up, safe to fetch from API (goes through tunnel)
+  log "Fetching relay list from Mullvad API through VPN tunnel"
+  if RELAYS_JSON="$(curl -fsS "$MULLVAD_API" 2>/dev/null)"; then
+    echo "$RELAYS_JSON" >"$PERSISTENT_CACHE"
+    log "Updated persistent cache with fresh relay data"
+  else
+    log "WARNING: Failed to fetch from API, will use cache or fallback"
+    if $cache_valid; then
+      RELAYS_JSON="$(cat "$PERSISTENT_CACHE")"
+    fi
+  fi
+elif $cache_valid; then
+  # Use persistent cache
+  RELAYS_JSON="$(cat "$PERSISTENT_CACHE")"
 else
-  RELAYS_JSON="$(curl -fsS "$MULLVAD_API")" || {
-    log "ERROR: failed to fetch Mullvad API"
+  # No cache and VPN is down - use fallback relays
+  log "No cache available and VPN is down - using fallback relays"
+  if [ -n "$FALLBACK_RELAYS_FILE" ] && [ -f "$FALLBACK_RELAYS_FILE" ]; then
+    RELAYS_JSON="$(cat "$FALLBACK_RELAYS_FILE")"
+    log "Loaded $(echo "$RELAYS_JSON" | jq -r 'length') fallback relay(s)"
+  else
+    log "ERROR: No fallback relays configured and no cache available"
     exit 3
-  }
-  echo "$RELAYS_JSON" >"$TMP_JSON"
+  fi
 fi
 
 # Filter relays by REGION_FILTER
@@ -111,9 +158,10 @@ measure_latency() {
   local ip="$1"
   if [ "$MEASURE_METHOD" = "ping" ]; then
     # Use ping; may require root capabilities for raw sockets but usually allowed
-    if ping -c 1 -W "$PING_TIMEOUT" "$ip" >/dev/null 2>&1; then
+    # Capture output once to avoid running ping twice
+    if ping_output=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" 2>&1); then
       # extract RTT
-      rtt=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" | awk -F'/' 'END{print $5}')
+      rtt=$(echo "$ping_output" | awk -F'/' 'END{print $5}')
       echo "${rtt:-999}"
     else
       echo "9999"
@@ -121,7 +169,7 @@ measure_latency() {
   else
     # TCP connect measurement: try connecting to 51820 (WireGuard) with timeout via bash
     start=$(date +%s%3N)
-    (echo >/dev/tcp/"$ip"/51820) >/dev/null 2>&1 && success=0 || success=1
+    timeout "$TCP_TIMEOUT" bash -c "echo >/dev/tcp/$ip/51820" >/dev/null 2>&1 && success=0 || success=1
     stop=$(date +%s%3N)
     if [ "$success" -eq 0 ]; then
       latency=$((stop - start))
@@ -133,9 +181,10 @@ measure_latency() {
 }
 
 # Build candidate list with measured latency
-candidates_tmp="$(mktemp)"
+temp_dir="$(mktemp -d)"
 pids=()
-echo "$RELAYS" | while IFS= read -r line; do
+temp_files=()
+while IFS= read -r line; do
   ip=$(echo "$line" | jq -r '.ipv4_addr_in // .ipv4_addr')
   host=$(echo "$line" | jq -r '.hostname')
   pub=$(echo "$line" | jq -r '.pubkey')
@@ -144,20 +193,28 @@ echo "$RELAYS" | while IFS= read -r line; do
   if [ -z "$ip" ] || [ "$ip" = "null" ]; then
     continue
   fi
-  # Each background job writes to its own temp file to avoid race conditions
+  # Each background job writes to its own unique temp file to avoid race conditions
+  temp_out="$temp_dir/result_$$_${#pids[@]}.txt"
+  temp_files+=("$temp_out")
   (
     latency=$(measure_latency "$ip")
-    temp_out="$(mktemp)"
     printf '%s\t%s\t%s\t%s\t%s\n' "$latency" "$ip" "$pub" "$host" "$city,$country" >"$temp_out"
-    cat "$temp_out" >>"$candidates_tmp"
-    rm -f "$temp_out"
   ) &
   pids+=($!)
-done
+done <<<"$RELAYS"
 # Wait for all measurement jobs to complete
 for pid in "${pids[@]}"; do
   wait "$pid"
 done
+
+# Combine all results into a single file
+candidates_tmp="$(mktemp)"
+for temp_file in "${temp_files[@]}"; do
+  if [ -f "$temp_file" ]; then
+    cat "$temp_file" >>"$candidates_tmp"
+  fi
+done
+rm -rf "$temp_dir"
 
 # sort and pick top N
 mapfile -t sorted < <(sort -n "$candidates_tmp")

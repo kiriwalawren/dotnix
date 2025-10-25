@@ -8,6 +8,18 @@
 with lib; let
   cfg = config.system.vpn;
 
+  # Convert fallback relays to Mullvad API format and write to a file
+  fallbackRelaysFile =
+    pkgs.writeText "mullvad-fallback-relays.json"
+    (builtins.toJSON (map (relay: {
+        inherit (relay) hostname pubkey;
+        country_code = relay.country;
+        ipv4_addr_in = relay.ip;
+        active = true;
+        owned = true;
+      })
+      cfg.killSwitch.fallbackRelays));
+
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
     runtimeInputs = with pkgs; [curl jq wireguard-tools iproute2 coreutils findutils iputils gawk];
@@ -23,12 +35,188 @@ in {
       example = ["194.242.2.4"];
       description = "DNS servers to use with the VPN. Defaults to Mullvad's base DNS (blocks ads, trackers, and malware).";
     };
+
+    killSwitch = {
+      enable = mkEnableOption "VPN kill switch - blocks all non-Tailscale traffic when VPN is down";
+
+      allowLocalNetwork = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether to allow traffic to local network (RFC1918 addresses) when VPN is down";
+      };
+
+      fallbackRelays = mkOption {
+        type = types.listOf (types.submodule {
+          options = {
+            ip = mkOption {
+              type = types.str;
+              description = "IPv4 address of the fallback relay";
+            };
+            pubkey = mkOption {
+              type = types.str;
+              description = "WireGuard public key of the fallback relay";
+            };
+            hostname = mkOption {
+              type = types.str;
+              description = "Hostname of the fallback relay";
+            };
+            country = mkOption {
+              type = types.str;
+              description = "Country code where the relay is located (e.g., 'us', 'ch', 'se')";
+            };
+          };
+        });
+        default = [
+          {
+            ip = "143.244.47.65";
+            pubkey = "IzqkjVCdJYC1AShILfzebchTlKCqVCt/SMEXolaS3Uc=";
+            hostname = "us-nyc-wg-301";
+            country = "us";
+          }
+          {
+            ip = "67.213.209.118";
+            pubkey = "IR4ZTWn7TBujt2nMDoB9xYISoVigWYTRyaG8mHLji1o=";
+            hostname = "us-atl-wg-303";
+            country = "us";
+          }
+        ];
+        description = "Fallback relays used for initial connection and when cache is unavailable";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
-    services.resolved.enable = true;
+    services.resolved = {
+      enable = true;
+      # Configure DNS routing: Tailscale domains bypass VPN DNS
+      domains = mkIf config.services.tailscale.enable [
+        # Route Tailscale control plane and DERP domains through system DNS, not VPN DNS
+        "~tailscale.com"
+        "~tailscale.io"
+      ];
+    };
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
+
+    # VPN Kill Switch: Block all non-Tailscale traffic when VPN is down
+    networking.firewall = mkIf cfg.killSwitch.enable {
+      # Allow forwarding for Tailscale and VPN
+      checkReversePath = "loose";
+
+      extraCommands = ''
+        # Flush any existing rules in the killswitch chain
+        iptables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -X nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -X nixos-vpn-killswitch 2>/dev/null || true
+
+        # Create killswitch chain
+        iptables -w -N nixos-vpn-killswitch
+        ip6tables -w -N nixos-vpn-killswitch
+
+        # IPv4 Rules
+        # Allow loopback
+        iptables -w -A nixos-vpn-killswitch -o lo -j ACCEPT
+
+        # Allow established/related connections
+        iptables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+        ${optionalString config.services.tailscale.enable ''
+          # Allow traffic on Tailscale interface
+          iptables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+        ''}
+
+        # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
+        iptables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
+
+        # Allow WireGuard and ICMP to fallback relays (for bootstrap and emergency)
+        ${concatMapStringsSep "\n" (relay: ''
+            iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p udp --dport 51820 -j ACCEPT
+            iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p icmp -j ACCEPT
+          '')
+          cfg.killSwitch.fallbackRelays}
+
+        # Allow WireGuard and ICMP to cached relay IPs (if cache exists)
+        if [ -f /var/cache/mullvad/relays-persistent.json ]; then
+          ${pkgs.jq}/bin/jq -r '.[].ipv4_addr_in // .[].ipv4_addr // empty' /var/cache/mullvad/relays-persistent.json | while read -r ip; do
+            if [ -n "$ip" ] && [ "$ip" != "null" ]; then
+              iptables -w -A nixos-vpn-killswitch -d "$ip" -p udp --dport 51820 -j ACCEPT
+              iptables -w -A nixos-vpn-killswitch -d "$ip" -p icmp -j ACCEPT
+            fi
+          done
+        fi
+
+        ${optionalString cfg.killSwitch.allowLocalNetwork ''
+          # Allow local network traffic (RFC1918)
+          iptables -w -A nixos-vpn-killswitch -d 192.168.0.0/16 -j ACCEPT
+          iptables -w -A nixos-vpn-killswitch -d 10.0.0.0/8 -j ACCEPT
+          iptables -w -A nixos-vpn-killswitch -d 172.16.0.0/12 -j ACCEPT
+          # Allow link-local
+          iptables -w -A nixos-vpn-killswitch -d 169.254.0.0/16 -j ACCEPT
+        ''}
+
+        # Allow DHCP (for getting initial connection)
+        iptables -w -A nixos-vpn-killswitch -p udp --dport 67:68 -j ACCEPT
+
+        # Drop everything else
+        iptables -w -A nixos-vpn-killswitch -j DROP
+
+        # IPv6 Rules
+        # Allow loopback
+        ip6tables -w -A nixos-vpn-killswitch -o lo -j ACCEPT
+
+        # Allow established/related connections
+        ip6tables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+        ${optionalString config.services.tailscale.enable ''
+          # Allow traffic on Tailscale interface
+          ip6tables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+        ''}
+
+        # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
+        ip6tables -w -A nixos-vpn-killswitch -o vpn0 -j ACCEPT
+
+        # Allow WireGuard to cached relay IPs (if cache exists and has IPv6 addresses)
+        if [ -f /var/cache/mullvad/relays-persistent.json ]; then
+          ${pkgs.jq}/bin/jq -r '.[].ipv6_addr_in // .[].ipv6_addr // empty' /var/cache/mullvad/relays-persistent.json | while read -r ip; do
+            if [ -n "$ip" ] && [ "$ip" != "null" ]; then
+              ip6tables -w -A nixos-vpn-killswitch -d "$ip" -p udp --dport 51820 -j ACCEPT
+            fi
+          done
+        fi
+
+        ${optionalString cfg.killSwitch.allowLocalNetwork ''
+          # Allow local network traffic (ULA and link-local)
+          ip6tables -w -A nixos-vpn-killswitch -d fc00::/7 -j ACCEPT
+          ip6tables -w -A nixos-vpn-killswitch -d fe80::/10 -j ACCEPT
+        ''}
+
+        # Allow DHCPv6
+        ip6tables -w -A nixos-vpn-killswitch -p udp --dport 546:547 -j ACCEPT
+
+        # Allow ICMPv6 (required for IPv6 to function - includes ping6)
+        ip6tables -w -A nixos-vpn-killswitch -p ipv6-icmp -j ACCEPT
+
+        # Drop everything else
+        ip6tables -w -A nixos-vpn-killswitch -j DROP
+
+        # Insert killswitch chain at the beginning of OUTPUT chain
+        iptables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -I OUTPUT 1 -j nixos-vpn-killswitch
+        ip6tables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -I OUTPUT 1 -j nixos-vpn-killswitch
+      '';
+
+      extraStopCommands = ''
+        # Clean up killswitch rules
+        iptables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        iptables -w -X nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -D OUTPUT -j nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -F nixos-vpn-killswitch 2>/dev/null || true
+        ip6tables -w -X nixos-vpn-killswitch 2>/dev/null || true
+      '';
+    };
 
     systemd = {
       services = {
@@ -44,8 +232,8 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
+              "FALLBACK_RELAYS_FILE=${fallbackRelaysFile}"
             ];
-            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
               # Add routing rules to exclude Tailscale traffic from VPN
@@ -100,8 +288,8 @@ in {
               "MEASURE_METHOD=ping"
               "VPN_ADDRESS=${inputs.secrets.mullvad."${config.networking.hostName}".address}"
               "VPN_DNS=${concatStringsSep "," cfg.dns}"
+              "FALLBACK_RELAYS_FILE=${fallbackRelaysFile}"
             ];
-            ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /etc/wireguard";
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             RemainAfterExit = "no"; # runner should exit so timer scheduling is sane
             # no ExecStop so it won't take down wg
