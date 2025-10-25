@@ -182,7 +182,7 @@ measure_latency() {
 # Build candidate list with measured latency
 candidates_tmp="$(mktemp)"
 pids=()
-echo "$RELAYS" | while IFS= read -r line; do
+while IFS= read -r line; do
   ip=$(echo "$line" | jq -r '.ipv4_addr_in // .ipv4_addr')
   host=$(echo "$line" | jq -r '.hostname')
   pub=$(echo "$line" | jq -r '.pubkey')
@@ -200,7 +200,7 @@ echo "$RELAYS" | while IFS= read -r line; do
     rm -f "$temp_out"
   ) &
   pids+=($!)
-done
+done <<< "$RELAYS"
 # Wait for all measurement jobs to complete
 for pid in "${pids[@]}"; do
   wait "$pid"
