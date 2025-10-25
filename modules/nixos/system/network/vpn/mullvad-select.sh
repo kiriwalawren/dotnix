@@ -158,9 +158,10 @@ measure_latency() {
   local ip="$1"
   if [ "$MEASURE_METHOD" = "ping" ]; then
     # Use ping; may require root capabilities for raw sockets but usually allowed
-    if ping -c 1 -W "$PING_TIMEOUT" "$ip" >/dev/null 2>&1; then
+    # Capture output once to avoid running ping twice
+    if ping_output=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" 2>&1); then
       # extract RTT
-      rtt=$(ping -c 1 -W "$PING_TIMEOUT" "$ip" | awk -F'/' 'END{print $5}')
+      rtt=$(echo "$ping_output" | awk -F'/' 'END{print $5}')
       echo "${rtt:-999}"
     else
       echo "9999"
@@ -168,7 +169,7 @@ measure_latency() {
   else
     # TCP connect measurement: try connecting to 51820 (WireGuard) with timeout via bash
     start=$(date +%s%3N)
-    (echo >/dev/tcp/"$ip"/51820) >/dev/null 2>&1 && success=0 || success=1
+    timeout "$TCP_TIMEOUT" bash -c "echo >/dev/tcp/$ip/51820" >/dev/null 2>&1 && success=0 || success=1
     stop=$(date +%s%3N)
     if [ "$success" -eq 0 ]; then
       latency=$((stop - start))
@@ -180,8 +181,9 @@ measure_latency() {
 }
 
 # Build candidate list with measured latency
-candidates_tmp="$(mktemp)"
+temp_dir="$(mktemp -d)"
 pids=()
+temp_files=()
 while IFS= read -r line; do
   ip=$(echo "$line" | jq -r '.ipv4_addr_in // .ipv4_addr')
   host=$(echo "$line" | jq -r '.hostname')
@@ -191,13 +193,12 @@ while IFS= read -r line; do
   if [ -z "$ip" ] || [ "$ip" = "null" ]; then
     continue
   fi
-  # Each background job writes to its own temp file to avoid race conditions
+  # Each background job writes to its own unique temp file to avoid race conditions
+  temp_out="$temp_dir/result_$$_${#pids[@]}.txt"
+  temp_files+=("$temp_out")
   (
     latency=$(measure_latency "$ip")
-    temp_out="$(mktemp)"
     printf '%s\t%s\t%s\t%s\t%s\n' "$latency" "$ip" "$pub" "$host" "$city,$country" >"$temp_out"
-    cat "$temp_out" >>"$candidates_tmp"
-    rm -f "$temp_out"
   ) &
   pids+=($!)
 done <<<"$RELAYS"
@@ -205,6 +206,15 @@ done <<<"$RELAYS"
 for pid in "${pids[@]}"; do
   wait "$pid"
 done
+
+# Combine all results into a single file
+candidates_tmp="$(mktemp)"
+for temp_file in "${temp_files[@]}"; do
+  if [ -f "$temp_file" ]; then
+    cat "$temp_file" >>"$candidates_tmp"
+  fi
+done
+rm -rf "$temp_dir"
 
 # sort and pick top N
 mapfile -t sorted < <(sort -n "$candidates_tmp")
