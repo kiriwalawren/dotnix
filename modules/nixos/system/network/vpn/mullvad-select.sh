@@ -82,7 +82,7 @@ cache_valid=false
 if [ -f "$PERSISTENT_CACHE" ]; then
   if [ "$(find "$PERSISTENT_CACHE" -mtime -"$CACHE_TIMEOUT_DAYS" -print 2>/dev/null)" ]; then
     cache_valid=true
-    log "Using persistent cache (age: $(( ($(date +%s) - $(stat -c %Y "$PERSISTENT_CACHE")) / 86400 )) days)"
+    log "Using persistent cache (age: $((($(date +%s) - $(stat -c %Y "$PERSISTENT_CACHE")) / 86400)) days)"
   else
     log "Persistent cache exists but is stale (>$CACHE_TIMEOUT_DAYS days)"
   fi
@@ -200,7 +200,7 @@ while IFS= read -r line; do
     rm -f "$temp_out"
   ) &
   pids+=($!)
-done <<< "$RELAYS"
+done <<<"$RELAYS"
 # Wait for all measurement jobs to complete
 for pid in "${pids[@]}"; do
   wait "$pid"

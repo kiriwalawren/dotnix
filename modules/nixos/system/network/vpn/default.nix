@@ -9,15 +9,16 @@ with lib; let
   cfg = config.system.vpn;
 
   # Convert fallback relays to Mullvad API format and write to a file
-  fallbackRelaysFile = pkgs.writeText "mullvad-fallback-relays.json"
+  fallbackRelaysFile =
+    pkgs.writeText "mullvad-fallback-relays.json"
     (builtins.toJSON (map (relay: {
-      hostname = relay.hostname;
-      country_code = relay.country;
-      ipv4_addr_in = relay.ip;
-      pubkey = relay.pubkey;
-      active = true;
-      owned = true;
-    }) cfg.killSwitch.fallbackRelays));
+        inherit (relay) hostname pubkey;
+        country_code = relay.country;
+        ipv4_addr_in = relay.ip;
+        active = true;
+        owned = true;
+      })
+      cfg.killSwitch.fallbackRelays));
 
   myScript = pkgs.writeShellApplication {
     name = "mullvad-select";
@@ -113,8 +114,8 @@ in {
         iptables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
         ${optionalString config.services.tailscale.enable ''
-        # Allow traffic on Tailscale interface
-        iptables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+          # Allow traffic on Tailscale interface
+          iptables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
         ''}
 
         # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
@@ -122,9 +123,10 @@ in {
 
         # Allow WireGuard and ICMP to fallback relays (for bootstrap and emergency)
         ${concatMapStringsSep "\n" (relay: ''
-        iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p udp --dport 51820 -j ACCEPT
-        iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p icmp -j ACCEPT
-        '') cfg.killSwitch.fallbackRelays}
+            iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p udp --dport 51820 -j ACCEPT
+            iptables -w -A nixos-vpn-killswitch -d ${relay.ip} -p icmp -j ACCEPT
+          '')
+          cfg.killSwitch.fallbackRelays}
 
         # Allow WireGuard and ICMP to cached relay IPs (if cache exists)
         if [ -f /var/cache/mullvad/relays-persistent.json ]; then
@@ -137,12 +139,12 @@ in {
         fi
 
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
-        # Allow local network traffic (RFC1918)
-        iptables -w -A nixos-vpn-killswitch -d 192.168.0.0/16 -j ACCEPT
-        iptables -w -A nixos-vpn-killswitch -d 10.0.0.0/8 -j ACCEPT
-        iptables -w -A nixos-vpn-killswitch -d 172.16.0.0/12 -j ACCEPT
-        # Allow link-local
-        iptables -w -A nixos-vpn-killswitch -d 169.254.0.0/16 -j ACCEPT
+          # Allow local network traffic (RFC1918)
+          iptables -w -A nixos-vpn-killswitch -d 192.168.0.0/16 -j ACCEPT
+          iptables -w -A nixos-vpn-killswitch -d 10.0.0.0/8 -j ACCEPT
+          iptables -w -A nixos-vpn-killswitch -d 172.16.0.0/12 -j ACCEPT
+          # Allow link-local
+          iptables -w -A nixos-vpn-killswitch -d 169.254.0.0/16 -j ACCEPT
         ''}
 
         # Allow DHCP (for getting initial connection)
@@ -159,8 +161,8 @@ in {
         ip6tables -w -A nixos-vpn-killswitch -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
         ${optionalString config.services.tailscale.enable ''
-        # Allow traffic on Tailscale interface
-        ip6tables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
+          # Allow traffic on Tailscale interface
+          ip6tables -w -A nixos-vpn-killswitch -o tailscale0 -j ACCEPT
         ''}
 
         # Allow traffic on VPN interface (once tunnel is up, all traffic goes through here)
@@ -176,9 +178,9 @@ in {
         fi
 
         ${optionalString cfg.killSwitch.allowLocalNetwork ''
-        # Allow local network traffic (ULA and link-local)
-        ip6tables -w -A nixos-vpn-killswitch -d fc00::/7 -j ACCEPT
-        ip6tables -w -A nixos-vpn-killswitch -d fe80::/10 -j ACCEPT
+          # Allow local network traffic (ULA and link-local)
+          ip6tables -w -A nixos-vpn-killswitch -d fc00::/7 -j ACCEPT
+          ip6tables -w -A nixos-vpn-killswitch -d fe80::/10 -j ACCEPT
         ''}
 
         # Allow DHCPv6
