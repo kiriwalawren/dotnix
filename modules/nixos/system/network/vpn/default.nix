@@ -9,31 +9,44 @@ with lib; let
   cfg = config.system.vpn;
 
   # Fake sudo for wg-quick (we already have CAP_NET_ADMIN capabilities)
-  # Strip sudo-specific flags and execute the command directly
+  # Just ignore sudo flags and execute the command
   fakeSudo = pkgs.writeShellScriptBin "sudo" ''
-    # Skip sudo flags and just execute the actual command
-    while [[ $# -gt 0 ]]; do
-      case "$1" in
-        -p|-n|-E|-H|-S|-b|-u|-g|-P|-C|-T)
-          # Flags that take an argument
-          shift 2
+    # Simple approach: filter out common sudo flags, keep everything else
+    args=()
+    skip_next=false
+    found_end_of_opts=false
+
+    for arg in "$@"; do
+      if $found_end_of_opts; then
+        # After --, keep everything
+        args+=("$arg")
+        continue
+      fi
+
+      if $skip_next; then
+        skip_next=false
+        continue
+      fi
+
+      case "$arg" in
+        -p|-u|-g|-C|-T|-r|-t)
+          # These flags take an argument, skip both
+          skip_next=true
+          ;;
+        -n|-E|-H|-S|-b|-i|-s|-k|-K|-V|-h|-l|-v)
+          # These flags don't take arguments, just skip them
           ;;
         --)
-          # End of options
-          shift
-          break
-          ;;
-        -*)
-          # Other flags without arguments
-          shift
+          # End of options marker, keep everything after this
+          found_end_of_opts=true
           ;;
         *)
-          # Found the actual command
-          break
+          # Not a flag, keep it
+          args+=("$arg")
           ;;
       esac
     done
-    exec "$@"
+    exec "''${args[@]}"
   '';
 
   myScript = pkgs.writeShellApplication {
