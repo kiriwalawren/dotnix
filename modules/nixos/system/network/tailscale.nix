@@ -47,7 +47,7 @@ in {
       extraUpFlags =
         (optionals (cfg.mode == "server") ["--advertise-exit-node"])
         ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"])
-        ++ (optionals config.services.mullvad-vpn.enable ["--accept-routes=false"]);
+        ++ ["--accept-routes=false"];
     };
 
     # Mullvad VPN integration - ensure Tailscale is excluded from VPN tunnel
