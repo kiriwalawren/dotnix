@@ -87,7 +87,7 @@ in {
 
             if [ -n "$TAILSCALE_PID" ] && [ "$TAILSCALE_PID" != "0" ]; then
               echo "Adding Tailscale (PID: $TAILSCALE_PID) to Mullvad split-tunnel"
-              ${mullvadPkg}/bin/mullvad split-tunnel pid add "$TAILSCALE_PID" || true
+              ${mullvadPkg}/bin/mullvad split-tunnel add "$TAILSCALE_PID" || true
               # Store PID for cleanup
               echo "$TAILSCALE_PID" > /run/mullvad-split-tunnel-tailscale.pid
             else
@@ -100,7 +100,7 @@ in {
               OLD_PID=$(cat /run/mullvad-split-tunnel-tailscale.pid)
               if [ -n "$OLD_PID" ]; then
                 echo "Removing old Tailscale PID ($OLD_PID) from Mullvad split-tunnel"
-                ${mullvadPkg}/bin/mullvad split-tunnel pid delete "$OLD_PID" || true
+                ${mullvadPkg}/bin/mullvad split-tunnel delete "$OLD_PID" || true
               fi
               rm -f /run/mullvad-split-tunnel-tailscale.pid
             fi
