@@ -19,11 +19,12 @@ in {
     };
 
     location = mkOption {
-      type = types.str;
-      default = "us nyc";
-      example = "se got";
+      type = types.listOf types.str;
+      default = ["us" "nyc"];
+      example = ["se" "got"];
       description = ''
-        Mullvad server location. Format: "country city" (e.g., "us nyc", "se got").
+        Mullvad server location as a list of arguments.
+        Format: [country city] or [country] (e.g., ["us" "nyc"], ["se" "got"], ["us"]).
         Use "mullvad relay list" to see available locations.
       '';
     };
@@ -111,7 +112,7 @@ in {
           ''}
 
           # Configure relay location
-          ${mullvadPkg}/bin/mullvad relay set location ${cfg.location}
+          ${mullvadPkg}/bin/mullvad relay set location ${escapeShellArgs cfg.location}
 
           # Auto-connect if enabled
           ${optionalString cfg.autoConnect ''
