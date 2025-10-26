@@ -73,7 +73,7 @@ in {
     systemd.services.mullvad-config = {
       description = "Configure Mullvad VPN settings";
       wantedBy = ["multi-user.target"];
-      wants = ["mullvad-daemon.service"];
+      wants = ["mullvad-daemon.service" "network-online.target"];
       after = ["mullvad-daemon.service" "network-online.target"];
       serviceConfig = {
         Type = "oneshot";
