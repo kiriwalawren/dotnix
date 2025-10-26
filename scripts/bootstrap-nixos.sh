@@ -155,8 +155,8 @@ if no_or_yes "Capture hardware-configuration.nix before install?"; then
   blue "[1/5] Capturing hardware-configuration.nix (pre‑install)"
   if "${ssh_root_cmd[@]}" command -v nixos-generate-config >/dev/null 2>&1; then
     "${ssh_root_cmd[@]}" "nixos-generate-config --no-filesystems --root /mnt || nixos-generate-config --no-filesystems --root /"
-    "${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/hosts/hardware/$target_hostname.nix" 2>/dev/null ||
-      "${scp_cmd[@]}" root@"$target_destination":/etc/nixos/hardware-configuration.nix "$git_root/hosts/hardware/$target_hostname.nix" 2>/dev/null ||
+    "${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/hosts/$target_hostname/hardware-configuration.nix" 2>/dev/null ||
+      "${scp_cmd[@]}" root@"$target_destination":/etc/nixos/hardware-configuration.nix "$git_root/hosts/$target_hostname/hardware-configuration.nix" 2>/dev/null ||
       yellow "Unable to fetch hardware-configuration.nix; continuing"
   else
     yellow "nixos-generate-config not available on target; skipping capture"
