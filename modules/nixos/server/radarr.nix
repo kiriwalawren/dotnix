@@ -159,12 +159,19 @@ in {
         print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
         ")
 
-        # Insert or replace user in database
-        ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
-          DELETE FROM Users;
-          INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
-          VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
-        "
+        # Retry database write until it succeeds (database might be locked during initialization)
+        for i in {1..60}; do
+          if ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
+            DELETE FROM Users;
+            INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
+            VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
+          " 2>/dev/null; then
+            echo "Successfully inserted user credentials"
+            break
+          fi
+          echo "Database locked, retrying... ($i/60)"
+          sleep 1
+        done
 
         # Restart radarr to pick up the new config
         systemctl restart radarr.service
