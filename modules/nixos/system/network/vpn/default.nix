@@ -86,15 +86,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.resolved = {
-      enable = true;
-      # Configure DNS routing: Tailscale domains bypass VPN DNS
-      domains = mkIf config.services.tailscale.enable [
-        # Route Tailscale control plane and DERP domains through system DNS, not VPN DNS
-        "~tailscale.com"
-        "~tailscale.io"
-      ];
-    };
+    services.resolved.enable = true;
     environment.systemPackages = with pkgs; [wireguard-tools];
     sops.secrets."mullvad-private-keys/${config.networking.hostName}" = {};
 
@@ -236,6 +228,11 @@ in {
             ];
             ExecStart = "${pkgs.util-linux}/bin/flock -n /run/lock/mullvad-select.lock ${myScript}/bin/mullvad-select";
             ExecStartPost = mkIf config.services.tailscale.enable (pkgs.writeShellScript "add-tailscale-routes" ''
+              # Fix DNS routing: Remove vpn0's ~. domain to prevent it from capturing all DNS
+              # This allows Tailscale to use global fallback DNS for control plane resolution
+              ${pkgs.systemd}/bin/resolvectl domain vpn0 ""
+              ${pkgs.systemd}/bin/resolvectl flush-caches
+
               # Add routing rules to exclude Tailscale traffic from VPN
               # See: https://tailscale.com/kb/1082/firewall-ports
 
