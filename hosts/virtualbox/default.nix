@@ -38,7 +38,7 @@
         cachix-agent.enable = true;
         openssh.enable = true;
         vpn = {
-          enable = true;
+          enable = false;
           killSwitch.enable = true;
         };
         tailscale = {
