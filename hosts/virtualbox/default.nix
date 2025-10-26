@@ -42,7 +42,7 @@
           killSwitch.enable = false;
         };
         tailscale = {
-          enable = true;
+          enable = false;
           mode = "server";
         };
       };

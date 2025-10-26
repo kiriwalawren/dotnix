@@ -10,6 +10,7 @@ with lib; let
   cfg = config.server.radarr;
   port = 7878;
   stateDir = "${server.stateDir}/radarr";
+  mediaDir = "${server.mediaDir}/movies";
 in {
   options.server.radarr = {
     enable = mkOption {
@@ -42,10 +43,9 @@ in {
     };
 
     systemd.tmpfiles.rules = [
-      "d '${server.stateDir}'                0755 root root - -"
-      "d '${stateDir}'                       0755 ${globals.radarr.user} ${globals.radarr.group} - -"
-      "d '${server.mediaDir}/library'        0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
-      "d '${server.mediaDir}/library/movies' 0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
+      "d '${server.stateDir}'        0755 root root - -"
+      "d '${stateDir}'               0755 ${globals.radarr.user} ${globals.radarr.group} - -"
+      "d '${mediaDir}'               0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
     ];
 
     users = {
@@ -70,6 +70,21 @@ in {
       after = ["unlock-raid.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
       requires = ["unlock-raid.service"];
       wants = optional config.system.vpn.enable "mullvad-config.service";
+
+      # Create state directories after /data is mounted (tmpfiles runs too early)
+      preStart = ''
+        ${pkgs.coreutils}/bin/mkdir -p ${server.stateDir}
+        ${pkgs.coreutils}/bin/chown root:root ${server.stateDir}
+        ${pkgs.coreutils}/bin/chmod 0755 ${server.stateDir}
+
+        ${pkgs.coreutils}/bin/mkdir -p ${stateDir}
+        ${pkgs.coreutils}/bin/chown ${globals.radarr.user}:${globals.radarr.group} ${stateDir}
+        ${pkgs.coreutils}/bin/chmod 0755 ${stateDir}
+
+        ${pkgs.coreutils}/bin/mkdir -p ${mediaDir}
+        ${pkgs.coreutils}/bin/chown ${globals.libraryOwner.user}:${globals.libraryOwner.group} ${mediaDir}
+        ${pkgs.coreutils}/bin/chmod 0775 ${mediaDir}
+      '';
     };
 
     # Inject secrets into Radarr config
