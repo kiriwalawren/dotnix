@@ -54,8 +54,8 @@ in {
     systemd.services = mkIf config.services.mullvad-vpn.enable {
       # Ensure Mullvad waits for Tailscale to start before configuring and connecting
       mullvad-config = {
-        wants = ["tailscaled.service"];
-        after = ["tailscaled.service"];
+        wants = ["tailscaled.service" "tailscaled-autoconnect.service"];
+        after = ["tailscaled.service" "tailscaled-autoconnect.service"];
       };
 
       # Ensure tailscaled upholds the split-tunnel service
