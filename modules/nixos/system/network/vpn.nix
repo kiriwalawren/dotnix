@@ -60,7 +60,7 @@ in {
     services.resolved.enable = true;
 
     # Configure SOPS secret for Mullvad account number
-    sops.secrets."mullvad/account-number" = {};
+    sops.secrets.mullvad-account-number = {};
 
     # Enable Mullvad VPN service
     services.mullvad-vpn = {
@@ -90,7 +90,7 @@ in {
           # Authenticate with Mullvad account
           if ! ${mullvadPkg}/bin/mullvad account get &>/dev/null; then
             echo "Logging in to Mullvad account..."
-            ACCOUNT_NUMBER=$(cat ${config.sops.secrets."mullvad/account-number".path})
+            ACCOUNT_NUMBER=$(cat ${config.sops.secrets.mullvad-account-number.path})
             ${mullvadPkg}/bin/mullvad account login "$ACCOUNT_NUMBER"
           fi
 
