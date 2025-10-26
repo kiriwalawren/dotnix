@@ -124,6 +124,20 @@ in {
         # Set username and password in database (using PBKDF2)
         dbFile="${stateDir}/radarr.db"
 
+        # Wait for database and Users table to be created (up to 30 seconds)
+        for i in {1..30}; do
+          if [ -f "$dbFile" ] && ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
+            break
+          fi
+          echo "Waiting for Radarr to create Users table... ($i/30)"
+          sleep 1
+        done
+
+        if ! ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
+          echo "Users table was not created, exiting"
+          exit 1
+        fi
+
         # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
         read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
         import base64
