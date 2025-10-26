@@ -64,6 +64,14 @@ in {
       dataDir = stateDir;
     };
 
+    # Ensure radarr starts after the encrypted RAID is unlocked and mounted
+    # Also wait for VPN if it's enabled
+    systemd.services.radarr = {
+      after = ["unlock-raid.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
+      requires = ["unlock-raid.service"];
+      wants = optional config.system.vpn.enable "mullvad-config.service";
+    };
+
     # Inject secrets into Radarr config
     systemd.services.radarr-secrets = {
       description = "Inject secrets into Radarr configuration";
