@@ -37,6 +37,7 @@ in {
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
     services = {
+      # resolved prevent DNS fighting between tailscale and NetworkManager
       resolved.enable = true;
       tailscale = {
         enable = true;

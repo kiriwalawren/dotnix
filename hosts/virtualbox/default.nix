@@ -38,11 +38,11 @@
         cachix-agent.enable = true;
         openssh.enable = true;
         vpn = {
-          enable = false;
+          enable = true;
           killSwitch.enable = false;
         };
         tailscale = {
-          enable = false;
+          enable = true;
           mode = "server";
         };
       };

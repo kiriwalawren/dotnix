@@ -31,11 +31,11 @@ in {
 
     dns = mkOption {
       type = types.listOf types.str;
-      default = ["194.242.2.4"];
+      default = ["94.140.14.14" "94.140.15.15"];
       example = ["194.242.2.4" "194.242.2.3"];
       description = ''
         DNS servers to use with the VPN.
-        Defaults to Mullvad's base DNS (blocks ads, trackers, and malware).
+        Defaults to AdGuard DNS (blocks ads, trackers, and malware).
       '';
     };
 
@@ -89,7 +89,7 @@ in {
           done
 
           # Authenticate with Mullvad account
-          if ! ${mullvadPkg}/bin/mullvad account get &>/dev/null; then
+          if ${mullvadPkg}/bin/mullvad account get | grep -q "Not logged in"; then
             echo "Logging in to Mullvad account..."
             ACCOUNT_NUMBER=$(cat ${config.sops.secrets.mullvad-account-number.path})
             ${mullvadPkg}/bin/mullvad account login "$ACCOUNT_NUMBER"
