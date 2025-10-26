@@ -36,18 +36,21 @@ in {
     sops.secrets.tailscale-auth-key = {};
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.sops.secrets.tailscale-auth-key.path;
-      openFirewall = true;
-      useRoutingFeatures =
-        if cfg.mode == "server"
-        then "both"
-        else "client";
-      extraUpFlags =
-        (optionals (cfg.mode == "server") ["--advertise-exit-node"])
-        ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"])
-        ++ ["--accept-routes=false"];
+    services = {
+      resolved.enable = true;
+      tailscale = {
+        enable = true;
+        authKeyFile = config.sops.secrets.tailscale-auth-key.path;
+        openFirewall = true;
+        useRoutingFeatures =
+          if cfg.mode == "server"
+          then "both"
+          else "client";
+        extraUpFlags =
+          (optionals (cfg.mode == "server") ["--advertise-exit-node"])
+          ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"])
+          ++ ["--accept-routes=false"];
+      };
     };
 
     # Mullvad VPN integration - ensure Tailscale is excluded from VPN tunnel
