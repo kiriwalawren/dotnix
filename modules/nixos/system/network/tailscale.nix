@@ -62,13 +62,18 @@ in {
         after = ["tailscaled.service" "tailscaled-autoconnect.service"];
       };
 
+      mullvad-daemon = {
+        wants = ["tailscaled.service" "tailscaled-autoconnect.service"];
+        after = ["tailscaled.service" "tailscaled-autoconnect.service"];
+      };
+
       # Ensure tailscaled upholds the split-tunnel service
       tailscaled.upholds = ["mullvad-split-tunnel-tailscale.service"];
 
       # Configure split-tunnel for Tailscale
       mullvad-split-tunnel-tailscale = {
         description = "Add Tailscale to Mullvad split-tunnel";
-        after = ["tailscaled.service" "mullvad-config.service"];
+        after = ["tailscaled.service" "mullvad-config.service" "mullvad-daemon.service"];
         bindsTo = ["tailscaled.service"]; # Stop when tailscaled stops
         serviceConfig = {
           Type = "oneshot";
