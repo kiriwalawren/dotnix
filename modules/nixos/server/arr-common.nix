@@ -264,7 +264,7 @@ with lib; {
       # Wait for API to be available (up to 60 seconds)
       echo "Waiting for ${capitalizedName} API to be available..."
       for i in {1..60}; do
-        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/api/v3/system/status" >/dev/null 2>&1; then
+        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/api/v3/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
           echo "${capitalizedName} API is available"
           break
         fi
