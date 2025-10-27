@@ -194,6 +194,47 @@ in {
 
         # Restart sonarr to pick up the new config
         systemctl restart sonarr.service
+
+        # Wait for Sonarr to be fully ready after restart
+        echo "Waiting for Sonarr to be ready..."
+        for i in {1..30}; do
+          if ${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/system/status >/dev/null 2>&1; then
+            echo "Sonarr is ready"
+            break
+          fi
+          echo "Waiting for Sonarr API... ($i/30)"
+          sleep 2
+        done
+
+        # Create root folders if they don't exist
+        echo "Checking for root folders..."
+        ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder)
+
+        # Create TV root folder
+        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${tvDir}")' >/dev/null 2>&1; then
+          echo "Creating root folder: ${tvDir}"
+          ${pkgs.curl}/bin/curl -s -X POST \
+            -H "X-Api-Key: $API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"path":"${tvDir}"}' \
+            http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder
+          echo "TV root folder created"
+        else
+          echo "TV root folder already exists"
+        fi
+
+        # Create anime root folder
+        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${animeDir}")' >/dev/null 2>&1; then
+          echo "Creating root folder: ${animeDir}"
+          ${pkgs.curl}/bin/curl -s -X POST \
+            -H "X-Api-Key: $API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"path":"${animeDir}"}' \
+            http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder
+          echo "Anime root folder created"
+        else
+          echo "Anime root folder already exists"
+        fi
       '';
     };
 
