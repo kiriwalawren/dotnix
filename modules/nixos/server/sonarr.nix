@@ -71,11 +71,6 @@ in {
         owner = globals.sonarr.user;
         mode = "0440";
       };
-      "sonarr/api_key_env" = {
-        inherit (globals.sonarr) group;
-        owner = globals.sonarr.user;
-        mode = "0440";
-      };
       "sonarr/auth/username" = {
         inherit (globals.sonarr) group;
         owner = globals.sonarr.user;
@@ -101,7 +96,7 @@ in {
       inherit (cfg) enable;
       inherit (globals.sonarr) user group;
       dataDir = stateDir;
-      environmentFiles = [config.sops.secrets."sonarr/api_key_env".path];
+      environmentFiles = ["/run/sonarr/env"];
     };
 
     # Ensure sonarr starts after directories are created and VPN is up (if enabled)
@@ -109,6 +104,14 @@ in {
       after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
       requires = ["server-setup-dirs.service"];
       wants = optional config.system.vpn.enable "mullvad-config.service";
+
+      # Create environment file with correct format before service starts
+      preStart = ''
+        mkdir -p /run/sonarr
+        echo "SONARR__AUTH__APIKEY=$(cat ${config.sops.secrets."sonarr/api_key".path})" > /run/sonarr/env
+        chown ${globals.sonarr.user}:${globals.sonarr.group} /run/sonarr/env
+        chmod 0400 /run/sonarr/env
+      '';
     };
 
     # Configure Sonarr via API

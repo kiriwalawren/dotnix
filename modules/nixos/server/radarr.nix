@@ -65,11 +65,6 @@ in {
         owner = globals.radarr.user;
         mode = "0440";
       };
-      "radarr/api_key_env" = {
-        inherit (globals.radarr) group;
-        owner = globals.radarr.user;
-        mode = "0440";
-      };
       "radarr/auth/username" = {
         inherit (globals.radarr) group;
         owner = globals.radarr.user;
@@ -96,7 +91,7 @@ in {
       inherit (globals.radarr) user group;
       settings.server.port = port;
       dataDir = stateDir;
-      environmentFiles = [config.sops.secrets."radarr/api_key_env".path];
+      environmentFiles = ["/run/radarr/env"];
     };
 
     # Ensure radarr starts after directories are created and VPN is up (if enabled)
@@ -104,6 +99,14 @@ in {
       after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
       requires = ["server-setup-dirs.service"];
       wants = optional config.system.vpn.enable "mullvad-config.service";
+
+      # Create environment file with correct format before service starts
+      preStart = ''
+        mkdir -p /run/radarr
+        echo "RADARR__AUTH__APIKEY=$(cat ${config.sops.secrets."radarr/api_key".path})" > /run/radarr/env
+        chown ${globals.radarr.user}:${globals.radarr.group} /run/radarr/env
+        chmod 0400 /run/radarr/env
+      '';
     };
 
     # Configure Radarr via API
