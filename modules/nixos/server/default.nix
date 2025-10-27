@@ -133,6 +133,25 @@ in {
       '';
     };
 
+    services.nginx = {
+      enable = true;
+
+      recommendedTlsSettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+
+      virtualHosts.localhost = {
+        serverName = "localhost";
+        default = true;
+        listen = [
+          {
+            addr = "0.0.0.0";
+            port = 80;
+          }
+        ];
+      };
+    };
+
     server.radarr.enable = true;
     server.sonarr.enable = true;
   };

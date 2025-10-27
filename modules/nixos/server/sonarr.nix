@@ -197,35 +197,15 @@ in {
       '';
     };
 
-    services.nginx = {
-      enable = true;
-
-      recommendedTlsSettings = true;
-      recommendedOptimisation = true;
-      recommendedGzipSettings = true;
-
-      virtualHosts."localhost" = {
-        listen = [
-          {
-            addr = "0.0.0.0";
-            port = 80;
-          }
-        ];
-
-        serverName = "localhost";
-        default = true;
-
-        locations."/sonarr" = {
-          proxyPass = "http://127.0.0.1:${builtins.toString port}";
-          recommendedProxySettings = true;
-          extraConfig = ''
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Server $host;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_redirect off;
-          '';
-        };
-      };
+    services.nginx.virtualHosts.localhost.locations."/sonarr" = {
+      proxyPass = "http://127.0.0.1:${builtins.toString port}";
+      recommendedProxySettings = true;
+      extraConfig = ''
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+      '';
     };
   };
 }
