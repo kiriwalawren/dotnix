@@ -89,8 +89,17 @@ in {
     services.radarr = {
       inherit (cfg) enable;
       inherit (globals.radarr) user group;
-      settings.server.port = port;
       dataDir = stateDir;
+      settings = {
+        auth = {
+          authenticationrequired = "Enabled";
+          authenticationmethod = "Forms";
+        };
+        server = {
+          inherit (cfg.config) urlBase;
+          port = port;
+        };
+      };
     };
 
     # Create environment file setup service

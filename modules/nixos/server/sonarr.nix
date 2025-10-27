@@ -96,6 +96,16 @@ in {
       inherit (cfg) enable;
       inherit (globals.sonarr) user group;
       dataDir = stateDir;
+      settings = {
+        auth = {
+          authenticationrequired = "Enabled";
+          authenticationmethod = "Forms";
+        };
+        server = {
+          inherit (cfg.config) urlBase;
+          port = port;
+        };
+      };
     };
 
     # Create environment file setup service
