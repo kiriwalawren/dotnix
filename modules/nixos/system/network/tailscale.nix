@@ -33,32 +33,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [nftables];
-    networking.nftables.enable = true;
-    networking.nftables.extraConfig = ''
-      table inet tailscale_mullvad {
-        chain mangle_output {
-          type route hook output priority -150; policy accept;
-
-          # Mark all packets destined for Tailscale subnet
-          ip daddr 100.64.0.0/10 meta mark set 0x40000
-        }
-
-        chain allow_tunnels {
-          type filter hook output priority 0; policy accept;
-
-          # Allow packets to Tailscale or Mullvad interfaces
-          oifname "tailscale0" accept
-          oifname "wg-mullvad" accept
-          oifname "lo" accept
-
-          # Drop everything else if killswitch is active
-          # Uncomment once you’re ready for killswitch testing:
-          # drop
-        }
-      }
-    '';
-
     sops.secrets.tailscale-auth-key = {};
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
@@ -81,53 +55,41 @@ in {
     };
 
     # Mullvad VPN integration - ensure Tailscale is excluded from VPN tunnel
-    systemd.services = mkIf config.services.mullvad-vpn.enable {
-      tailscaled = {
-        upholds = ["mullvad-split-tunnel-tailscale.service"];
-        wants = ["mullvad-daemon.service" "mullvad-config.service"];
-        after = ["mullvad-daemon.service" "mullvad-config.service"];
-      };
+    networking.nftables = mkIf config.services.mullvad-vpn.enable {
+      enable = true;
 
-      # Configure split-tunnel for Tailscale
-      mullvad-split-tunnel-tailscale = {
-        description = "Add Tailscale to Mullvad split-tunnel";
-        after = ["tailscaled.service"];
-        bindsTo = ["tailscaled.service"]; # Stop when tailscaled stops
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = pkgs.writeShellScript "mullvad-split-tunnel-tailscale-start" ''
-            # Wait for tailscaled to be fully running
-            for i in {1..30}; do
-              if ${pkgs.systemd}/bin/systemctl is-active tailscaled.service &>/dev/null; then
-                break
-              fi
-              sleep 1
-            done
+      nftables.tables = {
+        tailscale_mullvad = {
+          type = "inet";
 
-            # Get tailscaled PID
-            TAILSCALE_PID=$(${pkgs.systemd}/bin/systemctl show -p MainPID --value tailscaled.service)
+          chains = {
+            mangle_output = {
+              type = "route";
+              hook = "output";
+              priority = -150;
+              policy = "accept";
+              rules = ''
+                # Mark all packets destined for Tailscale subnet
+                ip daddr 100.64.0.0/10 meta mark set 0x40000
+              '';
+            };
 
-            if [ -n "$TAILSCALE_PID" ] && [ "$TAILSCALE_PID" != "0" ]; then
-              echo "Adding Tailscale (PID: $TAILSCALE_PID) to Mullvad split-tunnel"
-              ${mullvadPkg}/bin/mullvad split-tunnel add "$TAILSCALE_PID" || true
-              # Store PID for cleanup
-              echo "$TAILSCALE_PID" > /run/mullvad-split-tunnel-tailscale.pid
-            else
-              echo "Warning: Could not determine Tailscale PID"
-            fi
-          '';
-          ExecStop = pkgs.writeShellScript "mullvad-split-tunnel-tailscale-stop" ''
-            # Remove old PID from split-tunnel
-            if [ -f /run/mullvad-split-tunnel-tailscale.pid ]; then
-              OLD_PID=$(cat /run/mullvad-split-tunnel-tailscale.pid)
-              if [ -n "$OLD_PID" ]; then
-                echo "Removing old Tailscale PID ($OLD_PID) from Mullvad split-tunnel"
-                ${mullvadPkg}/bin/mullvad split-tunnel delete "$OLD_PID" || true
-              fi
-              rm -f /run/mullvad-split-tunnel-tailscale.pid
-            fi
-          '';
+            allow_tunnels = {
+              type = "filter";
+              hook = "output";
+              priority = 0;
+              policy = "accept";
+              rules = ''
+                # Allow packets to Tailscale or Mullvad interfaces
+                oifname "tailscale0" accept
+                oifname "wg-mullvad" accept
+                oifname "lo" accept
+
+                # Drop everything else if killswitch is active
+                # drop
+              '';
+            };
+          };
         };
       };
     };
