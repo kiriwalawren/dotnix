@@ -95,7 +95,7 @@ in {
           }
           // optionalAttrs config.services.postgresql.enable {
             postgres = {
-              host = "";
+              host = "localhost";
               port = 5432;
               user = "radarr";
               mainDb = "radarr";
