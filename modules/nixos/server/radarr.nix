@@ -27,12 +27,12 @@ in {
     # Register directories to be created
     server.dirRegistrations = [
       {
-        inherit (globals.radar) group;
+        inherit (globals.radarr) group;
         dir = stateDir;
         owner = globals.radarr.user;
       }
       {
-        inherit (globals.radar) group;
+        inherit (globals.radarr) group;
         dir = mediaDir;
         owner = globals.libraryOwner.user;
       }
