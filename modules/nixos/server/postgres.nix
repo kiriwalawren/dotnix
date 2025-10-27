@@ -6,10 +6,11 @@
 }:
 with lib; let
   inherit (config) server;
-  cfg = config.server.postgresql;
+  inherit (server) globals;
+  cfg = config.server.postgres;
   stateDir = "${server.stateDir}/postgres";
 in {
-  options.server.postgresql = {
+  options.server.postgres = {
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -21,6 +22,15 @@ in {
   };
 
   config = mkIf (server.enable && cfg.enable) {
+    # Register directories to be created
+    server.dirRegistrations = [
+      {
+        inherit (globals.postgres) group;
+        dir = stateDir;
+        owner = globals.postgres.user;
+      }
+    ];
+
     services.postgresql = {
       enable = true;
       package = pkgs.postgresql_16;

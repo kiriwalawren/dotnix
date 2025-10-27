@@ -10,7 +10,7 @@ with lib; let
 in {
   imports = [
     ./globals.nix
-    ./postgresql.nix
+    ./postgres.nix
     ./radarr.nix
     ./sonarr.nix
   ];
@@ -156,7 +156,7 @@ in {
     server = {
       radarr.enable = true;
       sonarr.enable = true;
-      postgresql.enable = true;
+      postgres.enable = true;
     };
   };
 }

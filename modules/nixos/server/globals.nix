@@ -59,6 +59,10 @@ in {
       inherit (globals.libraryOwner) group;
       user = "lidarr";
     };
+    postgres = {
+      user = "postgres";
+      group = "postgres";
+    };
     prowlarr = {
       user = "prowlarr";
       group = "prowlarr";
