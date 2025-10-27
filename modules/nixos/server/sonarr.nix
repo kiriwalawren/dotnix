@@ -34,20 +34,17 @@ in {
   };
 
   config = mkIf (server.enable && cfg.enable) {
-    # Set default values for sonarr-specific settings
-    server.sonarr.config = mkMerge [
-      {
-        port = mkDefault port;
-        branch = mkDefault "main";
-        instanceName = mkDefault "Sonarr";
-        urlBase = mkDefault "/sonarr";
-        rootFolders = mkDefault [tvDir animeDir];
-        apiKeySecret = mkDefault config.sops.secrets."sonarr/api_key".path;
-        usernameSecret = mkDefault config.sops.secrets."sonarr/auth/username".path;
-        passwordSecret = mkDefault config.sops.secrets."sonarr/auth/password".path;
-      }
-      cfg.config
-    ];
+    # Set defaults for sonarr-specific settings
+    server.sonarr.config = {
+      port = mkDefault port;
+      branch = mkDefault "main";
+      instanceName = mkDefault "Sonarr";
+      urlBase = mkDefault "/sonarr";
+      rootFolders = mkDefault [tvDir animeDir];
+      apiKeySecret = mkDefault config.sops.secrets."sonarr/api_key".path;
+      usernameSecret = mkDefault config.sops.secrets."sonarr/auth/username".path;
+      passwordSecret = mkDefault config.sops.secrets."sonarr/auth/password".path;
+    };
 
     # Register directories to be created
     server.dirRegistrations = [
@@ -115,9 +112,9 @@ in {
     };
 
     # Configure Sonarr via API
-    systemd.services.sonarr-config = arrCommon.mkArrConfigService "sonarr" config.server.sonarr.config;
+    systemd.services.sonarr-config = arrCommon.mkArrConfigService "sonarr" cfg.config;
 
-    services.nginx.virtualHosts.localhost.locations."/sonarr" = {
+    services.nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
       proxyPass = "http://127.0.0.1:${builtins.toString port}";
       recommendedProxySettings = true;
       extraConfig = ''

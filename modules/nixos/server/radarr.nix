@@ -33,20 +33,17 @@ in {
   };
 
   config = mkIf (server.enable && cfg.enable) {
-    # Set default values for radarr-specific settings
-    server.radarr.config = mkMerge [
-      {
-        port = mkDefault port;
-        branch = mkDefault "master";
-        instanceName = mkDefault "Radarr";
-        urlBase = mkDefault "/radarr";
-        rootFolders = mkDefault [mediaDir];
-        apiKeySecret = mkDefault config.sops.secrets."radarr/api_key".path;
-        usernameSecret = mkDefault config.sops.secrets."radarr/auth/username".path;
-        passwordSecret = mkDefault config.sops.secrets."radarr/auth/password".path;
-      }
-      cfg.config
-    ];
+    # Set defaults for radarr-specific settings
+    server.radarr.config = {
+      port = mkDefault port;
+      branch = mkDefault "master";
+      instanceName = mkDefault "Radarr";
+      urlBase = mkDefault "/radarr";
+      rootFolders = mkDefault [mediaDir];
+      apiKeySecret = mkDefault config.sops.secrets."radarr/api_key".path;
+      usernameSecret = mkDefault config.sops.secrets."radarr/auth/username".path;
+      passwordSecret = mkDefault config.sops.secrets."radarr/auth/password".path;
+    };
 
     # Register directories to be created
     server.dirRegistrations = [
@@ -110,9 +107,9 @@ in {
     };
 
     # Configure Radarr via API
-    systemd.services.radarr-config = arrCommon.mkArrConfigService "radarr" config.server.radarr.config;
+    systemd.services.radarr-config = arrCommon.mkArrConfigService "radarr" cfg.config;
 
-    services.nginx.virtualHosts.localhost.locations."/radarr" = {
+    services.nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
       proxyPass = "http://127.0.0.1:${builtins.toString port}";
       recommendedProxySettings = true;
       extraConfig = ''

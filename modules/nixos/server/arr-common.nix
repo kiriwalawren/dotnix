@@ -347,19 +347,19 @@ with lib; {
       ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/rootfolder")
 
       ${concatMapStringsSep "\n" (folder: ''
-        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
-          echo "Creating root folder: ${folder}"
-          ${pkgs.curl}/bin/curl -s -f -X POST \
-            -H "X-Api-Key: $API_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{"path":"${folder}"}' \
-            "$BASE_URL/api/v3/rootfolder"
-          echo "Root folder created: ${folder}"
-        else
-          echo "Root folder already exists: ${folder}"
-        fi
-      '')
-      serviceConfig.rootFolders}
+          if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
+            echo "Creating root folder: ${folder}"
+            ${pkgs.curl}/bin/curl -s -f -X POST \
+              -H "X-Api-Key: $API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{"path":"${folder}"}' \
+              "$BASE_URL/api/v3/rootfolder"
+            echo "Root folder created: ${folder}"
+          else
+            echo "Root folder already exists: ${folder}"
+          fi
+        '')
+        serviceConfig.rootFolders}
 
       echo "${capitalizedName} configuration complete"
 
