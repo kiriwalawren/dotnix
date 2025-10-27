@@ -85,7 +85,7 @@ in {
             };
             mode = mkOption {
               type = str;
-              default = "0755";
+              default = "0775";
               description = "Permission mode for the directory";
             };
           };
