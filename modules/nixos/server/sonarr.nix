@@ -119,7 +119,7 @@ in {
       };
 
       postgresql = mkIf config.services.postgresql.enable {
-        ensureDatabases = ["sonarr" "sonarr_log"];
+        ensureDatabases = ["sonarr"];
         ensureUsers = [
           {
             name = "sonarr";

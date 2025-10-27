@@ -104,7 +104,7 @@ in {
       };
 
       postgresql = mkIf config.services.postgresql.enable {
-        ensureDatabases = ["radarr" "radarr_log"];
+        ensureDatabases = ["radarr"];
         ensureUsers = [
           {
             name = "radarr";
