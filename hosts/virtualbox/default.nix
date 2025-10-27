@@ -69,6 +69,7 @@
         description = "Unlock and mount encrypted RAID array";
         wantedBy = ["multi-user.target"];
         after = ["mdmonitor.service"];
+        requires = ["mdmonitor.service"];
         unitConfig = {
           ConditionPathExists = [
             config.sops.secrets.raid-encryption-key.path
@@ -78,11 +79,29 @@
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
-          ExecStart = "${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}";
-          ExecStartPost = "${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data";
-          ExecStop = "-${pkgs.util-linux}/bin/umount /data";
-          ExecStopPost = "${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid";
         };
+        script = ''
+          # Wait for RAID device to be ready
+          ${pkgs.coreutils}/bin/timeout 30 sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
+
+          # Unlock the LUKS device
+          ${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}
+
+          # Wait for the device mapper device to be ready
+          ${pkgs.coreutils}/bin/timeout 30 sh -c 'while [ ! -e /dev/mapper/cryptraid ]; do ${pkgs.coreutils}/bin/sleep 1; done'
+
+          # Give the kernel a moment to recognize the filesystem
+          ${pkgs.coreutils}/bin/sleep 1
+
+          # Mount the filesystem
+          ${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data
+        '';
+        preStop = ''
+          ${pkgs.util-linux}/bin/umount /data || true
+        '';
+        postStop = ''
+          ${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid || true
+        '';
       };
 
       # Define mount point (but don't auto-mount - let the service handle it)
