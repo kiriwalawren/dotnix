@@ -1,9 +1,14 @@
 {
   config,
+  gitRev,
   inputs,
+  lib,
   pkgs,
   ...
-}: {
+}: let
+  # Create short revision for display
+  shortRev = lib.strings.substring 0 7 gitRev;
+in {
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
 
@@ -20,6 +25,10 @@
     ./ssh.nix
     ./user
   ];
+
+  # Set build label to include git revision
+  system.nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
+  system.configurationRevision = gitRev;
 
   environment.systemPackages = with pkgs; [
     curl

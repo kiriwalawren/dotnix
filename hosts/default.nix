@@ -6,6 +6,9 @@
 }: let
   inherit (self) inputs;
 
+  # Calculate git revision for build tracking
+  gitRev = self.rev or self.dirtyRev or "unknown";
+
   mkNixosConfiguration = {
     name,
     system ? "x86_64-linux",
@@ -26,7 +29,7 @@
         ]
         ++ modules;
       specialArgs = {
-        inherit inputs system name homeOptions;
+        inherit inputs system name homeOptions gitRev;
         theme = import ../theme;
       };
     };
