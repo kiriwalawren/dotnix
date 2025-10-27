@@ -77,6 +77,54 @@ in {
       };
     };
 
+    services = {
+      radarr = {
+        inherit (cfg) enable;
+        inherit (globals.radarr) user group;
+        dataDir = stateDir;
+        settings =
+          {
+            auth = {
+              required = "Enabled";
+              method = "Forms";
+            };
+            server = {
+              inherit port;
+              inherit (cfg.config) urlBase;
+            };
+          }
+          // optionalAttrs config.services.postgresql.enable {
+            postgres = {
+              host = "";
+              port = 5432;
+              user = "radarr";
+              mainDb = "radarr";
+            };
+          };
+      };
+
+      postgresql = mkIf config.services.postgresql.enable {
+        ensureDatabases = ["radarr"];
+        ensureUsers = [
+          {
+            name = "radarr";
+            ensureDBOwnership = true;
+          }
+        ];
+      };
+
+      nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
+        proxyPass = "http://127.0.0.1:${builtins.toString port}";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Server $host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_redirect off;
+        '';
+      };
+    };
+
     users = {
       groups.${globals.radarr.group}.gid = globals.gids.${globals.radarr.group};
       users.${globals.radarr.user} = {
@@ -84,41 +132,6 @@ in {
         isSystemUser = true;
         uid = globals.uids.${globals.radarr.user};
       };
-    };
-
-    services.radarr = {
-      inherit (cfg) enable;
-      inherit (globals.radarr) user group;
-      dataDir = stateDir;
-      settings =
-        {
-          auth = {
-            required = "Enabled";
-            method = "Forms";
-          };
-          server = {
-            inherit port;
-            inherit (cfg.config) urlBase;
-          };
-        }
-        // optionalAttrs config.services.postgresql.enable {
-          postgres = {
-            host = "";
-            port = 5432;
-            user = "radarr";
-            mainDb = "radarr";
-          };
-        };
-    };
-
-    services.postgresql = mkIf config.services.postgresql.enable {
-      ensureDatabases = ["radarr"];
-      ensureUsers = [
-        {
-          name = "radarr";
-          ensureDBOwnership = true;
-        }
-      ];
     };
 
     systemd.services = {
@@ -156,17 +169,6 @@ in {
 
       # Configure Radarr via API
       radarr-config = arrCommon.mkArrConfigService "radarr" cfg.config;
-    };
-
-    services.nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
-      proxyPass = "http://127.0.0.1:${builtins.toString port}";
-      recommendedProxySettings = true;
-      extraConfig = ''
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Server $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
-      '';
     };
   };
 }

@@ -153,8 +153,10 @@ in {
       };
     };
 
-    server.radarr.enable = true;
-    server.sonarr.enable = true;
-    server.postgresql.enable = true;
+    server = {
+      radarr.enable = true;
+      sonarr.enable = true;
+      postgresql.enable = true;
+    };
   };
 }
