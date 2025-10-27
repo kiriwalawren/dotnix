@@ -92,8 +92,8 @@ in {
       dataDir = stateDir;
       settings = {
         auth = {
-          authenticationrequired = "Enabled";
-          authenticationmethod = "Forms";
+          required = "Enabled";
+          method = "Forms";
         };
         server = {
           inherit (cfg.config) urlBase;
