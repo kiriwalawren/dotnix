@@ -58,7 +58,7 @@ in {
     networking.nftables = mkIf config.services.mullvad-vpn.enable {
       enable = true;
 
-      nftables.tables = {
+      tables = {
         tailscale_mullvad = {
           type = "inet";
 
