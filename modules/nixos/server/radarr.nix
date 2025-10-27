@@ -101,6 +101,7 @@ in {
               mainDb = "radarr";
               logDb = "radarr_log";
             };
+            log.dbeEnabled = true;
           };
       };
 

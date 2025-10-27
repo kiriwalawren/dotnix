@@ -116,6 +116,7 @@ in {
               mainDb = "sonarr";
               logDb = "sonarr_log";
             };
+            log.dbeEnabled = true;
           };
       };
 
