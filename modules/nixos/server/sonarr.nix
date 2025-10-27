@@ -114,7 +114,7 @@ in {
               port = 5432;
               user = "sonarr";
               mainDb = "sonarr";
-              logDb = "sonarr_log";
+              logDb = "sonarr";
             };
             log.dbEnabled = true;
           };
