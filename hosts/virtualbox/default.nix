@@ -39,7 +39,7 @@
         openssh.enable = true;
         vpn = {
           enable = true;
-          killSwitch.enable = false;
+          killSwitch.enable = true;
         };
         tailscale = {
           enable = true;
