@@ -99,9 +99,7 @@ in {
               port = 5432;
               user = "radarr";
               mainDb = "radarr";
-              logDb = "radarr";
             };
-            log.dbEnabled = true;
           };
       };
 
