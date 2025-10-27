@@ -99,12 +99,13 @@ in {
               port = 5432;
               user = "radarr";
               mainDb = "radarr";
+              logDb = "radarr_log";
             };
           };
       };
 
       postgresql = mkIf config.services.postgresql.enable {
-        ensureDatabases = ["radarr"];
+        ensureDatabases = ["radarr" "radarr_log"];
         ensureUsers = [
           {
             name = "radarr";

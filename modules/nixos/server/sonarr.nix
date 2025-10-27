@@ -114,12 +114,13 @@ in {
               port = 5432;
               user = "sonarr";
               mainDb = "sonarr";
+              logDb = "sonarr_log";
             };
           };
       };
 
       postgresql = mkIf config.services.postgresql.enable {
-        ensureDatabases = ["sonarr"];
+        ensureDatabases = ["sonarr" "sonarr_log"];
         ensureUsers = [
           {
             name = "sonarr";
