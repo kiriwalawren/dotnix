@@ -189,6 +189,33 @@ in {
 
         # Restart radarr to pick up the new config
         systemctl restart radarr.service
+
+        # Wait for Radarr to be fully ready after restart
+        echo "Waiting for Radarr to be ready..."
+        for i in {1..30}; do
+          if ${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/radarr/api/v3/system/status >/dev/null 2>&1; then
+            echo "Radarr is ready"
+            break
+          fi
+          echo "Waiting for Radarr API... ($i/30)"
+          sleep 2
+        done
+
+        # Create root folder if it doesn't exist
+        echo "Checking for root folder..."
+        ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/radarr/api/v3/rootfolder)
+
+        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${mediaDir}")' >/dev/null 2>&1; then
+          echo "Creating root folder: ${mediaDir}"
+          ${pkgs.curl}/bin/curl -s -X POST \
+            -H "X-Api-Key: $API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"path":"${mediaDir}"}' \
+            http://127.0.0.1:${builtins.toString port}/radarr/api/v3/rootfolder
+          echo "Root folder created"
+        else
+          echo "Root folder already exists"
+        fi
       '';
     };
 
