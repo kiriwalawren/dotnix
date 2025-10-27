@@ -92,19 +92,51 @@ in {
       };
     };
 
-    services.sonarr = {
-      inherit (cfg) enable;
-      inherit (globals.sonarr) user group;
-      dataDir = stateDir;
-      settings = {
-        auth = {
-          required = "Enabled";
-          method = "Forms";
-        };
-        server = {
-          inherit port;
-          inherit (cfg.config) urlBase;
-        };
+    services = {
+      sonarr = {
+        inherit (cfg) enable;
+        inherit (globals.sonarr) user group;
+        dataDir = stateDir;
+        settings =
+          {
+            auth = {
+              required = "Enabled";
+              method = "Forms";
+            };
+            server = {
+              inherit port;
+              inherit (cfg.config) urlBase;
+            };
+          }
+          // optionalAttrs config.services.postgresql.enable {
+            postgres = {
+              host = "/run/postgresql";
+              port = 5432;
+              user = "sonarr";
+              mainDb = "sonarr";
+            };
+          };
+      };
+
+      postgresql = mkIf config.services.postgresql.enable {
+        ensureDatabases = ["sonarr" "sonarr_log"];
+        ensureUsers = [
+          {
+            name = "sonarr";
+            ensureDBOwnership = true;
+          }
+        ];
+      };
+
+      nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
+        proxyPass = "http://127.0.0.1:${builtins.toString port}";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Server $host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_redirect off;
+        '';
       };
     };
 
@@ -130,25 +162,19 @@ in {
 
       # Ensure sonarr starts after directories are created and VPN is up (if enabled)
       sonarr = {
-        after = ["server-setup-dirs.service" "sonarr-env.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
-        requires = ["server-setup-dirs.service" "sonarr-env.service"];
+        after =
+          ["server-setup-dirs.service" "sonarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service")
+          ++ (optional config.system.vpn.enable "mullvad-config.service");
+        requires =
+          ["server-setup-dirs.service" "sonarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service");
         wants = optional config.system.vpn.enable "mullvad-config.service";
         serviceConfig.EnvironmentFile = "/run/sonarr/env";
       };
 
       # Configure Sonarr via API
       sonarr-config = arrCommon.mkArrConfigService "sonarr" cfg.config;
-    };
-
-    services.nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
-      proxyPass = "http://127.0.0.1:${builtins.toString port}";
-      recommendedProxySettings = true;
-      extraConfig = ''
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Server $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
-      '';
     };
   };
 }
