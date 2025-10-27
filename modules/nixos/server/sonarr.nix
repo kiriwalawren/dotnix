@@ -23,9 +23,29 @@ in {
         Whether or not to enable the Sonarr service.
       '';
     };
+
+    config = mkOption {
+      type = arrCommon.arrConfigModule;
+      default = {};
+      description = ''
+        Sonarr configuration options that will be set via the API.
+      '';
+    };
   };
 
   config = mkIf (server.enable && cfg.enable) {
+    # Set defaults for sonarr-specific settings
+    server.sonarr.config = {
+      port = mkDefault port;
+      branch = mkDefault "main";
+      instanceName = mkDefault "Sonarr";
+      urlBase = mkDefault "/sonarr";
+      rootFolders = mkDefault [tvDir animeDir];
+      apiKeySecret = mkDefault config.sops.secrets."sonarr/api_key".path;
+      usernameSecret = mkDefault config.sops.secrets."sonarr/auth/username".path;
+      passwordSecret = mkDefault config.sops.secrets."sonarr/auth/password".path;
+    };
+
     # Register directories to be created
     server.dirRegistrations = [
       {
@@ -76,28 +96,51 @@ in {
       inherit (cfg) enable;
       inherit (globals.sonarr) user group;
       dataDir = stateDir;
+      settings = {
+        auth = {
+          required = "Enabled";
+          method = "Forms";
+        };
+        server = {
+          inherit port;
+          inherit (cfg.config) urlBase;
+        };
+      };
     };
 
-    # Ensure sonarr starts after directories are created and VPN is up (if enabled)
-    systemd.services.sonarr = {
-      after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
-      requires = ["server-setup-dirs.service"];
-      wants = optional config.system.vpn.enable "mullvad-config.service";
+    systemd.services = {
+      # Create environment file setup service
+      sonarr-env = {
+        description = "Setup Sonarr environment file";
+        wantedBy = ["sonarr.service"];
+        before = ["sonarr.service"];
+
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+
+        script = ''
+          mkdir -p /run/sonarr
+          echo "SONARR__AUTH__APIKEY=$(cat ${config.sops.secrets."sonarr/api_key".path})" > /run/sonarr/env
+          chown ${globals.sonarr.user}:${globals.sonarr.group} /run/sonarr/env
+          chmod 0400 /run/sonarr/env
+        '';
+      };
+
+      # Ensure sonarr starts after directories are created and VPN is up (if enabled)
+      sonarr = {
+        after = ["server-setup-dirs.service" "sonarr-env.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
+        requires = ["server-setup-dirs.service" "sonarr-env.service"];
+        wants = optional config.system.vpn.enable "mullvad-config.service";
+        serviceConfig.EnvironmentFile = "/run/sonarr/env";
+      };
+
+      # Configure Sonarr via API
+      sonarr-config = arrCommon.mkArrConfigService "sonarr" cfg.config;
     };
 
-    # Configure Sonarr
-    systemd.services.sonarr-config = arrCommon.mkArrConfigService {
-      serviceName = "sonarr";
-      inherit port stateDir;
-      inherit (globals.sonarr) user group;
-      apiKeySecret = config.sops.secrets."sonarr/api_key".path;
-      usernameSecret = config.sops.secrets."sonarr/auth/username".path;
-      passwordSecret = config.sops.secrets."sonarr/auth/password".path;
-      urlBase = "/sonarr";
-      rootFolders = [tvDir animeDir];
-    };
-
-    services.nginx.virtualHosts.localhost.locations."/sonarr" = {
+    services.nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
       proxyPass = "http://127.0.0.1:${builtins.toString port}";
       recommendedProxySettings = true;
       extraConfig = ''

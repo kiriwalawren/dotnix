@@ -4,20 +4,243 @@
   ...
 }:
 with lib; {
-  # Helper function to create a secrets injection service for *arr applications
-  mkArrConfigService = {
-    serviceName, # e.g., "radarr", "sonarr"
-    port,
-    stateDir,
-    apiKeySecret,
-    usernameSecret,
-    passwordSecret,
-    urlBase,
-    rootFolders, # List of paths to create as root folders
-    user,
-    group,
-  }: {
-    description = "Inject secrets into ${serviceName} configuration";
+  # Shared configuration submodule for *arr applications
+  arrConfigModule = types.submodule {
+    options = {
+      # Connection settings
+      bindAddress = mkOption {
+        type = types.str;
+        default = "*";
+        description = "Address to bind to";
+      };
+
+      port = mkOption {
+        type = types.port;
+        description = "Port the service listens on";
+      };
+
+      sslPort = mkOption {
+        type = types.port;
+        default = 9898;
+        description = "SSL port";
+      };
+
+      enableSsl = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable SSL";
+      };
+
+      # Authentication settings
+      authenticationMethod = mkOption {
+        type = types.enum ["none" "basic" "forms" "external"];
+        default = "forms";
+        description = "Authentication method";
+      };
+
+      authenticationRequired = mkOption {
+        type = types.enum ["enabled" "disabled" "disabledForLocalAddresses"];
+        default = "enabled";
+        description = "Authentication requirement level";
+      };
+
+      apiKeySecret = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to API key secret file";
+      };
+
+      usernameSecret = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to username secret file";
+      };
+
+      passwordSecret = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = "Path to password secret file";
+      };
+
+      # URL settings
+      urlBase = mkOption {
+        type = types.str;
+        default = "";
+        description = "URL base path";
+      };
+
+      applicationUrl = mkOption {
+        type = types.str;
+        default = "";
+        description = "Application URL";
+      };
+
+      instanceName = mkOption {
+        type = types.str;
+        description = "Instance name";
+      };
+
+      # Logging settings
+      logLevel = mkOption {
+        type = types.enum ["info" "debug" "trace"];
+        default = "info";
+        description = "Log level";
+      };
+
+      logSizeLimit = mkOption {
+        type = types.int;
+        default = 1;
+        description = "Log size limit in MB";
+      };
+
+      consoleLogLevel = mkOption {
+        type = types.str;
+        default = "";
+        description = "Console log level";
+      };
+
+      # Update settings
+      branch = mkOption {
+        type = types.str;
+        description = "Update branch";
+      };
+
+      updateAutomatically = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Update automatically";
+      };
+
+      updateMechanism = mkOption {
+        type = types.enum ["builtIn" "script" "external" "docker"];
+        default = "builtIn";
+        description = "Update mechanism";
+      };
+
+      updateScriptPath = mkOption {
+        type = types.str;
+        default = "";
+        description = "Update script path";
+      };
+
+      # Proxy settings
+      proxyEnabled = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable proxy";
+      };
+
+      proxyType = mkOption {
+        type = types.enum ["http" "socks4" "socks5"];
+        default = "http";
+        description = "Proxy type";
+      };
+
+      proxyHostname = mkOption {
+        type = types.str;
+        default = "";
+        description = "Proxy hostname";
+      };
+
+      proxyPort = mkOption {
+        type = types.port;
+        default = 8080;
+        description = "Proxy port";
+      };
+
+      proxyUsername = mkOption {
+        type = types.str;
+        default = "";
+        description = "Proxy username";
+      };
+
+      proxyPassword = mkOption {
+        type = types.str;
+        default = "";
+        description = "Proxy password";
+      };
+
+      proxyBypassFilter = mkOption {
+        type = types.str;
+        default = "";
+        description = "Proxy bypass filter";
+      };
+
+      proxyBypassLocalAddresses = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Proxy bypass local addresses";
+      };
+
+      # SSL settings
+      sslCertPath = mkOption {
+        type = types.str;
+        default = "";
+        description = "SSL certificate path";
+      };
+
+      sslCertPassword = mkOption {
+        type = types.str;
+        default = "";
+        description = "SSL certificate password";
+      };
+
+      certificateValidation = mkOption {
+        type = types.enum ["enabled" "disabled" "disabledForLocalAddresses"];
+        default = "enabled";
+        description = "Certificate validation";
+      };
+
+      # Backup settings
+      backupFolder = mkOption {
+        type = types.str;
+        default = "Backups";
+        description = "Backup folder name";
+      };
+
+      backupInterval = mkOption {
+        type = types.int;
+        default = 7;
+        description = "Backup interval in days";
+      };
+
+      backupRetention = mkOption {
+        type = types.int;
+        default = 28;
+        description = "Backup retention in days";
+      };
+
+      # Other settings
+      launchBrowser = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Launch browser on start (not applicable for NixOS services)";
+      };
+
+      analyticsEnabled = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable analytics";
+      };
+
+      trustCgnatIpAddresses = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Trust CGNAT IP addresses";
+      };
+
+      # Root folders (managed via separate API endpoint)
+      rootFolders = mkOption {
+        type = types.listOf types.path;
+        default = [];
+        description = "List of root folders to create";
+      };
+    };
+  };
+
+  # Helper function to create a systemd service that configures *arr via API
+  mkArrConfigService = serviceName: serviceConfig: {
+    description = "Configure ${serviceName} via API";
     after = ["${serviceName}.service"];
     wantedBy = ["multi-user.target"];
 
@@ -26,135 +249,124 @@ with lib; {
       RemainAfterExit = true;
     };
 
-    script = ''
+    script = let
+      capitalizedName = lib.toUpper (builtins.substring 0 1 serviceName) + builtins.substring 1 (-1) serviceName;
+    in ''
       set -eu
 
-      configFile="${stateDir}/config.xml"
-
-      # Wait for config file to be created (up to 30 seconds)
-      for i in {1..30}; do
-        if [ -f "$configFile" ]; then
-          break
-        fi
-        echo "Waiting for ${serviceName} to create config file... ($i/30)"
-        sleep 1
-      done
-
-      if [ ! -f "$configFile" ]; then
-        echo "Config file was not created, exiting"
-        exit 1
-      fi
-
       # Read secrets
-      API_KEY=$(cat ${apiKeySecret})
-      AUTH_USER=$(cat ${usernameSecret})
+      API_KEY=$(cat ${serviceConfig.apiKeySecret})
+      AUTH_USER=$(cat ${serviceConfig.usernameSecret})
+      AUTH_PASSWORD=$(cat ${serviceConfig.passwordSecret})
 
-      # Backup config
-      cp "$configFile" "$configFile.bak"
+      BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}"
 
-      # Helper function to set XML elements (delete existing, then insert)
-      set_element() {
-        local field=$1
-        local value=$2
-        # Delete all existing instances of the field
-        ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -d "//Config/$field" "$configFile" || true
-        # Insert the new value
-        ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
-      }
-
-      # Set all fields (Username/Password are NOT stored in config.xml)
-      set_element "ApiKey" "$API_KEY"
-      set_element "AuthenticationMethod" "Forms"
-      set_element "AuthenticationRequired" "Enabled"
-      set_element "UrlBase" "${urlBase}"
-
-      # Change ownership back to service user
-      chown ${user}:${group} "$configFile"
-
-      # Set username and password in database (using PBKDF2)
-      dbFile="${stateDir}/${serviceName}.db"
-
-      # Wait for database and Users table to be created (up to 30 seconds)
-      for i in {1..30}; do
-        if [ -f "$dbFile" ] && ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
+      # Wait for API to be available (up to 60 seconds)
+      echo "Waiting for ${capitalizedName} API to be available..."
+      for i in {1..60}; do
+        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/api/v3/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
+          echo "${capitalizedName} API is available"
           break
         fi
-        echo "Waiting for ${serviceName} to create Users table... ($i/30)"
+        echo "Waiting for ${capitalizedName} API... ($i/60)"
         sleep 1
       done
 
-      if ! ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
-        echo "Users table was not created, exiting"
+      # Get current host configuration
+      echo "Fetching current host configuration..."
+      HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/config/host")
+
+      if [ -z "$HOST_CONFIG" ]; then
+        echo "Failed to fetch host configuration"
         exit 1
       fi
 
-      # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
-      read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
-      import base64
-      import hashlib
-      import secrets
-      import sys
+      # Extract the ID from the host config (needed for PUT request)
+      CONFIG_ID=$(echo "$HOST_CONFIG" | ${pkgs.jq}/bin/jq -r '.id')
 
-      # Read password directly from file to avoid bash variable expansion issues
-      with open('${passwordSecret}', 'rb') as f:
-          password = f.read()
+      # Build the complete configuration JSON
+      echo "Building configuration..."
+      NEW_CONFIG=$(${pkgs.jq}/bin/jq -n \
+        --arg apiKey "$API_KEY" \
+        --arg username "$AUTH_USER" \
+        --arg password "$AUTH_PASSWORD" \
+        --argjson id "$CONFIG_ID" \
+        '{
+          id: $id,
+          bindAddress: "${serviceConfig.bindAddress}",
+          port: ${builtins.toString serviceConfig.port},
+          sslPort: ${builtins.toString serviceConfig.sslPort},
+          enableSsl: ${boolToString serviceConfig.enableSsl},
+          launchBrowser: ${boolToString serviceConfig.launchBrowser},
+          authenticationMethod: "${serviceConfig.authenticationMethod}",
+          authenticationRequired: "${serviceConfig.authenticationRequired}",
+          analyticsEnabled: ${boolToString serviceConfig.analyticsEnabled},
+          username: $username,
+          password: $password,
+          passwordConfirmation: $password,
+          logLevel: "${serviceConfig.logLevel}",
+          logSizeLimit: ${builtins.toString serviceConfig.logSizeLimit},
+          consoleLogLevel: "${serviceConfig.consoleLogLevel}",
+          branch: "${serviceConfig.branch}",
+          apiKey: $apiKey,
+          sslCertPath: "${serviceConfig.sslCertPath}",
+          sslCertPassword: "${serviceConfig.sslCertPassword}",
+          urlBase: "${serviceConfig.urlBase}",
+          instanceName: "${serviceConfig.instanceName}",
+          applicationUrl: "${serviceConfig.applicationUrl}",
+          updateAutomatically: ${boolToString serviceConfig.updateAutomatically},
+          updateMechanism: "${serviceConfig.updateMechanism}",
+          updateScriptPath: "${serviceConfig.updateScriptPath}",
+          proxyEnabled: ${boolToString serviceConfig.proxyEnabled},
+          proxyType: "${serviceConfig.proxyType}",
+          proxyHostname: "${serviceConfig.proxyHostname}",
+          proxyPort: ${builtins.toString serviceConfig.proxyPort},
+          proxyUsername: "${serviceConfig.proxyUsername}",
+          proxyPassword: "${serviceConfig.proxyPassword}",
+          proxyBypassFilter: "${serviceConfig.proxyBypassFilter}",
+          proxyBypassLocalAddresses: ${boolToString serviceConfig.proxyBypassLocalAddresses},
+          certificateValidation: "${serviceConfig.certificateValidation}",
+          backupFolder: "${serviceConfig.backupFolder}",
+          backupInterval: ${builtins.toString serviceConfig.backupInterval},
+          backupRetention: ${builtins.toString serviceConfig.backupRetention},
+          trustCgnatIpAddresses: ${boolToString serviceConfig.trustCgnatIpAddresses}
+        }')
 
-      salt = secrets.token_bytes(16)
-      iterations = 10000
-      num_bytes = 32
+      # Update host configuration
+      echo "Updating ${capitalizedName} configuration via API..."
+      ${pkgs.curl}/bin/curl -s -f -X PUT \
+        -H "X-Api-Key: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "$NEW_CONFIG" \
+        "$BASE_URL/api/v3/config/host/$CONFIG_ID"
 
-      # PBKDF2-HMAC-SHA512
-      hashed = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, dklen=num_bytes)
-
-      print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
-      ")
-
-      # Retry database write until it succeeds (database might be locked during initialization)
-      for i in {1..60}; do
-        if ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
-          DELETE FROM Users;
-          INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
-          VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
-        " 2>/dev/null; then
-          echo "Successfully inserted user credentials"
-          break
-        fi
-        echo "Database locked, retrying... ($i/60)"
-        sleep 1
-      done
-
-      # Restart service to pick up the new config
-      systemctl restart ${serviceName}.service
-
-      # Wait for API to be fully ready after restart
-      echo "Waiting for ${serviceName} to be ready..."
-      for i in {1..30}; do
-        if ${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}${urlBase}/api/v3/system/status >/dev/null 2>&1; then
-          echo "${serviceName} is ready"
-          break
-        fi
-        echo "Waiting for ${serviceName} API... ($i/30)"
-        sleep 2
-      done
+      echo "Configuration updated successfully"
 
       # Create root folders if they don't exist
       echo "Checking for root folders..."
-      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}${urlBase}/api/v3/rootfolder)
+      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/rootfolder")
 
       ${concatMapStringsSep "\n" (folder: ''
           if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
             echo "Creating root folder: ${folder}"
-            ${pkgs.curl}/bin/curl -s -X POST \
+            ${pkgs.curl}/bin/curl -s -f -X POST \
               -H "X-Api-Key: $API_KEY" \
               -H "Content-Type: application/json" \
               -d '{"path":"${folder}"}' \
-              http://127.0.0.1:${builtins.toString port}${urlBase}/api/v3/rootfolder
+              "$BASE_URL/api/v3/rootfolder"
             echo "Root folder created: ${folder}"
           else
             echo "Root folder already exists: ${folder}"
           fi
         '')
-        rootFolders}
+        serviceConfig.rootFolders}
+
+      echo "${capitalizedName} configuration complete"
+
+      # Restart the service to pick up the new configuration
+      echo "Restarting ${serviceName} service..."
+      systemctl restart ${serviceName}.service
+      echo "${capitalizedName} service restarted"
     '';
   };
 }
