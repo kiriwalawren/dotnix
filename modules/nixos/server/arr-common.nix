@@ -303,7 +303,7 @@ with lib; {
           analyticsEnabled: ${boolToString serviceConfig.analyticsEnabled},
           username: $username,
           password: $password,
-          passwordConfirmation: "",
+          passwordConfirmation: $password,
           logLevel: "${serviceConfig.logLevel}",
           logSizeLimit: ${builtins.toString serviceConfig.logSizeLimit},
           consoleLogLevel: "${serviceConfig.consoleLogLevel}",
@@ -334,22 +334,11 @@ with lib; {
 
       # Update host configuration
       echo "Updating ${capitalizedName} configuration via API..."
-      echo "Config to send: $NEW_CONFIG"
-
-      RESPONSE=$(${pkgs.curl}/bin/curl -s -w "\n%{http_code}" -X PUT \
+      ${pkgs.curl}/bin/curl -s -f -X PUT \
         -H "X-Api-Key: $API_KEY" \
         -H "Content-Type: application/json" \
         -d "$NEW_CONFIG" \
-        "$BASE_URL/api/v3/config/host/$CONFIG_ID")
-
-      HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-      BODY=$(echo "$RESPONSE" | sed '$d')
-
-      if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "202" ]; then
-        echo "Failed to update configuration. HTTP $HTTP_CODE"
-        echo "Response: $BODY"
-        exit 1
-      fi
+        "$BASE_URL/api/v3/config/host/$CONFIG_ID"
 
       echo "Configuration updated successfully"
 
