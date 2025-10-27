@@ -7,18 +7,19 @@
 with lib; let
   inherit (config) server;
   inherit (server) globals;
-  cfg = config.server.radarr;
-  port = 7878;
-  stateDir = "${server.stateDir}/radarr";
-  mediaDir = "${server.mediaDir}/movies";
+  cfg = config.server.sonarr;
+  port = 8989;
+  stateDir = "${server.stateDir}/sonarr";
+  tvDir = "${server.mediaDir}/tv";
+  animeDir = "${server.mediaDir}/anime";
 in {
-  options.server.radarr = {
+  options.server.sonarr = {
     enable = mkOption {
       type = types.bool;
       default = false;
       example = true;
       description = ''
-        Whether or not to enable the Radarr service.
+        Whether or not to enable the Sonarr service.
       '';
     };
   };
@@ -27,62 +28,66 @@ in {
     # Register directories to be created
     server.dirRegistrations = [
       {
-        inherit (globals.radar) group;
+        inherit (globals.sonarr) group;
         dir = stateDir;
-        owner = globals.radarr.user;
+        owner = globals.sonarr.user;
       }
       {
-        inherit (globals.radar) group;
-        dir = mediaDir;
+        inherit (globals.sonarr) group;
+        dir = tvDir;
+        owner = globals.libraryOwner.user;
+      }
+      {
+        inherit (globals.sonarr) group;
+        dir = animeDir;
         owner = globals.libraryOwner.user;
       }
     ];
 
     sops.secrets = {
-      "radarr/api_key" = {
-        inherit (globals.radarr) group;
-        owner = globals.radarr.user;
+      "sonarr/api_key" = {
+        inherit (globals.sonarr) group;
+        owner = globals.sonarr.user;
         mode = "0440";
       };
-      "radarr/auth/username" = {
-        inherit (globals.radarr) group;
-        owner = globals.radarr.user;
+      "sonarr/auth/username" = {
+        inherit (globals.sonarr) group;
+        owner = globals.sonarr.user;
         mode = "0440";
       };
-      "radarr/auth/password" = {
-        inherit (globals.radarr) group;
-        owner = globals.radarr.user;
+      "sonarr/auth/password" = {
+        inherit (globals.sonarr) group;
+        owner = globals.sonarr.user;
         mode = "0440";
       };
     };
 
     users = {
-      groups.${globals.radarr.group}.gid = globals.gids.${globals.radarr.group};
-      users.${globals.radarr.user} = {
-        inherit (globals.radarr) group;
+      groups.${globals.sonarr.group}.gid = globals.gids.${globals.sonarr.group};
+      users.${globals.sonarr.user} = {
+        inherit (globals.sonarr) group;
         isSystemUser = true;
-        uid = globals.uids.${globals.radarr.user};
+        uid = globals.uids.${globals.sonarr.user};
       };
     };
 
-    services.radarr = {
+    services.sonarr = {
       inherit (cfg) enable;
-      inherit (globals.radarr) user group;
-      settings.server.port = port;
+      inherit (globals.sonarr) user group;
       dataDir = stateDir;
     };
 
-    # Ensure radarr starts after directories are created and VPN is up (if enabled)
-    systemd.services.radarr = {
+    # Ensure sonarr starts after directories are created and VPN is up (if enabled)
+    systemd.services.sonarr = {
       after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
       requires = ["server-setup-dirs.service"];
       wants = optional config.system.vpn.enable "mullvad-config.service";
     };
 
-    # Inject secrets into Radarr config
-    systemd.services.radarr-secrets = {
-      description = "Inject secrets into Radarr configuration";
-      after = ["radarr.service"];
+    # Inject secrets into Sonarr config
+    systemd.services.sonarr-secrets = {
+      description = "Inject secrets into Sonarr configuration";
+      after = ["sonarr.service"];
       wantedBy = ["multi-user.target"];
 
       serviceConfig = {
@@ -100,7 +105,7 @@ in {
           if [ -f "$configFile" ]; then
             break
           fi
-          echo "Waiting for Radarr to create config file... ($i/30)"
+          echo "Waiting for Sonarr to create config file... ($i/30)"
           sleep 1
         done
 
@@ -110,8 +115,8 @@ in {
         fi
 
         # Read secrets
-        API_KEY=$(cat ${config.sops.secrets."radarr/api_key".path})
-        AUTH_USER=$(cat ${config.sops.secrets."radarr/auth/username".path})
+        API_KEY=$(cat ${config.sops.secrets."sonarr/api_key".path})
+        AUTH_USER=$(cat ${config.sops.secrets."sonarr/auth/username".path})
 
         # Backup config
         cp "$configFile" "$configFile.bak"
@@ -130,20 +135,20 @@ in {
         set_element "ApiKey" "$API_KEY"
         set_element "AuthenticationMethod" "Forms"
         set_element "AuthenticationRequired" "Enabled"
-        set_element "UrlBase" "/radarr"
+        set_element "UrlBase" "/sonarr"
 
-        # Change ownership back to radarr
-        chown ${globals.radarr.user}:${globals.radarr.group} "$configFile"
+        # Change ownership back to sonarr
+        chown ${globals.sonarr.user}:${globals.sonarr.group} "$configFile"
 
         # Set username and password in database (using PBKDF2)
-        dbFile="${stateDir}/radarr.db"
+        dbFile="${stateDir}/sonarr.db"
 
         # Wait for database and Users table to be created (up to 30 seconds)
         for i in {1..30}; do
           if [ -f "$dbFile" ] && ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
             break
           fi
-          echo "Waiting for Radarr to create Users table... ($i/30)"
+          echo "Waiting for Sonarr to create Users table... ($i/30)"
           sleep 1
         done
 
@@ -160,7 +165,7 @@ in {
         import sys
 
         # Read password directly from file to avoid bash variable expansion issues
-        with open('${config.sops.secrets."radarr/auth/password".path}', 'rb') as f:
+        with open('${config.sops.secrets."sonarr/auth/password".path}', 'rb') as f:
             password = f.read()
 
         salt = secrets.token_bytes(16)
@@ -187,8 +192,8 @@ in {
           sleep 1
         done
 
-        # Restart radarr to pick up the new config
-        systemctl restart radarr.service
+        # Restart sonarr to pick up the new config
+        systemctl restart sonarr.service
       '';
     };
 
@@ -210,7 +215,7 @@ in {
         serverName = "localhost";
         default = true;
 
-        locations."/radarr" = {
+        locations."/sonarr" = {
           proxyPass = "http://127.0.0.1:${builtins.toString port}";
           recommendedProxySettings = true;
           extraConfig = ''

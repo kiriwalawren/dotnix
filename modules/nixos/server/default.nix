@@ -8,7 +8,11 @@ with lib; let
   inherit (config.server) globals;
   cfg = config.server;
 in {
-  imports = [./globals.nix ./radarr.nix];
+  imports = [
+    ./globals.nix
+    ./radarr.nix
+    ./sonarr.nix
+  ];
 
   options.server = {
     enable = mkOption {
@@ -62,6 +66,36 @@ in {
         > Is not supported, because `/home/user` is owned by `user`.
       '';
     };
+
+    dirRegistrations = mkOption {
+      type = with types;
+        listOf (submodule {
+          options = {
+            dir = mkOption {
+              type = path;
+              description = "Directory path to create";
+            };
+            owner = mkOption {
+              type = str;
+              description = "Owner of the directory";
+            };
+            group = mkOption {
+              type = str;
+              description = "Group of the directory";
+            };
+            mode = mkOption {
+              type = str;
+              default = "0755";
+              description = "Permission mode for the directory";
+            };
+          };
+        });
+      default = [];
+      description = ''
+        Directory registrations from services. Each service can register
+        directories it needs to be created.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -89,19 +123,17 @@ in {
         ${pkgs.coreutils}/bin/chown ${globals.libraryOwner.user}:${globals.libraryOwner.group} ${cfg.mediaDir}
         ${pkgs.coreutils}/bin/chmod 0775 ${cfg.mediaDir}
 
-        # Radarr directories
-        ${optionalString cfg.radarr.enable ''
-          ${pkgs.coreutils}/bin/mkdir -p ${cfg.stateDir}/radarr
-          ${pkgs.coreutils}/bin/chown ${globals.radarr.user}:${globals.radarr.group} ${cfg.stateDir}/radarr
-          ${pkgs.coreutils}/bin/chmod 0755 ${cfg.stateDir}/radarr
-
-          ${pkgs.coreutils}/bin/mkdir -p ${cfg.mediaDir}/movies
-          ${pkgs.coreutils}/bin/chown ${globals.libraryOwner.user}:${globals.libraryOwner.group} ${cfg.mediaDir}/movies
-          ${pkgs.coreutils}/bin/chmod 0775 ${cfg.mediaDir}/movies
-        ''}
+        # Service-registered directories
+        ${concatMapStringsSep "\n" (reg: ''
+            ${pkgs.coreutils}/bin/mkdir -p ${reg.dir}
+            ${pkgs.coreutils}/bin/chown ${reg.owner}:${reg.group} ${reg.dir}
+            ${pkgs.coreutils}/bin/chmod ${reg.mode} ${reg.dir}
+          '')
+          cfg.dirRegistrations}
       '';
     };
 
     server.radarr.enable = true;
+    server.sonarr.enable = true;
   };
 }
