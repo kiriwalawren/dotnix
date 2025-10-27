@@ -1,12 +1,10 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
   cfg = config.system.tailscale;
-  mullvadPkg = config.services.mullvad-vpn.package;
 in {
   options.system.tailscale = {
     enable = mkEnableOption "tailscale";
