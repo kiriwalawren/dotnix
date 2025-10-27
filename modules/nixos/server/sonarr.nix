@@ -12,6 +12,7 @@ with lib; let
   stateDir = "${server.stateDir}/sonarr";
   tvDir = "${server.mediaDir}/tv";
   animeDir = "${server.mediaDir}/anime";
+  arrCommon = import ./arr-common.nix {inherit lib pkgs;};
 in {
   options.server.sonarr = {
     enable = mkOption {
@@ -84,158 +85,16 @@ in {
       wants = optional config.system.vpn.enable "mullvad-config.service";
     };
 
-    # Inject secrets into Sonarr config
-    systemd.services.sonarr-secrets = {
-      description = "Inject secrets into Sonarr configuration";
-      after = ["sonarr.service"];
-      wantedBy = ["multi-user.target"];
-
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-
-      script = ''
-        set -eu
-
-        configFile="${stateDir}/config.xml"
-
-        # Wait for config file to be created (up to 30 seconds)
-        for i in {1..30}; do
-          if [ -f "$configFile" ]; then
-            break
-          fi
-          echo "Waiting for Sonarr to create config file... ($i/30)"
-          sleep 1
-        done
-
-        if [ ! -f "$configFile" ]; then
-          echo "Config file was not created, exiting"
-          exit 1
-        fi
-
-        # Read secrets
-        API_KEY=$(cat ${config.sops.secrets."sonarr/api_key".path})
-        AUTH_USER=$(cat ${config.sops.secrets."sonarr/auth/username".path})
-
-        # Backup config
-        cp "$configFile" "$configFile.bak"
-
-        # Helper function to set XML elements (delete existing, then insert)
-        set_element() {
-          local field=$1
-          local value=$2
-          # Delete all existing instances of the field
-          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -d "//Config/$field" "$configFile" || true
-          # Insert the new value
-          ${pkgs.xmlstarlet}/bin/xmlstarlet ed -L -s "//Config" -t elem -n "$field" -v "$value" "$configFile"
-        }
-
-        # Set all fields (Username/Password are NOT stored in config.xml)
-        set_element "ApiKey" "$API_KEY"
-        set_element "AuthenticationMethod" "Forms"
-        set_element "AuthenticationRequired" "Enabled"
-        set_element "UrlBase" "/sonarr"
-
-        # Change ownership back to sonarr
-        chown ${globals.sonarr.user}:${globals.sonarr.group} "$configFile"
-
-        # Set username and password in database (using PBKDF2)
-        dbFile="${stateDir}/sonarr.db"
-
-        # Wait for database and Users table to be created (up to 30 seconds)
-        for i in {1..30}; do
-          if [ -f "$dbFile" ] && ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
-            break
-          fi
-          echo "Waiting for Sonarr to create Users table... ($i/30)"
-          sleep 1
-        done
-
-        if ! ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
-          echo "Users table was not created, exiting"
-          exit 1
-        fi
-
-        # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
-        read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
-        import base64
-        import hashlib
-        import secrets
-        import sys
-
-        # Read password directly from file to avoid bash variable expansion issues
-        with open('${config.sops.secrets."sonarr/auth/password".path}', 'rb') as f:
-            password = f.read()
-
-        salt = secrets.token_bytes(16)
-        iterations = 10000
-        num_bytes = 32
-
-        # PBKDF2-HMAC-SHA512
-        hashed = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, dklen=num_bytes)
-
-        print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
-        ")
-
-        # Retry database write until it succeeds (database might be locked during initialization)
-        for i in {1..60}; do
-          if ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
-            DELETE FROM Users;
-            INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
-            VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
-          " 2>/dev/null; then
-            echo "Successfully inserted user credentials"
-            break
-          fi
-          echo "Database locked, retrying... ($i/60)"
-          sleep 1
-        done
-
-        # Restart sonarr to pick up the new config
-        systemctl restart sonarr.service
-
-        # Wait for Sonarr to be fully ready after restart
-        echo "Waiting for Sonarr to be ready..."
-        for i in {1..30}; do
-          if ${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/system/status >/dev/null 2>&1; then
-            echo "Sonarr is ready"
-            break
-          fi
-          echo "Waiting for Sonarr API... ($i/30)"
-          sleep 2
-        done
-
-        # Create root folders if they don't exist
-        echo "Checking for root folders..."
-        ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder)
-
-        # Create TV root folder
-        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${tvDir}")' >/dev/null 2>&1; then
-          echo "Creating root folder: ${tvDir}"
-          ${pkgs.curl}/bin/curl -s -X POST \
-            -H "X-Api-Key: $API_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{"path":"${tvDir}"}' \
-            http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder
-          echo "TV root folder created"
-        else
-          echo "TV root folder already exists"
-        fi
-
-        # Create anime root folder
-        if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${animeDir}")' >/dev/null 2>&1; then
-          echo "Creating root folder: ${animeDir}"
-          ${pkgs.curl}/bin/curl -s -X POST \
-            -H "X-Api-Key: $API_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{"path":"${animeDir}"}' \
-            http://127.0.0.1:${builtins.toString port}/sonarr/api/v3/rootfolder
-          echo "Anime root folder created"
-        else
-          echo "Anime root folder already exists"
-        fi
-      '';
+    # Configure Sonarr
+    systemd.services.sonarr-config = arrCommon.mkArrConfigService {
+      serviceName = "sonarr";
+      inherit port stateDir;
+      inherit (globals.sonarr) user group;
+      apiKeySecret = config.sops.secrets."sonarr/api_key".path;
+      usernameSecret = config.sops.secrets."sonarr/auth/username".path;
+      passwordSecret = config.sops.secrets."sonarr/auth/password".path;
+      urlBase = "/sonarr";
+      rootFolders = [tvDir animeDir];
     };
 
     services.nginx.virtualHosts.localhost.locations."/sonarr" = {
