@@ -22,9 +22,32 @@ in {
         Whether or not to enable the Radarr service.
       '';
     };
+
+    config = mkOption {
+      type = arrCommon.arrConfigModule;
+      default = {};
+      description = ''
+        Radarr configuration options that will be set via the API.
+      '';
+    };
   };
 
   config = mkIf (server.enable && cfg.enable) {
+    # Set default values for radarr-specific settings
+    server.radarr.config = mkMerge [
+      {
+        port = mkDefault port;
+        branch = mkDefault "master";
+        instanceName = mkDefault "Radarr";
+        urlBase = mkDefault "/radarr";
+        rootFolders = mkDefault [mediaDir];
+        apiKeySecret = mkDefault config.sops.secrets."radarr/api_key".path;
+        usernameSecret = mkDefault config.sops.secrets."radarr/auth/username".path;
+        passwordSecret = mkDefault config.sops.secrets."radarr/auth/password".path;
+      }
+      cfg.config
+    ];
+
     # Register directories to be created
     server.dirRegistrations = [
       {
@@ -41,6 +64,11 @@ in {
 
     sops.secrets = {
       "radarr/api_key" = {
+        inherit (globals.radarr) group;
+        owner = globals.radarr.user;
+        mode = "0440";
+      };
+      "radarr/api_key_env" = {
         inherit (globals.radarr) group;
         owner = globals.radarr.user;
         mode = "0440";
@@ -71,6 +99,7 @@ in {
       inherit (globals.radarr) user group;
       settings.server.port = port;
       dataDir = stateDir;
+      environmentFiles = [config.sops.secrets."radarr/api_key_env".path];
     };
 
     # Ensure radarr starts after directories are created and VPN is up (if enabled)
@@ -80,17 +109,8 @@ in {
       wants = optional config.system.vpn.enable "mullvad-config.service";
     };
 
-    # Configure Radarr
-    systemd.services.radarr-config = arrCommon.mkArrConfigService {
-      serviceName = "radarr";
-      inherit port stateDir;
-      inherit (globals.radarr) user group;
-      apiKeySecret = config.sops.secrets."radarr/api_key".path;
-      usernameSecret = config.sops.secrets."radarr/auth/username".path;
-      passwordSecret = config.sops.secrets."radarr/auth/password".path;
-      urlBase = "/radarr";
-      rootFolders = [mediaDir];
-    };
+    # Configure Radarr via API
+    systemd.services.radarr-config = arrCommon.mkArrConfigService "radarr" config.server.radarr.config;
 
     services.nginx.virtualHosts.localhost.locations."/radarr" = {
       proxyPass = "http://127.0.0.1:${builtins.toString port}";
