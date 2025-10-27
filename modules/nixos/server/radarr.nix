@@ -90,16 +90,35 @@ in {
       inherit (cfg) enable;
       inherit (globals.radarr) user group;
       dataDir = stateDir;
-      settings = {
-        auth = {
-          required = "Enabled";
-          method = "Forms";
+      settings =
+        {
+          auth = {
+            required = "Enabled";
+            method = "Forms";
+          };
+          server = {
+            inherit port;
+            inherit (cfg.config) urlBase;
+          };
+        }
+        // optionalAttrs config.services.postgresql.enable {
+          postgres = {
+            host = "";
+            port = 5432;
+            user = "radarr";
+            mainDb = "radarr";
+          };
         };
-        server = {
-          inherit port;
-          inherit (cfg.config) urlBase;
-        };
-      };
+    };
+
+    services.postgresql = mkIf config.services.postgresql.enable {
+      ensureDatabases = ["radarr"];
+      ensureUsers = [
+        {
+          name = "radarr";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     systemd.services = {
@@ -124,8 +143,13 @@ in {
 
       # Ensure radarr starts after directories are created and VPN is up (if enabled)
       radarr = {
-        after = ["server-setup-dirs.service" "radarr-env.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
-        requires = ["server-setup-dirs.service" "radarr-env.service"];
+        after =
+          ["server-setup-dirs.service" "radarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service")
+          ++ (optional config.system.vpn.enable "mullvad-config.service");
+        requires =
+          ["server-setup-dirs.service" "radarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service");
         wants = optional config.system.vpn.enable "mullvad-config.service";
         serviceConfig.EnvironmentFile = "/run/radarr/env";
       };

@@ -96,16 +96,35 @@ in {
       inherit (cfg) enable;
       inherit (globals.sonarr) user group;
       dataDir = stateDir;
-      settings = {
-        auth = {
-          required = "Enabled";
-          method = "Forms";
+      settings =
+        {
+          auth = {
+            required = "Enabled";
+            method = "Forms";
+          };
+          server = {
+            inherit port;
+            inherit (cfg.config) urlBase;
+          };
+        }
+        // optionalAttrs config.services.postgresql.enable {
+          postgres = {
+            host = "";
+            port = 5432;
+            user = "sonarr";
+            mainDb = "sonarr";
+          };
         };
-        server = {
-          inherit port;
-          inherit (cfg.config) urlBase;
-        };
-      };
+    };
+
+    services.postgresql = mkIf config.services.postgresql.enable {
+      ensureDatabases = ["sonarr"];
+      ensureUsers = [
+        {
+          name = "sonarr";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     systemd.services = {
@@ -130,8 +149,13 @@ in {
 
       # Ensure sonarr starts after directories are created and VPN is up (if enabled)
       sonarr = {
-        after = ["server-setup-dirs.service" "sonarr-env.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
-        requires = ["server-setup-dirs.service" "sonarr-env.service"];
+        after =
+          ["server-setup-dirs.service" "sonarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service")
+          ++ (optional config.system.vpn.enable "mullvad-config.service");
+        requires =
+          ["server-setup-dirs.service" "sonarr-env.service"]
+          ++ (optional config.services.postgresql.enable "postgresql.service");
         wants = optional config.system.vpn.enable "mullvad-config.service";
         serviceConfig.EnvironmentFile = "/run/sonarr/env";
       };
