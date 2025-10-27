@@ -37,11 +37,10 @@
       system = {
         cachix-agent.enable = true;
         openssh.enable = true;
-        ddns = {
+        vpn = {
           enable = true;
-          domains = ["walawren.com"];
+          killSwitch.enable = true;
         };
-        vpn.enable = true;
         tailscale = {
           enable = true;
           mode = "server";

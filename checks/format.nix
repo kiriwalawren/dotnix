@@ -7,7 +7,7 @@
 }:
 runCommand "check-format" {nativeBuildInputs = [alejandra nodePackages.prettier shfmt];} ''
   alejandra --check ${./..}
-  prettier --check -u ${./..} --ignore-path ${./../.prettierignore} ${./../.gitignore}
+  prettier --check -u ${./..} --ignore-path ${./../.prettierignore} ${./../.gitignore} --ignore-pattern "**/*.sh"
   shfmt -d -i 2 -ci ${./..}
   touch $out
 ''

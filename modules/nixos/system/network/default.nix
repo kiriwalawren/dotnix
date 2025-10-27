@@ -6,7 +6,7 @@
   imports = [
     ./ddns.nix
     ./tailscale.nix
-    ./vpn
+    ./vpn.nix
   ];
 
   config = {

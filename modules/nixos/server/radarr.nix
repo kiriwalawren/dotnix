@@ -10,6 +10,7 @@ with lib; let
   cfg = config.server.radarr;
   port = 7878;
   stateDir = "${server.stateDir}/radarr";
+  mediaDir = "${server.mediaDir}/movies";
 in {
   options.server.radarr = {
     enable = mkOption {
@@ -41,13 +42,6 @@ in {
       };
     };
 
-    systemd.tmpfiles.rules = [
-      "d '${server.stateDir}'                0755 root root - -"
-      "d '${stateDir}'                       0755 ${globals.radarr.user} ${globals.radarr.group} - -"
-      "d '${server.mediaDir}/library'        0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
-      "d '${server.mediaDir}/library/movies' 0775 ${globals.libraryOwner.user} ${globals.libraryOwner.group} - -"
-    ];
-
     users = {
       groups.${globals.radarr.group}.gid = globals.gids.${globals.radarr.group};
       users.${globals.radarr.user} = {
@@ -62,6 +56,13 @@ in {
       inherit (globals.radarr) user group;
       settings.server.port = port;
       dataDir = stateDir;
+    };
+
+    # Ensure radarr starts after directories are created and VPN is up (if enabled)
+    systemd.services.radarr = {
+      after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
+      requires = ["server-setup-dirs.service"];
+      wants = optional config.system.vpn.enable "mullvad-config.service";
     };
 
     # Inject secrets into Radarr config
@@ -123,6 +124,20 @@ in {
         # Set username and password in database (using PBKDF2)
         dbFile="${stateDir}/radarr.db"
 
+        # Wait for database and Users table to be created (up to 30 seconds)
+        for i in {1..30}; do
+          if [ -f "$dbFile" ] && ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
+            break
+          fi
+          echo "Waiting for Radarr to create Users table... ($i/30)"
+          sleep 1
+        done
+
+        if ! ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "SELECT name FROM sqlite_master WHERE type='table' AND name='Users';" | grep -q Users; then
+          echo "Users table was not created, exiting"
+          exit 1
+        fi
+
         # Generate PBKDF2 hash using Python (read password directly from file to avoid shell expansion)
         read SALT HASHED_PASSWORD <<< $(${pkgs.python3}/bin/python3 -c "
         import base64
@@ -144,12 +159,19 @@ in {
         print(base64.b64encode(salt).decode(), base64.b64encode(hashed).decode())
         ")
 
-        # Insert or replace user in database
-        ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
-          DELETE FROM Users;
-          INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
-          VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
-        "
+        # Retry database write until it succeeds (database might be locked during initialization)
+        for i in {1..60}; do
+          if ${pkgs.sqlite}/bin/sqlite3 "$dbFile" "
+            DELETE FROM Users;
+            INSERT INTO Users (Id, Identifier, Username, Password, Salt, Iterations)
+            VALUES (1, lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)),2) || '-' || substr('89ab',abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)),2) || '-' || hex(randomblob(6))), '$AUTH_USER', '$HASHED_PASSWORD', '$SALT', 10000);
+          " 2>/dev/null; then
+            echo "Successfully inserted user credentials"
+            break
+          fi
+          echo "Database locked, retrying... ($i/60)"
+          sleep 1
+        done
 
         # Restart radarr to pick up the new config
         systemctl restart radarr.service

@@ -1,10 +1,12 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 with lib; let
   cfg = config.system.tailscale;
+  mullvadPkg = config.services.mullvad-vpn.package;
 in {
   options.system.tailscale = {
     enable = mkEnableOption "tailscale";
@@ -34,17 +36,42 @@ in {
     sops.secrets.tailscale-auth-key = {};
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
-    services.tailscale = {
+    services = {
+      # resolved prevent DNS fighting between tailscale and NetworkManager
+      resolved.enable = true;
+      tailscale = {
+        enable = true;
+        authKeyFile = config.sops.secrets.tailscale-auth-key.path;
+        openFirewall = true;
+        useRoutingFeatures =
+          if cfg.mode == "server"
+          then "both"
+          else "client";
+        extraUpFlags =
+          (optionals (cfg.mode == "server") ["--advertise-exit-node"])
+          ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"])
+          ++ ["--accept-routes=false"];
+      };
+    };
+
+    # Mullvad VPN integration - use nftables to route Tailscale traffic around VPN
+    networking.nftables = mkIf config.services.mullvad-vpn.enable {
       enable = true;
-      authKeyFile = config.sops.secrets.tailscale-auth-key.path;
-      openFirewall = true;
-      useRoutingFeatures =
-        if cfg.mode == "server"
-        then "both"
-        else "client";
-      extraUpFlags =
-        (optionals (cfg.mode == "server") ["--advertise-exit-node"])
-        ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"]);
+      tables."mullvad-tailscale" = {
+        family = "inet";
+        content = ''
+          chain prerouting {
+            type filter hook prerouting priority -100; policy accept;
+            ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+          }
+
+          chain outgoing {
+            type route hook output priority -100; policy accept;
+            meta mark 0x80000 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+            ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+          }
+        '';
+      };
     };
   };
 }
