@@ -82,13 +82,13 @@
         };
         script = ''
           # Wait for RAID device to be ready
-          ${pkgs.coreutils}/bin/timeout 30 sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
+          ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
 
           # Unlock the LUKS device
           ${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}
 
           # Wait for the device mapper device to be ready
-          ${pkgs.coreutils}/bin/timeout 30 sh -c 'while [ ! -e /dev/mapper/cryptraid ]; do ${pkgs.coreutils}/bin/sleep 1; done'
+          ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/mapper/cryptraid ]; do ${pkgs.coreutils}/bin/sleep 1; done'
 
           # Give the kernel a moment to recognize the filesystem
           ${pkgs.coreutils}/bin/sleep 1
