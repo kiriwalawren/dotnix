@@ -33,6 +33,32 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [nftables];
+    networking.nftables.enable = true;
+    networking.nftables.extraConfig = ''
+      table inet tailscale_mullvad {
+        chain mangle_output {
+          type route hook output priority -150; policy accept;
+
+          # Mark all packets destined for Tailscale subnet
+          ip daddr 100.64.0.0/10 meta mark set 0x40000
+        }
+
+        chain allow_tunnels {
+          type filter hook output priority 0; policy accept;
+
+          # Allow packets to Tailscale or Mullvad interfaces
+          oifname "tailscale0" accept
+          oifname "wg-mullvad" accept
+          oifname "lo" accept
+
+          # Drop everything else if killswitch is active
+          # Uncomment once you’re ready for killswitch testing:
+          # drop
+        }
+      }
+    '';
+
     sops.secrets.tailscale-auth-key = {};
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
