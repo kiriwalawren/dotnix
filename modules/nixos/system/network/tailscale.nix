@@ -54,33 +54,12 @@ in {
       };
     };
 
-    # Mullvad VPN integration - ensure Tailscale is excluded from VPN tunnel
-    networking.nftables = mkIf config.services.mullvad-vpn.enable {
-      enable = true;
-
-      tables = {
-        tailscale_mullvad = {
-          family = "inet";
-          content = ''
-            # Mark packets destined for Tailscale subnet
-            chain mangle_output {
-              type route hook output priority -150; policy accept;
-              ip daddr 100.64.0.0/10 meta mark set 0x40000
-            }
-
-            # Allow only Tailscale, Mullvad, and loopback
-            chain allow_tunnels {
-              type filter hook output priority 0; policy accept;
-              oifname "tailscale0" accept
-              oifname "wg-mullvad" accept
-              oifname "lo" accept
-
-              # Drop everything else if killswitch is active
-              # drop
-            }
-          '';
-        };
-      };
+    # Mullvad VPN integration - wrap tailscaled with mullvad-exclude to bypass VPN tunnel
+    systemd.services.tailscaled = mkIf config.services.mullvad-vpn.enable {
+      serviceConfig.ExecStart = [
+        "" # Clear previous ExecStart
+        "${mullvadPkg}/bin/mullvad-exclude ${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=\${PORT} $FLAGS"
+      ];
     };
   };
 }
