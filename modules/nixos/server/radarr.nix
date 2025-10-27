@@ -91,22 +91,33 @@ in {
       inherit (globals.radarr) user group;
       settings.server.port = port;
       dataDir = stateDir;
-      environmentFiles = ["/run/radarr/env"];
     };
 
-    # Ensure radarr starts after directories are created and VPN is up (if enabled)
-    systemd.services.radarr = {
-      after = ["server-setup-dirs.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
-      requires = ["server-setup-dirs.service"];
-      wants = optional config.system.vpn.enable "mullvad-config.service";
+    # Create environment file setup service
+    systemd.services.radarr-env = {
+      description = "Setup Radarr environment file";
+      wantedBy = ["radarr.service"];
+      before = ["radarr.service"];
 
-      # Create environment file with correct format before service starts
-      preStart = ''
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+
+      script = ''
         mkdir -p /run/radarr
         echo "RADARR__AUTH__APIKEY=$(cat ${config.sops.secrets."radarr/api_key".path})" > /run/radarr/env
         chown ${globals.radarr.user}:${globals.radarr.group} /run/radarr/env
         chmod 0400 /run/radarr/env
       '';
+    };
+
+    # Ensure radarr starts after directories are created and VPN is up (if enabled)
+    systemd.services.radarr = {
+      after = ["server-setup-dirs.service" "radarr-env.service"] ++ (optional config.system.vpn.enable "mullvad-config.service");
+      requires = ["server-setup-dirs.service" "radarr-env.service"];
+      wants = optional config.system.vpn.enable "mullvad-config.service";
+      serviceConfig.EnvironmentFile = "/run/radarr/env";
     };
 
     # Configure Radarr via API
