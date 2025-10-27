@@ -110,7 +110,7 @@ in {
           }
           // optionalAttrs config.services.postgresql.enable {
             postgres = {
-              host = "localhost";
+              host = "/run/postgresql";
               port = 5432;
               user = "sonarr";
               mainDb = "sonarr";
