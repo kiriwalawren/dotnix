@@ -26,10 +26,6 @@ in {
     ./user
   ];
 
-  # Set build label to include git revision
-  system.nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
-  system.configurationRevision = gitRev;
-
   environment.systemPackages = with pkgs; [
     curl
     wget
@@ -69,6 +65,10 @@ in {
   };
 
   system = {
+    # Set build label to include git revision
+    nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
+    configurationRevision = gitRev;
+
     autoUpgrade = {
       enable = true;
       flake = "github:kiriwalawren/dotnix";
