@@ -12,17 +12,15 @@ in {
     programs = {
       git = {
         enable = true;
-        diff-so-fancy = {
-          enable = true;
-          pagerOpts = ["--tabs=4" "-RFX"];
-        };
-
-        userName = "Kiri Carlson";
-        userEmail = "kiri@walawren.com";
 
         ignores = ["Session.vim" "secrets.sh" "secrets.tfvars" "local.tfvars" ".claude/"];
 
-        extraConfig = {
+        settings = {
+          user = {
+            name = "Kiri Carlson";
+            email = "kiri@walawren.com";
+          };
+
           core = {
             autocrlf = "input";
           };
@@ -35,6 +33,12 @@ in {
             rebase = false;
           };
         };
+      };
+
+      diff-so-fancy = {
+        enable = true;
+        enableGitIntegration = true;
+        pagerOpts = ["--tabs=4" "-RFX"];
       };
 
       gh = {

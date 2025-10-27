@@ -1,22 +1,22 @@
 {
   programs.nixvim.plugins.treesitter-textobjects = {
     enable = true;
-    move = {
+    settings.move = {
       enable = true;
 
-      gotoNextStart = {
+      goto_next_start = {
         "]f" = "@function.outer";
         "]c" = "@class.outer";
       };
-      gotoNextEnd = {
+      goto_next_end = {
         "]F" = "@function.outer";
         "]C" = "@class.outer";
       };
-      gotoPreviousStart = {
+      goto_previous_start = {
         "[f" = "@function.outer";
         "[c" = "@class.outer";
       };
-      gotoPreviousEnd = {
+      goto_previous_end = {
         "[F" = "@function.outer";
         "[C" = "@class.outer";
       };
