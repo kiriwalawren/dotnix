@@ -56,24 +56,16 @@ in {
 
     # Mullvad VPN integration - ensure Tailscale is excluded from VPN tunnel
     systemd.services = mkIf config.services.mullvad-vpn.enable {
-      # Ensure Mullvad waits for Tailscale to start before configuring and connecting
-      mullvad-config = {
-        wants = ["tailscaled.service" "tailscaled-autoconnect.service"];
-        after = ["tailscaled.service" "tailscaled-autoconnect.service"];
+      tailscaled = {
+        upholds = ["mullvad-split-tunnel-tailscale.service"];
+        wants = ["mullvad-daemon.service" "mullvad-config.service"];
+        after = ["mullvad-daemon.service" "mullvad-config.service"];
       };
-
-      mullvad-daemon = {
-        wants = ["tailscaled.service" "tailscaled-autoconnect.service"];
-        after = ["tailscaled.service" "tailscaled-autoconnect.service"];
-      };
-
-      # Ensure tailscaled upholds the split-tunnel service
-      tailscaled.upholds = ["mullvad-split-tunnel-tailscale.service"];
 
       # Configure split-tunnel for Tailscale
       mullvad-split-tunnel-tailscale = {
         description = "Add Tailscale to Mullvad split-tunnel";
-        after = ["tailscaled.service" "mullvad-config.service" "mullvad-daemon.service"];
+        after = ["tailscaled.service"];
         bindsTo = ["tailscaled.service"]; # Stop when tailscaled stops
         serviceConfig = {
           Type = "oneshot";
