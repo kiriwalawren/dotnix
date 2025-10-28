@@ -1,9 +1,190 @@
 {
+  config,
   lib,
   pkgs,
   ...
 }:
 with lib; {
+  # Helper function to create a complete *arr NixOS module
+  # This reduces boilerplate across sonarr/radarr/lidarr modules
+  mkArrModule = {
+    serviceName, # e.g., "sonarr", "radarr", "lidarr"
+    port,
+    defaultBranch,
+    defaultApiVersion ? "v3",
+    mediaDirs, # list of {dir, owner} attribute sets
+    defaultRootFolders, # default rootFolders configuration
+  }: let
+    inherit (config) server;
+    inherit (server) globals;
+    cfg = config.server.${serviceName};
+    stateDir = "${server.stateDir}/${serviceName}";
+    arrCommon = import ./arr-common.nix {inherit config lib pkgs;};
+    capitalizedName = toUpper (substring 0 1 serviceName) + substring 1 (-1) serviceName;
+    globalsCfg = globals.${serviceName};
+  in {
+    options.server.${serviceName} = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        example = true;
+        description = "Whether or not to enable the ${capitalizedName} service.";
+      };
+
+      config = mkOption {
+        type = arrCommon.arrConfigModule;
+        default = {};
+        description = "${capitalizedName} configuration options that will be set via the API.";
+      };
+    };
+
+    config = mkIf (server.enable && cfg.enable) {
+      # Set defaults for service-specific settings
+      server.${serviceName}.config = {
+        inherit port;
+        branch = mkDefault defaultBranch;
+        instanceName = mkDefault capitalizedName;
+        urlBase = mkDefault "/${serviceName}";
+        apiVersion = mkDefault defaultApiVersion;
+        rootFolders = mkDefault defaultRootFolders;
+        apiKeySecret = mkDefault config.sops.secrets."${serviceName}/api_key".path;
+        usernameSecret = mkDefault config.sops.secrets."${serviceName}/auth/username".path;
+        passwordSecret = mkDefault config.sops.secrets."${serviceName}/auth/password".path;
+      };
+
+      # Register directories to be created
+      server.dirRegistrations =
+        [
+          {
+            inherit (globalsCfg) group;
+            dir = stateDir;
+            owner = globalsCfg.user;
+          }
+        ]
+        ++ (map (mediaDir: {
+            inherit (globalsCfg) group;
+            inherit (mediaDir) dir owner;
+          })
+          mediaDirs);
+
+      sops.secrets = {
+        "${serviceName}/api_key" = {
+          inherit (globalsCfg) group;
+          owner = globalsCfg.user;
+          mode = "0440";
+        };
+        "${serviceName}/auth/username" = {
+          inherit (globalsCfg) group;
+          owner = globalsCfg.user;
+          mode = "0440";
+        };
+        "${serviceName}/auth/password" = {
+          inherit (globalsCfg) group;
+          owner = globalsCfg.user;
+          mode = "0440";
+        };
+      };
+
+      services = {
+        ${serviceName} = {
+          inherit (cfg) enable;
+          inherit (globalsCfg) user group;
+          dataDir = stateDir;
+          settings =
+            {
+              auth = {
+                required = "Enabled";
+                method = "Forms";
+              };
+              server = {
+                inherit port;
+                inherit (cfg.config) urlBase;
+              };
+            }
+            // optionalAttrs config.services.postgresql.enable {
+              postgres = {
+                host = "/run/postgresql";
+                port = 5432;
+                user = serviceName;
+                mainDb = serviceName;
+                logDb = serviceName;
+              };
+            };
+        };
+
+        postgresql = mkIf config.services.postgresql.enable {
+          ensureDatabases = [serviceName];
+          ensureUsers = [
+            {
+              name = serviceName;
+              ensureDBOwnership = true;
+            }
+          ];
+        };
+
+        nginx.virtualHosts.localhost.locations."${cfg.config.urlBase}" = {
+          proxyPass = "http://127.0.0.1:${builtins.toString port}";
+          recommendedProxySettings = true;
+          extraConfig = ''
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_redirect off;
+          '';
+        };
+      };
+
+      users = {
+        groups.${globalsCfg.group}.gid = globals.gids.${globalsCfg.group};
+        users.${globalsCfg.user} = {
+          inherit (globalsCfg) group;
+          isSystemUser = true;
+          uid = globals.uids.${globalsCfg.user};
+        };
+      };
+
+      systemd.services = {
+        # Create environment file setup service
+        "${serviceName}-env" = {
+          description = "Setup ${capitalizedName} environment file";
+          wantedBy = ["${serviceName}.service"];
+          before = ["${serviceName}.service"];
+
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+
+          script = let
+            envVar = toUpper serviceName + "__AUTH__APIKEY";
+          in ''
+            mkdir -p /run/${serviceName}
+            echo "${envVar}=$(cat ${config.sops.secrets."${serviceName}/api_key".path})" > /run/${serviceName}/env
+            chown ${globalsCfg.user}:${globalsCfg.group} /run/${serviceName}/env
+            chmod 0400 /run/${serviceName}/env
+          '';
+        };
+
+        # Ensure main service (radarr.service, etc.) service starts after
+        # directories are created and VPN is up (if enabled)
+        ${serviceName} = {
+          after =
+            ["server-setup-dirs.service" "${serviceName}-env.service"]
+            ++ (optional config.services.postgresql.enable "postgresql.service")
+            ++ (optional config.system.vpn.enable "mullvad-config.service");
+          requires =
+            ["server-setup-dirs.service" "${serviceName}-env.service"]
+            ++ (optional config.services.postgresql.enable "postgresql.service");
+          wants = optional config.system.vpn.enable "mullvad-config.service";
+          serviceConfig.EnvironmentFile = "/run/${serviceName}/env";
+        };
+
+        # Configure service via API
+        "${serviceName}-config" = arrCommon.mkArrConfigService serviceName cfg.config;
+      };
+    };
+  };
+
   # Shared configuration submodule for *arr applications
   arrConfigModule = types.submodule {
     options = {
@@ -67,6 +248,12 @@ with lib; {
         type = types.str;
         default = "";
         description = "URL base path";
+      };
+
+      apiVersion = mkOption {
+        type = types.str;
+        default = "v3";
+        description = "Current version of the API of the select service";
       };
 
       applicationUrl = mkOption {
@@ -231,9 +418,15 @@ with lib; {
 
       # Root folders (managed via separate API endpoint)
       rootFolders = mkOption {
-        type = types.listOf types.path;
+        type = types.listOf types.attrs;
         default = [];
-        description = "List of root folders to create";
+        description = ''
+          List of root folders to create. Each folder is an attribute set that will be
+          converted to JSON and sent to the API.
+
+          For Sonarr/Radarr, a simple path is sufficient: {path = "/path/to/folder";}
+          For Lidarr, additional fields are required like defaultQualityProfileId, etc.
+        '';
       };
     };
   };
@@ -259,12 +452,12 @@ with lib; {
       AUTH_USER=$(cat ${serviceConfig.usernameSecret})
       AUTH_PASSWORD=$(cat ${serviceConfig.passwordSecret})
 
-      BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}"
+      BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}/api/${serviceConfig.apiVersion}"
 
       # Wait for API to be available (up to 60 seconds)
       echo "Waiting for ${capitalizedName} API to be available..."
       for i in {1..60}; do
-        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/api/v3/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
+        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
           echo "${capitalizedName} API is available"
           break
         fi
@@ -274,7 +467,7 @@ with lib; {
 
       # Get current host configuration
       echo "Fetching current host configuration..."
-      HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/config/host")
+      HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/config/host")
 
       if [ -z "$HOST_CONFIG" ]; then
         echo "Failed to fetch host configuration"
@@ -338,25 +531,30 @@ with lib; {
         -H "X-Api-Key: $API_KEY" \
         -H "Content-Type: application/json" \
         -d "$NEW_CONFIG" \
-        "$BASE_URL/api/v3/config/host/$CONFIG_ID"
+        "$BASE_URL/config/host/$CONFIG_ID"
 
       echo "Configuration updated successfully"
 
       # Create root folders if they don't exist
       echo "Checking for root folders..."
-      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/rootfolder")
+      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder")
 
-      ${concatMapStringsSep "\n" (folder: ''
-          if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
-            echo "Creating root folder: ${folder}"
+      ${concatMapStringsSep "\n" (folderConfig: let
+          # Convert the Nix attr set to a JSON string
+          folderJson = builtins.toJSON folderConfig;
+          # Extract the path for checking existence
+          folderPath = folderConfig.path;
+        in ''
+          if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folderPath}")' >/dev/null 2>&1; then
+            echo "Creating root folder: ${folderPath}"
             ${pkgs.curl}/bin/curl -s -f -X POST \
               -H "X-Api-Key: $API_KEY" \
               -H "Content-Type: application/json" \
-              -d '{"path":"${folder}"}' \
-              "$BASE_URL/api/v3/rootfolder"
-            echo "Root folder created: ${folder}"
+              -d '${folderJson}' \
+              "$BASE_URL/rootfolder"
+            echo "Root folder created: ${folderPath}"
           else
-            echo "Root folder already exists: ${folder}"
+            echo "Root folder already exists: ${folderPath}"
           fi
         '')
         serviceConfig.rootFolders}
