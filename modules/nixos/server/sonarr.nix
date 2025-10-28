@@ -40,7 +40,10 @@ in {
       branch = mkDefault "main";
       instanceName = mkDefault "Sonarr";
       urlBase = mkDefault "/sonarr";
-      rootFolders = mkDefault [tvDir animeDir];
+      rootFolders = mkDefault [
+        {path = tvDir;}
+        {path = animeDir;}
+      ];
       apiKeySecret = mkDefault config.sops.secrets."sonarr/api_key".path;
       usernameSecret = mkDefault config.sops.secrets."sonarr/auth/username".path;
       passwordSecret = mkDefault config.sops.secrets."sonarr/auth/password".path;

@@ -39,7 +39,7 @@ in {
       branch = mkDefault "master";
       instanceName = mkDefault "Radarr";
       urlBase = mkDefault "/radarr";
-      rootFolders = mkDefault [mediaDir];
+      rootFolders = mkDefault [{path = mediaDir;}];
       apiKeySecret = mkDefault config.sops.secrets."radarr/api_key".path;
       usernameSecret = mkDefault config.sops.secrets."radarr/auth/username".path;
       passwordSecret = mkDefault config.sops.secrets."radarr/auth/password".path;

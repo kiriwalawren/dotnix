@@ -237,9 +237,15 @@ with lib; {
 
       # Root folders (managed via separate API endpoint)
       rootFolders = mkOption {
-        type = types.listOf types.path;
+        type = types.listOf types.attrs;
         default = [];
-        description = "List of root folders to create";
+        description = ''
+          List of root folders to create. Each folder is an attribute set that will be
+          converted to JSON and sent to the API.
+
+          For Sonarr/Radarr, a simple path is sufficient: {path = "/path/to/folder";}
+          For Lidarr, additional fields are required like defaultQualityProfileId, etc.
+        '';
       };
     };
   };
@@ -352,17 +358,22 @@ with lib; {
       echo "Checking for root folders..."
       ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder")
 
-      ${concatMapStringsSep "\n" (folder: ''
-          if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
-            echo "Creating root folder: ${folder}"
+      ${concatMapStringsSep "\n" (folderConfig: let
+          # Convert the Nix attr set to a JSON string
+          folderJson = builtins.toJSON folderConfig;
+          # Extract the path for checking existence
+          folderPath = folderConfig.path;
+        in ''
+          if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folderPath}")' >/dev/null 2>&1; then
+            echo "Creating root folder: ${folderPath}"
             ${pkgs.curl}/bin/curl -s -f -X POST \
               -H "X-Api-Key: $API_KEY" \
               -H "Content-Type: application/json" \
-              -d '{"path":"${folder}"}' \
+              -d '${folderJson}' \
               "$BASE_URL/rootfolder"
-            echo "Root folder created: ${folder}"
+            echo "Root folder created: ${folderPath}"
           else
-            echo "Root folder already exists: ${folder}"
+            echo "Root folder already exists: ${folderPath}"
           fi
         '')
         serviceConfig.rootFolders}

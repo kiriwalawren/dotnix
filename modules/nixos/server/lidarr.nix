@@ -40,7 +40,17 @@ in {
       instanceName = mkDefault "Lidarr";
       urlBase = mkDefault "/lidarr";
       apiVersion = mkDefault "v1";
-      rootFolders = mkDefault [mediaDir];
+      rootFolders = mkDefault [
+        {
+          path = mediaDir;
+          defaultQualityProfileId = 2;
+          defaultMetadataProfileId = 1;
+          defaultMonitorOption = "all";
+          defaultNewItemMonitorOption = "all";
+          defaultTags = [];
+          name = "default";
+        }
+      ];
       apiKeySecret = mkDefault config.sops.secrets."lidarr/api_key".path;
       usernameSecret = mkDefault config.sops.secrets."lidarr/auth/username".path;
       passwordSecret = mkDefault config.sops.secrets."lidarr/auth/password".path;
