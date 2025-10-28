@@ -28,6 +28,7 @@ in {
         inherit (globals.postgres) group;
         dir = stateDir;
         owner = globals.postgres.user;
+        mode = "0700";
       }
     ];
 
