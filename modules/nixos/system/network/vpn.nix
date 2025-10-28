@@ -123,6 +123,11 @@ in {
             ${mullvadPkg}/bin/mullvad auto-connect set off
           ''}
         '';
+        ExecStop = pkgs.writeShellScript "logout-mullvad" ''
+          # Disconnect and logout to free up device slot
+          ${mullvadPkg}/bin/mullvad disconnect || true
+          ${mullvadPkg}/bin/mullvad account logout || true
+        '';
       };
     };
   };
