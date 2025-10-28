@@ -69,6 +69,12 @@ with lib; {
         description = "URL base path";
       };
 
+      apiVersion = {
+        type = types.str;
+        default = "v3";
+        description = "Current version of the API of the select service";
+      };
+
       applicationUrl = mkOption {
         type = types.str;
         default = "";
@@ -259,12 +265,12 @@ with lib; {
       AUTH_USER=$(cat ${serviceConfig.usernameSecret})
       AUTH_PASSWORD=$(cat ${serviceConfig.passwordSecret})
 
-      BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}"
+      BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}/api/${serviceConfig.apiVersion}"
 
       # Wait for API to be available (up to 60 seconds)
       echo "Waiting for ${capitalizedName} API to be available..."
       for i in {1..60}; do
-        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/api/v3/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
+        if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
           echo "${capitalizedName} API is available"
           break
         fi
@@ -274,7 +280,7 @@ with lib; {
 
       # Get current host configuration
       echo "Fetching current host configuration..."
-      HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/config/host")
+      HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/config/host")
 
       if [ -z "$HOST_CONFIG" ]; then
         echo "Failed to fetch host configuration"
@@ -338,13 +344,13 @@ with lib; {
         -H "X-Api-Key: $API_KEY" \
         -H "Content-Type: application/json" \
         -d "$NEW_CONFIG" \
-        "$BASE_URL/api/v3/config/host/$CONFIG_ID"
+        "$BASE_URL/config/host/$CONFIG_ID"
 
       echo "Configuration updated successfully"
 
       # Create root folders if they don't exist
       echo "Checking for root folders..."
-      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/api/v3/rootfolder")
+      ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder")
 
       ${concatMapStringsSep "\n" (folder: ''
           if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folder}")' >/dev/null 2>&1; then
@@ -353,7 +359,7 @@ with lib; {
               -H "X-Api-Key: $API_KEY" \
               -H "Content-Type: application/json" \
               -d '{"path":"${folder}"}' \
-              "$BASE_URL/api/v3/rootfolder"
+              "$BASE_URL/rootfolder"
             echo "Root folder created: ${folder}"
           else
             echo "Root folder already exists: ${folder}"

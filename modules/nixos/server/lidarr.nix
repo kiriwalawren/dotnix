@@ -39,6 +39,7 @@ in {
       branch = mkDefault "master";
       instanceName = mkDefault "Lidarr";
       urlBase = mkDefault "/lidarr";
+      apiVersion = mkDefault "v1";
       rootFolders = mkDefault [mediaDir];
       apiKeySecret = mkDefault config.sops.secrets."lidarr/api_key".path;
       usernameSecret = mkDefault config.sops.secrets."lidarr/auth/username".path;
