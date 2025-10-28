@@ -7,7 +7,7 @@
   inherit (config) server;
   inherit (server) globals;
   mediaDir = "${server.mediaDir}/movies";
-  arrCommon = import ./arr-common.nix {inherit lib pkgs;};
+  arrCommon = import ./arr-common.nix {inherit config lib pkgs;};
 in
   arrCommon.mkArrModule {
     serviceName = "radarr";
@@ -22,6 +22,4 @@ in
     defaultRootFolders = [
       {path = mediaDir;}
     ];
-  } {
-    inherit config lib pkgs;
   }

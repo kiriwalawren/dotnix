@@ -7,7 +7,7 @@
   inherit (config) server;
   inherit (server) globals;
   mediaDir = "${server.mediaDir}/music";
-  arrCommon = import ./arr-common.nix {inherit lib pkgs;};
+  arrCommon = import ./arr-common.nix {inherit config lib pkgs;};
 in
   arrCommon.mkArrModule {
     serviceName = "lidarr";
@@ -31,6 +31,4 @@ in
         name = "default";
       }
     ];
-  } {
-    inherit config lib pkgs;
   }
