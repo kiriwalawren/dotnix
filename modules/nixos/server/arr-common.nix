@@ -69,7 +69,7 @@ with lib; {
         description = "URL base path";
       };
 
-      apiVersion = {
+      apiVersion = mkOption {
         type = types.str;
         default = "v3";
         description = "Current version of the API of the select service";
