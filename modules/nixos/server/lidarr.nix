@@ -8,7 +8,7 @@ with lib; let
   inherit (config) server;
   inherit (server) globals;
   cfg = config.server.lidarr;
-  port = 7878;
+  port = 8686;
   stateDir = "${server.stateDir}/lidarr";
   mediaDir = "${server.mediaDir}/music";
   arrCommon = import ./arr-common.nix {inherit lib pkgs;};
