@@ -109,10 +109,10 @@
       pkgs.writeShellApplication {
         name = "dotnix-format";
         text = ''
-          ${pkgs.alejandra}/bin/alejandra ./
-          ${pkgs.statix} fix ./
+          ${pkgs.alejandra}/bin/alejandra ./.
+          ${pkgs.statix} fix ./.
           ${pkgs.nodePackages.prettier}/bin/prettier --write . --ignore-pattern "**/*.sh"
-          ${pkgs.shfmt}/bin/shfmt -l -w -i 2 -ci ./
+          ${pkgs.shfmt}/bin/shfmt -l -w -i 2 -ci ./.
         '';
       });
 
