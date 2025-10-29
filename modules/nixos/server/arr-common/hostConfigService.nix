@@ -38,7 +38,7 @@ with lib; {
 
     # Get current host configuration
     echo "Fetching current host configuration..."
-    HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/config/host")
+    HOST_CONFIG=$(${pkgs.curl}/bin/curl -s -f -H "X-Api-Key: $API_KEY" "$BASE_URL/config/host" 2>/dev/null)
 
     if [ -z "$HOST_CONFIG" ]; then
       echo "Failed to fetch host configuration"

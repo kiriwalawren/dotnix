@@ -37,7 +37,7 @@ with lib; {
 
     # Create root folders if they don't exist
     echo "Checking for root folders..."
-    ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder")
+    ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder" 2>/dev/null)
 
     ${concatMapStringsSep "\n" (folderConfig: let
         # Convert the Nix attr set to a JSON string
@@ -51,7 +51,7 @@ with lib; {
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d '${folderJson}' \
-            "$BASE_URL/rootfolder"
+            "$BASE_URL/rootfolder" > /dev/null
           echo "Root folder created: ${folderPath}"
         else
           echo "Root folder already exists: ${folderPath}"
