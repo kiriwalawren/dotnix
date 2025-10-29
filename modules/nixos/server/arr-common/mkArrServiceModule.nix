@@ -92,16 +92,22 @@ in {
           cfg.mediaDirs);
 
       sops.secrets = {
-        "${serviceName}/api_key" = {
-          inherit (cfg) group;
-          owner = serviceName;
-          mode = "0440";
-        };
-        "${serviceName}/password" = {
-          inherit (cfg) group;
-          owner = serviceName;
-          mode = "0440";
-        };
+        "${serviceName}/api_key" =
+          {
+            mode = "0440";
+          }
+          // optionalAttrs (!cfg.usesDynamicUser) {
+            inherit (cfg) group;
+            owner = serviceName;
+          };
+        "${serviceName}/password" =
+          {
+            mode = "0440";
+          }
+          // optionalAttrs (!cfg.usesDynamicUser) {
+            inherit (cfg) group;
+            owner = serviceName;
+          };
       };
 
       services = {
@@ -186,8 +192,12 @@ in {
             in ''
               mkdir -p /run/${serviceName}
               echo "${envVar}=$(cat ${config.sops.secrets."${serviceName}/api_key".path})" > /run/${serviceName}/env
-              chown ${serviceName}:${cfg.group} /run/${serviceName}/env
-              chmod 0400 /run/${serviceName}/env
+              ${optionalString (!cfg.usesDynamicUser) "chown ${serviceName}:${cfg.group} /run/${serviceName}/env"}
+              chmod 0${
+                if cfg.usesDynamicUser
+                then "444"
+                else "400"
+              } /run/${serviceName}/env
             '';
           };
 

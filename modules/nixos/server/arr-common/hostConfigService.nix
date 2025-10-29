@@ -64,7 +64,7 @@ with lib; {
         authenticationMethod: "${serviceConfig.hostConfig.authenticationMethod}",
         authenticationRequired: "${serviceConfig.hostConfig.authenticationRequired}",
         analyticsEnabled: ${boolToString serviceConfig.hostConfig.analyticsEnabled},
-        username: ${serviceConfig.hostConfig.username},
+        username: "${serviceConfig.hostConfig.username}",
         password: $password,
         passwordConfirmation: $password,
         logLevel: "${serviceConfig.hostConfig.logLevel}",
