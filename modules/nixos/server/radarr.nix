@@ -5,19 +5,16 @@
   ...
 }: let
   inherit (config) server;
-  inherit (server) globals;
   mediaDir = "${server.mediaDir}/movies";
-  arrCommon = import ./arr-common {inherit config lib pkgs;};
 in {
-  imports = [
-    (arrCommon.mkArrServiceModule "radarr")
-  ];
+  imports = [(import ./arr-common/mkArrServiceModule.nix "radarr" {inherit config lib pkgs;})];
 
   config.server.radarr = {
+    group = lib.mkDefault "media";
     mediaDirs = lib.mkDefault [
       {
         dir = mediaDir;
-        owner = globals.libraryOwner.user;
+        owner = "root";
       }
     ];
     config = {

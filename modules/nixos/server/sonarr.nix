@@ -5,24 +5,21 @@
   ...
 }: let
   inherit (config) server;
-  inherit (server) globals;
   tvDir = "${server.mediaDir}/tv";
   animeDir = "${server.mediaDir}/anime";
-  arrCommon = import ./arr-common {inherit config lib pkgs;};
 in {
-  imports = [
-    (arrCommon.mkArrServiceModule "sonarr")
-  ];
+  imports = [(import ./arr-common/mkArrServiceModule.nix "sonarr" {inherit config lib pkgs;})];
 
   config.server.sonarr = {
+    group = lib.mkDefault "media";
     mediaDirs = lib.mkDefault [
       {
         dir = tvDir;
-        owner = globals.libraryOwner.user;
+        owner = "root";
       }
       {
         dir = animeDir;
-        owner = globals.libraryOwner.user;
+        owner = "root";
       }
     ];
     config = {

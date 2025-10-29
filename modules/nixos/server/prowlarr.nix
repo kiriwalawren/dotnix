@@ -3,12 +3,8 @@
   lib,
   pkgs,
   ...
-}: let
-  arrCommon = import ./arr-common {inherit config lib pkgs;};
-in {
-  imports = [
-    (arrCommon.mkArrServiceModule "prowlarr")
-  ];
+}: {
+  imports = [(import ./arr-common/mkArrServiceModule.nix "prowlarr" {inherit config lib pkgs;})];
 
   config.server.prowlarr = {
     usesDynamicUser = true;
