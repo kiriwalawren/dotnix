@@ -101,7 +101,7 @@ with lib; {
       -H "X-Api-Key: $API_KEY" \
       -H "Content-Type: application/json" \
       -d "$NEW_CONFIG" \
-      "$BASE_URL/config/host/$CONFIG_ID"
+      "$BASE_URL/config/host/$CONFIG_ID" > /dev/null
 
     echo "Configuration updated successfully"
 
