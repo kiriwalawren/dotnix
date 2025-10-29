@@ -1,11 +1,5 @@
-{
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  inherit (config.server) globals;
-in {
+{lib, ...}:
+with lib; {
   options.server.globals = mkOption {
     type = types.attrs;
     description = "Global values to be used by the server";
@@ -39,57 +33,38 @@ in {
       recyclarr = 269;
     };
 
-    autobrr = {
-      user = "autobrr";
-      group = "autobrr";
-    };
-    bazarr = {
-      inherit (globals.libraryOwner) group;
-      user = "bazarr";
-    };
-    jellyfin = {
-      inherit (globals.libraryOwner) group;
-      user = "jellyfin";
-    };
-    jellyseerr = {
-      user = "jellyseerr";
-      group = "jellyseerr";
-    };
-    lidarr = {
-      inherit (globals.libraryOwner) group;
-      user = "lidarr";
-    };
-    postgres = {
-      user = "postgres";
-      group = "postgres";
-    };
-    prowlarr = {
-      user = "prowlarr";
-      group = "prowlarr";
-    };
-    radarr = {
-      inherit (globals.libraryOwner) group;
-      user = "radarr";
-    };
-    recyclarr = {
-      user = "recyclarr";
-      group = "recyclarr";
-    };
-    sabnzbd = {
-      inherit (globals.libraryOwner) group;
-      user = "sabnzbd";
-    };
-    sonarr = {
-      inherit (globals.libraryOwner) group;
-      user = "sonarr";
-    };
-    transmission = {
-      inherit (globals.libraryOwner) group;
-      user = "transmission";
-    };
-    cross-seed = {
-      user = "cross-seed";
-      group = "cross-seed";
-    };
+    # TODO: Remove these when you have added each specific service
+    # autobrr = {
+    #   user = "autobrr";
+    #   group = "autobrr";
+    # };
+    # bazarr = {
+    #   inherit (globals.libraryOwner) group;
+    #   user = "bazarr";
+    # };
+    # jellyfin = {
+    #   inherit (globals.libraryOwner) group;
+    #   user = "jellyfin";
+    # };
+    # jellyseerr = {
+    #   user = "jellyseerr";
+    #   group = "jellyseerr";
+    # };
+    # recyclarr = {
+    #   user = "recyclarr";
+    #   group = "recyclarr";
+    # };
+    # sabnzbd = {
+    #   inherit (globals.libraryOwner) group;
+    #   user = "sabnzbd";
+    # };
+    # transmission = {
+    #   inherit (globals.libraryOwner) group;
+    #   user = "transmission";
+    # };
+    # cross-seed = {
+    #   user = "cross-seed";
+    #   group = "cross-seed";
+    # };
   };
 }

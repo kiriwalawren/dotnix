@@ -12,6 +12,7 @@ in {
     ./globals.nix
     ./lidarr.nix
     ./postgres.nix
+    ./prowlarr.nix
     ./radarr.nix
     ./sonarr.nix
   ];
@@ -157,6 +158,7 @@ in {
     server = {
       lidarr.enable = true;
       postgres.enable = true;
+      prowlarr.enable = true;
       radarr.enable = true;
       sonarr.enable = true;
     };

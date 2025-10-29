@@ -6,7 +6,6 @@
 }:
 with lib; let
   inherit (config) server;
-  inherit (server) globals;
   cfg = config.server.postgres;
   stateDir = "${server.stateDir}/postgres";
 in {
@@ -15,9 +14,7 @@ in {
       type = types.bool;
       default = false;
       example = true;
-      description = ''
-        Whether or not to enable postgresql.
-      '';
+      description = "Whether or not to enable postgresql.";
     };
   };
 
@@ -25,9 +22,9 @@ in {
     # Register directories to be created
     server.dirRegistrations = [
       {
-        inherit (globals.postgres) group;
         dir = stateDir;
-        owner = globals.postgres.user;
+        owner = "postgres";
+        group = "postgres";
         mode = "0700";
       }
     ];
