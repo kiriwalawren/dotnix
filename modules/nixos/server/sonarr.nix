@@ -8,7 +8,7 @@
   inherit (server) globals;
   tvDir = "${server.mediaDir}/tv";
   animeDir = "${server.mediaDir}/anime";
-  arrCommon = import ./arr-common.nix {inherit config lib pkgs;};
+  arrCommon = import ./arr-common {inherit config lib pkgs;};
 in
   arrCommon.mkArrModule {
     serviceName = "sonarr";
@@ -24,7 +24,7 @@ in
         owner = globals.libraryOwner.user;
       }
     ];
-    defaultRootFolders = [
+    rootFolders = [
       {path = tvDir;}
       {path = animeDir;}
     ];
