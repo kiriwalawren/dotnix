@@ -39,6 +39,26 @@ with lib; {
     echo "Checking for root folders..."
     ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder" 2>/dev/null)
 
+    # Build list of configured paths
+    CONFIGURED_PATHS=$(cat <<'EOF'
+    ${builtins.toJSON (map (f: f.path) serviceConfig.rootFolders)}
+    EOF
+    )
+
+    # Delete root folders that are not in the configuration
+    echo "Removing root folders not in configuration..."
+    echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -r '.[] | @json' | while IFS= read -r folder; do
+      FOLDER_PATH=$(echo "$folder" | ${pkgs.jq}/bin/jq -r '.path')
+      FOLDER_ID=$(echo "$folder" | ${pkgs.jq}/bin/jq -r '.id')
+
+      if ! echo "$CONFIGURED_PATHS" | ${pkgs.jq}/bin/jq -e --arg path "$FOLDER_PATH" 'index($path)' >/dev/null 2>&1; then
+        echo "Deleting root folder not in config: $FOLDER_PATH (ID: $FOLDER_ID)"
+        ${pkgs.curl}/bin/curl -s -f -X DELETE \
+          -H "X-Api-Key: $API_KEY" \
+          "$BASE_URL/rootfolder/$FOLDER_ID" >/dev/null 2>&1 || echo "Warning: Failed to delete root folder $FOLDER_PATH"
+      fi
+    done
+
     ${concatMapStringsSep "\n" (folderConfig: let
         # Convert the Nix attr set to a JSON string
         folderJson = builtins.toJSON folderConfig;
