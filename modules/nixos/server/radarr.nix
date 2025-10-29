@@ -8,18 +8,27 @@
   inherit (server) globals;
   mediaDir = "${server.mediaDir}/movies";
   arrCommon = import ./arr-common {inherit config lib pkgs;};
-in
-  arrCommon.mkArrModule {
-    serviceName = "radarr";
-    port = 7878;
-    defaultBranch = "master";
-    mediaDirs = [
+in {
+  imports = [
+    (arrCommon.mkArrServiceModule "radarr")
+  ];
+
+  config.server.radarr = {
+    mediaDirs = lib.mkDefault [
       {
         dir = mediaDir;
         owner = globals.libraryOwner.user;
       }
     ];
-    rootFolders = [
-      {path = mediaDir;}
-    ];
-  }
+    config = {
+      apiVersion = lib.mkDefault "v3";
+      hostConfig = {
+        port = lib.mkDefault 7878;
+        branch = lib.mkDefault "master";
+      };
+      rootFolders = lib.mkDefault [
+        {path = mediaDir;}
+      ];
+    };
+  };
+}

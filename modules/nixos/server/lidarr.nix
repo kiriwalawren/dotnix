@@ -8,27 +8,35 @@
   inherit (server) globals;
   mediaDir = "${server.mediaDir}/music";
   arrCommon = import ./arr-common {inherit config lib pkgs;};
-in
-  arrCommon.mkArrModule {
-    serviceName = "lidarr";
-    port = 8686;
-    defaultBranch = "master";
-    defaultApiVersion = "v1";
-    mediaDirs = [
+in {
+  imports = [
+    (arrCommon.mkArrServiceModule "lidarr")
+  ];
+
+  config.server.lidarr = {
+    mediaDirs = lib.mkDefault [
       {
         dir = mediaDir;
         owner = globals.libraryOwner.user;
       }
     ];
-    rootFolders = [
-      {
-        path = mediaDir;
-        defaultQualityProfileId = 2;
-        defaultMetadataProfileId = 1;
-        defaultMonitorOption = "all";
-        defaultNewItemMonitorOption = "all";
-        defaultTags = [];
-        name = "default";
-      }
-    ];
-  }
+    config = {
+      apiVersion = lib.mkDefault "v1";
+      hostConfig = {
+        port = lib.mkDefault 8686;
+        branch = lib.mkDefault "master";
+      };
+      rootFolders = lib.mkDefault [
+        {
+          path = mediaDir;
+          defaultQualityProfileId = 2;
+          defaultMetadataProfileId = 1;
+          defaultMonitorOption = "all";
+          defaultNewItemMonitorOption = "all";
+          defaultTags = [];
+          name = "default";
+        }
+      ];
+    };
+  };
+}

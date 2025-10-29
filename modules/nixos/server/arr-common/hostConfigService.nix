@@ -20,11 +20,10 @@ with lib; {
     set -eu
 
     # Read secrets
-    API_KEY=$(cat ${serviceConfig.apiKeySecret})
-    AUTH_USER=$(cat ${serviceConfig.usernameSecret})
-    AUTH_PASSWORD=$(cat ${serviceConfig.passwordSecret})
+    API_KEY=$(cat ${serviceConfig.apiKeyPath})
+    AUTH_PASSWORD=$(cat ${serviceConfig.hostConfig.passwordPath})
 
-    BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}/api/${serviceConfig.apiVersion}"
+    BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.hostConfig.port}${serviceConfig.hostConfig.urlBase}/api/${serviceConfig.apiVersion}"
 
     # Wait for API to be available (up to 60 seconds)
     echo "Waiting for ${capitalizedName} API to be available..."
@@ -53,48 +52,47 @@ with lib; {
     echo "Building configuration..."
     NEW_CONFIG=$(${pkgs.jq}/bin/jq -n \
       --arg apiKey "$API_KEY" \
-      --arg username "$AUTH_USER" \
       --arg password "$AUTH_PASSWORD" \
       --argjson id "$CONFIG_ID" \
       '{
         id: $id,
-        bindAddress: "${serviceConfig.bindAddress}",
-        port: ${builtins.toString serviceConfig.port},
-        sslPort: ${builtins.toString serviceConfig.sslPort},
-        enableSsl: ${boolToString serviceConfig.enableSsl},
-        launchBrowser: ${boolToString serviceConfig.launchBrowser},
-        authenticationMethod: "${serviceConfig.authenticationMethod}",
-        authenticationRequired: "${serviceConfig.authenticationRequired}",
-        analyticsEnabled: ${boolToString serviceConfig.analyticsEnabled},
-        username: $username,
+        bindAddress: "${serviceConfig.hostConfig.bindAddress}",
+        port: ${builtins.toString serviceConfig.hostConfig.port},
+        sslPort: ${builtins.toString serviceConfig.hostConfig.sslPort},
+        enableSsl: ${boolToString serviceConfig.hostConfig.enableSsl},
+        launchBrowser: ${boolToString serviceConfig.hostConfig.launchBrowser},
+        authenticationMethod: "${serviceConfig.hostConfig.authenticationMethod}",
+        authenticationRequired: "${serviceConfig.hostConfig.authenticationRequired}",
+        analyticsEnabled: ${boolToString serviceConfig.hostConfig.analyticsEnabled},
+        username: ${serviceConfig.hostConfig.username},
         password: $password,
         passwordConfirmation: $password,
-        logLevel: "${serviceConfig.logLevel}",
-        logSizeLimit: ${builtins.toString serviceConfig.logSizeLimit},
-        consoleLogLevel: "${serviceConfig.consoleLogLevel}",
-        branch: "${serviceConfig.branch}",
+        logLevel: "${serviceConfig.hostConfig.logLevel}",
+        logSizeLimit: ${builtins.toString serviceConfig.hostConfig.logSizeLimit},
+        consoleLogLevel: "${serviceConfig.hostConfig.consoleLogLevel}",
+        branch: "${serviceConfig.hostConfig.branch}",
         apiKey: $apiKey,
-        sslCertPath: "${serviceConfig.sslCertPath}",
-        sslCertPassword: "${serviceConfig.sslCertPassword}",
-        urlBase: "${serviceConfig.urlBase}",
-        instanceName: "${serviceConfig.instanceName}",
-        applicationUrl: "${serviceConfig.applicationUrl}",
-        updateAutomatically: ${boolToString serviceConfig.updateAutomatically},
-        updateMechanism: "${serviceConfig.updateMechanism}",
-        updateScriptPath: "${serviceConfig.updateScriptPath}",
-        proxyEnabled: ${boolToString serviceConfig.proxyEnabled},
-        proxyType: "${serviceConfig.proxyType}",
-        proxyHostname: "${serviceConfig.proxyHostname}",
-        proxyPort: ${builtins.toString serviceConfig.proxyPort},
-        proxyUsername: "${serviceConfig.proxyUsername}",
-        proxyPassword: "${serviceConfig.proxyPassword}",
-        proxyBypassFilter: "${serviceConfig.proxyBypassFilter}",
-        proxyBypassLocalAddresses: ${boolToString serviceConfig.proxyBypassLocalAddresses},
-        certificateValidation: "${serviceConfig.certificateValidation}",
-        backupFolder: "${serviceConfig.backupFolder}",
-        backupInterval: ${builtins.toString serviceConfig.backupInterval},
-        backupRetention: ${builtins.toString serviceConfig.backupRetention},
-        trustCgnatIpAddresses: ${boolToString serviceConfig.trustCgnatIpAddresses}
+        sslCertPath: "${serviceConfig.hostConfig.sslCertPath}",
+        sslCertPassword: "${serviceConfig.hostConfig.sslCertPassword}",
+        urlBase: "${serviceConfig.hostConfig.urlBase}",
+        instanceName: "${serviceConfig.hostConfig.instanceName}",
+        applicationUrl: "${serviceConfig.hostConfig.applicationUrl}",
+        updateAutomatically: ${boolToString serviceConfig.hostConfig.updateAutomatically},
+        updateMechanism: "${serviceConfig.hostConfig.updateMechanism}",
+        updateScriptPath: "${serviceConfig.hostConfig.updateScriptPath}",
+        proxyEnabled: ${boolToString serviceConfig.hostConfig.proxyEnabled},
+        proxyType: "${serviceConfig.hostConfig.proxyType}",
+        proxyHostname: "${serviceConfig.hostConfig.proxyHostname}",
+        proxyPort: ${builtins.toString serviceConfig.hostConfig.proxyPort},
+        proxyUsername: "${serviceConfig.hostConfig.proxyUsername}",
+        proxyPassword: "${serviceConfig.hostConfig.proxyPassword}",
+        proxyBypassFilter: "${serviceConfig.hostConfig.proxyBypassFilter}",
+        proxyBypassLocalAddresses: ${boolToString serviceConfig.hostConfig.proxyBypassLocalAddresses},
+        certificateValidation: "${serviceConfig.hostConfig.certificateValidation}",
+        backupFolder: "${serviceConfig.hostConfig.backupFolder}",
+        backupInterval: ${builtins.toString serviceConfig.hostConfig.backupInterval},
+        backupRetention: ${builtins.toString serviceConfig.hostConfig.backupRetention},
+        trustCgnatIpAddresses: ${boolToString serviceConfig.hostConfig.trustCgnatIpAddresses}
       }')
 
     # Update host configuration

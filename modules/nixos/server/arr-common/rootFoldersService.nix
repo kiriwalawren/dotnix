@@ -20,9 +20,9 @@ with lib; {
     set -eu
 
     # Read API key secret
-    API_KEY=$(cat ${serviceConfig.apiKeySecret})
+    API_KEY=$(cat ${serviceConfig.apiKeyPath})
 
-    BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.port}${serviceConfig.urlBase}/api/${serviceConfig.apiVersion}"
+    BASE_URL="http://127.0.0.1:${builtins.toString serviceConfig.hostConfig.port}${serviceConfig.hostConfig.urlBase}/api/${serviceConfig.apiVersion}"
 
     # Wait for API to be available (up to 60 seconds)
     echo "Waiting for ${capitalizedName} API to be available..."

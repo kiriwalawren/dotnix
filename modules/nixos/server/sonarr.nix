@@ -9,12 +9,13 @@
   tvDir = "${server.mediaDir}/tv";
   animeDir = "${server.mediaDir}/anime";
   arrCommon = import ./arr-common {inherit config lib pkgs;};
-in
-  arrCommon.mkArrModule {
-    serviceName = "sonarr";
-    port = 8989;
-    defaultBranch = "main";
-    mediaDirs = [
+in {
+  imports = [
+    (arrCommon.mkArrServiceModule "sonarr")
+  ];
+
+  config.server.sonarr = {
+    mediaDirs = lib.mkDefault [
       {
         dir = tvDir;
         owner = globals.libraryOwner.user;
@@ -24,8 +25,16 @@ in
         owner = globals.libraryOwner.user;
       }
     ];
-    rootFolders = [
-      {path = tvDir;}
-      {path = animeDir;}
-    ];
-  }
+    config = {
+      apiVersion = lib.mkDefault "v3";
+      hostConfig = {
+        port = lib.mkDefault 8989;
+        branch = lib.mkDefault "main";
+      };
+      rootFolders = lib.mkDefault [
+        {path = tvDir;}
+        {path = animeDir;}
+      ];
+    };
+  };
+}

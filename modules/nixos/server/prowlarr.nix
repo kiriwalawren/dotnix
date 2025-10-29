@@ -5,11 +5,19 @@
   ...
 }: let
   arrCommon = import ./arr-common {inherit config lib pkgs;};
-in
-  arrCommon.mkArrModule {
-    serviceName = "prowlarr";
-    port = 9696;
-    defaultBranch = "master";
-    defaultApiVersion = "v1";
+in {
+  imports = [
+    (arrCommon.mkArrServiceModule "prowlarr")
+  ];
+
+  config.server.prowlarr = {
     usesDynamicUser = true;
-  }
+    config = {
+      apiVersion = lib.mkDefault "v1";
+      hostConfig = {
+        port = lib.mkDefault 9696;
+        branch = lib.mkDefault "master";
+      };
+    };
+  };
+}
