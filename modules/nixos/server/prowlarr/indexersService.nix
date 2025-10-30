@@ -27,7 +27,7 @@ with lib; {
     # Wait for API to be available (up to 60 seconds)
     echo "Waiting for ${capitalizedName} API to be available..."
     for i in {1..60}; do
-      if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
+      if ${pkgs.curl}/bin/curl -sSf "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
         echo "${capitalizedName} API is available"
         break
       fi
@@ -37,11 +37,11 @@ with lib; {
 
     # Fetch all indexer schemas
     echo "Fetching indexer schemas..."
-    SCHEMAS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer/schema")
+    SCHEMAS=$(${pkgs.curl}/bin/curl -sS -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer/schema")
 
     # Fetch existing indexers
     echo "Fetching existing indexers..."
-    INDEXERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer")
+    INDEXERS=$(${pkgs.curl}/bin/curl -sS -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer")
 
     # Build list of configured indexer names
     CONFIGURED_NAMES=$(cat <<'EOF'
@@ -57,7 +57,7 @@ with lib; {
 
       if ! echo "$CONFIGURED_NAMES" | ${pkgs.jq}/bin/jq -e --arg name "$INDEXER_NAME" 'index($name)' >/dev/null 2>&1; then
         echo "Deleting indexer not in config: $INDEXER_NAME (ID: $INDEXER_ID)"
-        ${pkgs.curl}/bin/curl -s -f -X DELETE \
+        ${pkgs.curl}/bin/curl -sSf -X DELETE \
           -H "X-Api-Key: $API_KEY" \
           "$BASE_URL/indexer/$INDEXER_ID" >/dev/null || echo "Warning: Failed to delete indexer $INDEXER_NAME"
       fi
@@ -85,7 +85,7 @@ with lib; {
             '.fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)')
 
           # Update the indexer
-          ${pkgs.curl}/bin/curl -s -f -X PUT \
+          ${pkgs.curl}/bin/curl -sSf -X PUT \
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$UPDATED_INDEXER" \
@@ -109,7 +109,7 @@ with lib; {
             '.fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)')
 
           # Create the indexer
-          ${pkgs.curl}/bin/curl -s -f -X POST \
+          ${pkgs.curl}/bin/curl -sSf -X POST \
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$NEW_INDEXER" \
