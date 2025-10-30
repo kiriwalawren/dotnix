@@ -65,7 +65,7 @@ with lib; {
 
     ${concatMapStringsSep "\n" (indexerConfig: let
         indexerName = indexerConfig.name;
-        apiKeyPath = indexerConfig.apiKeyPath;
+        inherit (indexerConfig) apiKeyPath;
       in ''
         echo "Processing indexer: ${indexerName}"
 
