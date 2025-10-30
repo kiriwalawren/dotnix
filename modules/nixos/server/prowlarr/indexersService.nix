@@ -37,11 +37,11 @@ with lib; {
 
     # Fetch all indexer schemas
     echo "Fetching indexer schemas..."
-    SCHEMAS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer/schema" 2>/dev/null)
+    SCHEMAS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer/schema")
 
     # Fetch existing indexers
     echo "Fetching existing indexers..."
-    INDEXERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer" 2>/dev/null)
+    INDEXERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/indexer")
 
     # Build list of configured indexer names
     CONFIGURED_NAMES=$(cat <<'EOF'
@@ -59,7 +59,7 @@ with lib; {
         echo "Deleting indexer not in config: $INDEXER_NAME (ID: $INDEXER_ID)"
         ${pkgs.curl}/bin/curl -s -f -X DELETE \
           -H "X-Api-Key: $API_KEY" \
-          "$BASE_URL/indexer/$INDEXER_ID" >/dev/null 2>&1 || echo "Warning: Failed to delete indexer $INDEXER_NAME"
+          "$BASE_URL/indexer/$INDEXER_ID" >/dev/null || echo "Warning: Failed to delete indexer $INDEXER_NAME"
       fi
     done
 
@@ -89,7 +89,7 @@ with lib; {
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$UPDATED_INDEXER" \
-            "$BASE_URL/indexer/$INDEXER_ID" > /dev/null
+            "$BASE_URL/indexer/$INDEXER_ID" >/dev/null
 
           echo "Indexer ${indexerName} updated"
         else
@@ -113,7 +113,7 @@ with lib; {
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$NEW_INDEXER" \
-            "$BASE_URL/indexer" > /dev/null
+            "$BASE_URL/indexer" >/dev/null
 
           echo "Indexer ${indexerName} created"
         fi
