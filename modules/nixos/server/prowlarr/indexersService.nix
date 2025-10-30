@@ -103,10 +103,16 @@ with lib; {
             exit 1
           fi
 
+          echo "DEBUG: Found schema for ${indexerName}"
+          echo "$SCHEMA" | ${pkgs.jq}/bin/jq '.'
+
           # Create new indexer from schema, setting the API key
           NEW_INDEXER=$(echo "$SCHEMA" | ${pkgs.jq}/bin/jq \
             --arg apiKey "$INDEXER_API_KEY" \
             '.fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)')
+
+          echo "DEBUG: Indexer JSON payload:"
+          echo "$NEW_INDEXER" | ${pkgs.jq}/bin/jq '.'
 
           # Create the indexer
           ${pkgs.curl}/bin/curl -sSf -X POST \
