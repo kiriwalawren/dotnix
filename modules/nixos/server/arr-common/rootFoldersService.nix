@@ -27,7 +27,7 @@ with lib; {
     # Wait for API to be available (up to 60 seconds)
     echo "Waiting for ${capitalizedName} API to be available..."
     for i in {1..60}; do
-      if ${pkgs.curl}/bin/curl -s -f "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
+      if ${pkgs.curl}/bin/curl -sSf "$BASE_URL/system/status?apiKey=$API_KEY" >/dev/null 2>&1; then
         echo "${capitalizedName} API is available"
         break
       fi
@@ -37,7 +37,7 @@ with lib; {
 
     # Create root folders if they don't exist
     echo "Checking for root folders..."
-    ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -s -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder" 2>/dev/null)
+    ROOT_FOLDERS=$(${pkgs.curl}/bin/curl -sSf -H "X-Api-Key: $API_KEY" "$BASE_URL/rootfolder" 2>/dev/null)
 
     # Build list of configured paths
     CONFIGURED_PATHS=$(cat <<'EOF'
@@ -53,7 +53,7 @@ with lib; {
 
       if ! echo "$CONFIGURED_PATHS" | ${pkgs.jq}/bin/jq -e --arg path "$FOLDER_PATH" 'index($path)' >/dev/null 2>&1; then
         echo "Deleting root folder not in config: $FOLDER_PATH (ID: $FOLDER_ID)"
-        ${pkgs.curl}/bin/curl -s -f -X DELETE \
+        ${pkgs.curl}/bin/curl -sSf -X DELETE \
           -H "X-Api-Key: $API_KEY" \
           "$BASE_URL/rootfolder/$FOLDER_ID" >/dev/null 2>&1 || echo "Warning: Failed to delete root folder $FOLDER_PATH"
       fi
@@ -67,7 +67,7 @@ with lib; {
       in ''
         if ! echo "$ROOT_FOLDERS" | ${pkgs.jq}/bin/jq -e '.[] | select(.path == "${folderPath}")' >/dev/null 2>&1; then
           echo "Creating root folder: ${folderPath}"
-          ${pkgs.curl}/bin/curl -s -f -X POST \
+          ${pkgs.curl}/bin/curl -sSf -X POST \
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d '${folderJson}' \

@@ -114,8 +114,6 @@ with lib; {
           # Apply field overrides to existing indexer
           UPDATED_INDEXER=$(apply_field_overrides "$EXISTING_INDEXER" "$INDEXER_API_KEY" "$FIELD_OVERRIDES")
 
-          echo "DEBUG: Applied field overrides: $FIELD_OVERRIDES"
-
           # Update the indexer
           ${pkgs.curl}/bin/curl -sSf -X PUT \
             -H "X-Api-Key: $API_KEY" \
@@ -138,16 +136,12 @@ with lib; {
           # Apply field overrides to schema
           NEW_INDEXER=$(apply_field_overrides "$SCHEMA" "$INDEXER_API_KEY" "$FIELD_OVERRIDES")
 
-          echo "DEBUG: Applied field overrides: $FIELD_OVERRIDES"
-          echo "DEBUG: Indexer JSON payload:"
-          echo "$NEW_INDEXER" | ${pkgs.jq}/bin/jq '.'
-
           # Create the indexer
           ${pkgs.curl}/bin/curl -sSf -X POST \
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$NEW_INDEXER" \
-            "$BASE_URL/indexer"
+            "$BASE_URL/indexer" >/dev/null
 
           echo "Indexer ${indexerName} created"
         fi
