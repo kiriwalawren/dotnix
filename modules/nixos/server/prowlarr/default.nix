@@ -41,6 +41,7 @@ in {
   config = {
     sops.secrets = {
       "indexer-api-keys/DrunkenSlug" = {mode = "0440";};
+      "indexer-api-keys/NZBFinder" = {mode = "0440";};
     };
 
     server.prowlarr = {
