@@ -31,11 +31,24 @@ in {
 
     dns = mkOption {
       type = types.listOf types.str;
-      default = ["94.140.14.14" "94.140.15.15"];
+      default = [
+        # AdGuard DNS (primary ad-blocking DNS)
+        "94.140.14.14"
+        "94.140.15.15"
+        # Control D Ads & Trackers (backup ad-blocking DNS)
+        "76.76.2.2"
+        "76.76.10.2"
+        # Quad9 (fallback with malware blocking)
+        "9.9.9.9"
+        "149.112.112.112"
+      ];
       example = ["194.242.2.4" "194.242.2.3"];
       description = ''
         DNS servers to use with the VPN.
-        Defaults to AdGuard DNS (blocks ads, trackers, and malware).
+        Defaults to multiple ad-blocking DNS servers for redundancy:
+        - AdGuard DNS (primary)
+        - Control D (backup ad-blocking)
+        - Quad9 (fallback with malware blocking)
       '';
     };
 
