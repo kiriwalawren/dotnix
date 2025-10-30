@@ -110,7 +110,7 @@
         name = "dotnix-format";
         text = ''
           ${pkgs.alejandra}/bin/alejandra ./.
-          ${pkgs.statix} fix ./.
+          ${pkgs.statix}/bin/statix fix ./.
           ${pkgs.nodePackages.prettier}/bin/prettier --write . --ignore-pattern "**/*.sh"
           ${pkgs.shfmt}/bin/shfmt -l -w -i 2 -ci ./.
         '';
