@@ -57,6 +57,10 @@ in {
             name = "DrunkenSlug";
             apiKeyPath = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
           }
+          {
+            name = "NZBFinder";
+            apiKeyPath = config.sops.secrets."indexer-api-keys/NZBFinder".path;
+          }
         ];
       };
     };
