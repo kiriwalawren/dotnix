@@ -18,12 +18,21 @@ with lib; let
           };
           apiKeyPath = mkOption {
             type = types.str;
-            description = "API key for the indexer";
+            description = "Path to file containing the API key for the indexer";
+          };
+          appProfileId = mkOption {
+            type = types.int;
+            default = 1;
+            description = "Application profile ID for the indexer (default: 1)";
           };
         };
       });
       default = [];
-      description = "List of indexers to configure in Prowlarr";
+      description = ''
+        List of indexers to configure in Prowlarr.
+        Any additional attributes beyond name, apiKeyPath, and appProfileId
+        will be applied as field values to the indexer schema.
+      '';
     };
   };
 in {

@@ -66,11 +66,43 @@ with lib; {
     ${concatMapStringsSep "\n" (indexerConfig: let
         indexerName = indexerConfig.name;
         inherit (indexerConfig) apiKeyPath;
+        # Extract all attributes except name and apiKeyPath to use as field values
+        fieldOverrides = builtins.removeAttrs indexerConfig ["name" "apiKeyPath"];
+        # Convert to JSON for passing to the script
+        fieldOverridesJson = builtins.toJSON fieldOverrides;
       in ''
         echo "Processing indexer: ${indexerName}"
 
+        # Function to apply field overrides to an indexer JSON object
+        apply_field_overrides() {
+          local indexer_json="$1"
+          local api_key="$2"
+          local overrides="$3"
+
+          echo "$indexer_json" | ${pkgs.jq}/bin/jq \
+            --arg apiKey "$api_key" \
+            --argjson overrides "$overrides" '
+              # First set the apiKey field
+              .fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)
+              # Then apply top-level overrides (like appProfileId)
+              | . + $overrides
+              # Finally apply field-level overrides
+              | .fields[] |= (
+                  . as $field |
+                  if $overrides[$field.name] != null then
+                    .value = $overrides[$field.name]
+                  else
+                    .
+                  end
+                )
+            '
+        }
+
         # Read the indexer API key from the secret file
         INDEXER_API_KEY=$(cat ${apiKeyPath})
+
+        # Parse field overrides from Nix config
+        FIELD_OVERRIDES='${fieldOverridesJson}'
 
         # Check if indexer already exists
         EXISTING_INDEXER=$(echo "$INDEXERS" | ${pkgs.jq}/bin/jq -r '.[] | select(.name == "${indexerName}") | @json' || echo "")
@@ -79,10 +111,10 @@ with lib; {
           echo "Indexer ${indexerName} already exists, updating..."
           INDEXER_ID=$(echo "$EXISTING_INDEXER" | ${pkgs.jq}/bin/jq -r '.id')
 
-          # Merge the existing indexer with the new API key
-          UPDATED_INDEXER=$(echo "$EXISTING_INDEXER" | ${pkgs.jq}/bin/jq \
-            --arg apiKey "$INDEXER_API_KEY" \
-            '.fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)')
+          # Apply field overrides to existing indexer
+          UPDATED_INDEXER=$(apply_field_overrides "$EXISTING_INDEXER" "$INDEXER_API_KEY" "$FIELD_OVERRIDES")
+
+          echo "DEBUG: Applied field overrides: $FIELD_OVERRIDES"
 
           # Update the indexer
           ${pkgs.curl}/bin/curl -sSf -X PUT \
@@ -103,14 +135,10 @@ with lib; {
             exit 1
           fi
 
-          echo "DEBUG: Found schema for ${indexerName}"
-          echo "$SCHEMA" | ${pkgs.jq}/bin/jq '.'
+          # Apply field overrides to schema
+          NEW_INDEXER=$(apply_field_overrides "$SCHEMA" "$INDEXER_API_KEY" "$FIELD_OVERRIDES")
 
-          # Create new indexer from schema, setting the API key
-          NEW_INDEXER=$(echo "$SCHEMA" | ${pkgs.jq}/bin/jq \
-            --arg apiKey "$INDEXER_API_KEY" \
-            '.fields[] |= (if .name == "apiKey" then .value = $apiKey else . end)')
-
+          echo "DEBUG: Applied field overrides: $FIELD_OVERRIDES"
           echo "DEBUG: Indexer JSON payload:"
           echo "$NEW_INDEXER" | ${pkgs.jq}/bin/jq '.'
 
