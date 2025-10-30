@@ -119,7 +119,7 @@ with lib; {
             -H "X-Api-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d "$NEW_INDEXER" \
-            "$BASE_URL/indexer" >/dev/null
+            "$BASE_URL/indexer"
 
           echo "Indexer ${indexerName} created"
         fi
