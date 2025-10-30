@@ -12,7 +12,7 @@ in {
     ./globals.nix
     ./lidarr.nix
     ./postgres.nix
-    ./prowlarr.nix
+    ./prowlarr
     ./radarr.nix
     ./sonarr.nix
   ];

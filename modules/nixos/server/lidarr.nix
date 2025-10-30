@@ -7,7 +7,7 @@
   inherit (config) server;
   mediaDir = "${server.mediaDir}/music";
 in {
-  imports = [(import ./arr-common/mkArrServiceModule.nix "lidarr" {inherit config lib pkgs;})];
+  imports = [(import ./arr-common/mkArrServiceModule.nix "lidarr" {} {inherit config lib pkgs;})];
 
   config.server.lidarr = {
     group = lib.mkDefault "media";

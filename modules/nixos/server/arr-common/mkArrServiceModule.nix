@@ -1,11 +1,11 @@
-serviceName: {
+serviceName: extraConfigOptions: {
   config,
   lib,
   pkgs,
   ...
 }:
 with lib; let
-  arrConfigModule = import ./configModule.nix {inherit lib;};
+  arrConfigModule = import ./configModule.nix extraConfigOptions {inherit lib;};
   mkArrHostConfigService = import ./hostConfigService.nix {inherit lib pkgs;};
   mkArrRootFoldersService = import ./rootFoldersService.nix {inherit lib pkgs;};
   capitalizedName = toUpper (substring 0 1 serviceName) + substring 1 (-1) serviceName;

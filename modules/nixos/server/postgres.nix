@@ -14,7 +14,7 @@ in {
       type = types.bool;
       default = false;
       example = true;
-      description = "Whether or not to enable postgresql.";
+      description = "Whether or not to enable postgresql. For the entire stack";
     };
   };
 

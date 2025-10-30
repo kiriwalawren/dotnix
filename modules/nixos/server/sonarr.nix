@@ -8,7 +8,7 @@
   tvDir = "${server.mediaDir}/tv";
   animeDir = "${server.mediaDir}/anime";
 in {
-  imports = [(import ./arr-common/mkArrServiceModule.nix "sonarr" {inherit config lib pkgs;})];
+  imports = [(import ./arr-common/mkArrServiceModule.nix "sonarr" {} {inherit config lib pkgs;})];
 
   config.server.sonarr = {
     group = lib.mkDefault "media";

@@ -7,7 +7,7 @@
   inherit (config) server;
   mediaDir = "${server.mediaDir}/movies";
 in {
-  imports = [(import ./arr-common/mkArrServiceModule.nix "radarr" {inherit config lib pkgs;})];
+  imports = [(import ./arr-common/mkArrServiceModule.nix "radarr" {} {inherit config lib pkgs;})];
 
   config.server.radarr = {
     group = lib.mkDefault "media";
