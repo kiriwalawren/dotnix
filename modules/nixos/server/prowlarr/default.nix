@@ -52,6 +52,6 @@ in {
       };
     };
 
-    systemd.services."prowlarr-indexers" = mkIf (config.server.prowlarr.config.indexers != []) (mkProwlarrIndexersService "prowlarr" config.server.prowlarr.config);
+    systemd.services."prowlarr-indexers" = mkProwlarrIndexersService "prowlarr" config.server.prowlarr.config;
   };
 }
