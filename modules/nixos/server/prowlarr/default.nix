@@ -39,11 +39,6 @@ in {
   imports = [(import ../arr-common/mkArrServiceModule.nix "prowlarr" extraConfigOptions {inherit config lib pkgs;})];
 
   config = {
-    sops.secrets = {
-      "indexer-api-keys/DrunkenSlug" = {mode = "0440";};
-      "indexer-api-keys/NZBFinder" = {mode = "0440";};
-    };
-
     server.prowlarr = {
       usesDynamicUser = true;
       config = {
@@ -53,7 +48,7 @@ in {
           branch = lib.mkDefault "master";
         };
 
-        indexers = [
+        indexers = mkIf (config.server.enable && config.server.prowlarr.enable) [
           {
             name = "DrunkenSlug";
             apiKeyPath = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
@@ -66,6 +61,13 @@ in {
       };
     };
 
-    systemd.services."prowlarr-indexers" = mkProwlarrIndexersService "prowlarr" config.server.prowlarr.config;
+    sops.secrets = mkIf (config.server.enable && config.server.prowlarr.enable) {
+      "indexer-api-keys/DrunkenSlug" = {mode = "0440";};
+      "indexer-api-keys/NZBFinder" = {mode = "0440";};
+    };
+
+    systemd.services."prowlarr-indexers" = mkIf (config.server.enable && config.server.prowlarr.enable) (
+      mkProwlarrIndexersService "prowlarr" config.server.prowlarr.config
+    );
   };
 }

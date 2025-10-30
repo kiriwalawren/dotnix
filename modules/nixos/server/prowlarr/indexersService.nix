@@ -67,7 +67,9 @@ with lib; {
         indexerName = indexerConfig.name;
         inherit (indexerConfig) apiKeyPath;
         # Extract all attributes except name and apiKeyPath to use as field values
-        fieldOverrides = builtins.removeAttrs indexerConfig ["name" "apiKeyPath"];
+        allOverrides = builtins.removeAttrs indexerConfig ["name" "apiKeyPath"];
+        # Filter out null values and internal module attributes
+        fieldOverrides = lib.filterAttrs (name: value: value != null && !lib.hasPrefix "_" name) allOverrides;
         # Convert to JSON for passing to the script
         fieldOverridesJson = builtins.toJSON fieldOverrides;
       in ''
