@@ -256,6 +256,26 @@
         "type": "github"
       }
     },
+    "nixflix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1761875337,
+        "narHash": "sha256-WZMYdvldRJTLAkJmwPWbd3Rl3IQ1R8v1EFM8CDViI7g=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "9f48d07e69af5f63138b3f25dc79d2725c945dab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "type": "github"
+      }
+    },
     "nixos-anywhere": {
       "inputs": {
         "disko": [
@@ -434,6 +454,7 @@
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
         "hyprland-contrib": "hyprland-contrib",
+        "nixflix": "nixflix",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",

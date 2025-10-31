@@ -37,10 +37,6 @@
       system = {
         cachix-agent.enable = true;
         openssh.enable = true;
-        vpn = {
-          enable = true;
-          killSwitch.enable = true;
-        };
         tailscale = {
           enable = true;
           mode = "server";
@@ -110,6 +106,8 @@
         fsType = "ext4";
         options = ["noauto" "nofail"];
       };
+
+      nixflix.serviceDependencies = ["unlock-raid.service"];
     })
   ];
 
