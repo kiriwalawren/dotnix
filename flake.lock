@@ -256,6 +256,26 @@
         "type": "github"
       }
     },
+    "nixflix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1761986605,
+        "narHash": "sha256-JFpXrMmTgjGxwHTGA4xJoOd7UioRFgEukH7XQKv8e/w=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "9946d3ecabad02cc7d7cbe0ebf48e7fd2515f1f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "type": "github"
+      }
+    },
     "nixos-anywhere": {
       "inputs": {
         "disko": [
@@ -434,6 +454,7 @@
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
         "hyprland-contrib": "hyprland-contrib",
+        "nixflix": "nixflix",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
@@ -445,10 +466,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1761706762,
-        "narHash": "sha256-xdbFSWcr2EMPdiRHgbHVoBFfKdXxRrXNFcYRgODws10=",
+        "lastModified": 1761986782,
+        "narHash": "sha256-rqQnKi8soHquXvAjRFmtixQ8A+qZKvRhwIjv2KKM130=",
         "ref": "main",
-        "rev": "341d440ce278a79e2fcaf21fffed136fbdb9a7e7",
+        "rev": "d154b29b991e476bf2ff82ae851ea0e064b71a26",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
