@@ -9,7 +9,7 @@ with lib; {
     nixflix.mullvad = {
       enable = true;
       accountNumberPath = config.sops.secrets.mullvad-account-number.path;
-      location = "us nyc";
+      location = ["us" "nyc"];
       dns = [
         # AdGuard DNS (primary ad-blocking DNS)
         "94.140.14.14"
