@@ -77,15 +77,7 @@
           RemainAfterExit = true;
         };
         script = ''
-          # Wait for RAID to finish rebuilding/resyncing (blocks until stable)
-          echo "Waiting for RAID to become stable..."
-          while ${pkgs.gnugrep}/bin/grep -qE 'recovery|resync' /proc/mdstat 2>/dev/null; do
-            echo "RAID is rebuilding/resyncing, waiting..."
-            ${pkgs.coreutils}/bin/sleep 5
-          done
-          echo "RAID is stable"
-
-          # Wait for RAID partition device to be ready (should be quick now)
+          # Wait for RAID partition device to be ready
           ${pkgs.coreutils}/bin/timeout 60 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
 
           # Unlock the LUKS device
