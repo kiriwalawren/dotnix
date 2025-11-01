@@ -15,6 +15,7 @@ in {
     ./fish.nix
     ./git.nix
     ./nixvim
+    ./restish.nix
     ./tmux.nix
     ./wsl.nix
   ];
@@ -35,6 +36,7 @@ in {
       fish.enable = true;
       git.enable = true;
       nixvim.enable = true;
+      restish.enable = true;
       tmux.enable = true;
     };
   };
