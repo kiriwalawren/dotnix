@@ -77,8 +77,16 @@
           RemainAfterExit = true;
         };
         script = ''
-          # Wait for RAID device to be ready
-          ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
+          # Wait for RAID to finish rebuilding/resyncing (blocks until stable)
+          echo "Waiting for RAID to become stable..."
+          while ${pkgs.gnugrep}/bin/grep -qE 'recovery|resync' /proc/mdstat 2>/dev/null; do
+            echo "RAID is rebuilding/resyncing, waiting..."
+            ${pkgs.coreutils}/bin/sleep 5
+          done
+          echo "RAID is stable"
+
+          # Wait for RAID partition device to be ready (should be quick now)
+          ${pkgs.coreutils}/bin/timeout 60 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/md/raid1p1 ]; do ${pkgs.coreutils}/bin/sleep 1; done'
 
           # Unlock the LUKS device
           ${pkgs.cryptsetup}/bin/cryptsetup luksOpen /dev/md/raid1p1 cryptraid --key-file ${config.sops.secrets.raid-encryption-key.path}
@@ -86,11 +94,22 @@
           # Wait for the device mapper device to be ready
           ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/sh -c 'while [ ! -e /dev/mapper/cryptraid ]; do ${pkgs.coreutils}/bin/sleep 1; done'
 
-          # Give the kernel a moment to recognize the filesystem
-          ${pkgs.coreutils}/bin/sleep 1
-
           # Mount the filesystem
           ${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data
+
+          # Verify mount succeeded and filesystem is accessible
+          if ! ${pkgs.coreutils}/bin/mountpoint -q /data; then
+            echo "ERROR: /data is not mounted!"
+            exit 1
+          fi
+
+          # Test filesystem is readable
+          ${pkgs.coreutils}/bin/ls /data > /dev/null || {
+            echo "ERROR: /data filesystem is not accessible!"
+            exit 1
+          }
+
+          echo "/data is mounted and ready"
         '';
         preStop = ''
           ${pkgs.util-linux}/bin/umount /data || true
@@ -98,13 +117,6 @@
         postStop = ''
           ${pkgs.cryptsetup}/bin/cryptsetup luksClose cryptraid || true
         '';
-      };
-
-      # Define mount point (but don't auto-mount - let the service handle it)
-      fileSystems."/data" = {
-        device = "/dev/mapper/cryptraid";
-        fsType = "ext4";
-        options = ["noauto" "nofail"];
       };
 
       nixflix.serviceDependencies = ["unlock-raid.service"];
