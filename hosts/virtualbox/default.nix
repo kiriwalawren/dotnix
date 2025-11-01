@@ -98,7 +98,7 @@
           ${pkgs.util-linux}/bin/mount /dev/mapper/cryptraid /data
 
           # Verify mount succeeded and filesystem is accessible
-          if ! ${pkgs.coreutils}/bin/mountpoint -q /data; then
+          if ! ${pkgs.util-linux}/bin/mountpoint -q /data; then
             echo "ERROR: /data is not mounted!"
             exit 1
           fi
