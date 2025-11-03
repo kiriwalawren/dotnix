@@ -11,6 +11,7 @@ in {
     ./mullvad.nix
     ./prowlarr.nix
     ./radarr.nix
+    ./sabnzbd.nix
     ./sonarr.nix
   ];
 
