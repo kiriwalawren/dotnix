@@ -20,19 +20,19 @@ with lib; {
       environmentSecrets = [
         {
           env = "EWEKA_USERNAME";
-          path = config.sops.secrets."usenet/eweka/username".path;
+          inherit (config.sops.secrets."usenet/eweka/username") path;
         }
         {
           env = "EWEKA_PASSWORD";
-          path = config.sops.secrets."usenet/eweka/password".path;
+          inherit (config.sops.secrets."usenet/eweka/password") path;
         }
         {
           env = "NGD_USERNAME";
-          path = config.sops.secrets."usenet/newsgroupdirect/username".path;
+          inherit (config.sops.secrets."usenet/newsgroupdirect/username") path;
         }
         {
           env = "NGD_PASSWORD";
-          path = config.sops.secrets."usenet/newsgroupdirect/password".path;
+          inherit (config.sops.secrets."usenet/newsgroupdirect/password") path;
         }
       ];
 
