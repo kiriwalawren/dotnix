@@ -6,7 +6,10 @@
 with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
-      "sabnzbd/api_key" = {};
+      "sabnzbd/api_key" = {
+        inherit (cofig.nixflix.sabnzbd) group;
+        owner = config.nixflix.sabnzbd.user;
+      };
       "usenet/eweka/username" = {};
       "usenet/eweka/password" = {};
       "usenet/newsgroupdirect/username" = {};
