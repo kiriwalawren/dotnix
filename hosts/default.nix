@@ -47,6 +47,6 @@ in
     (import ./wsl)
     (import ./desktop)
     (import ./framework13)
-    (import ./virtualbox)
+    (import ./home-server)
     (import ./installer)
   ]

@@ -1,5 +1,5 @@
 {
-  name = "virtualbox";
+  name = "home-server";
   modules = [
     ./hardware-configuration.nix
 

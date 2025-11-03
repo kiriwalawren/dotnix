@@ -50,6 +50,7 @@ in {
   system.activationScripts.linkUserSshKey.text = ''
     mkdir -p /home/${user}/.ssh
     ln -sf /run/secrets-for-users/${user}_ssh_key /home/${user}/.ssh/${user}_ssh_key
+    ln -sf /run/secrets-for-users/${user}_ssh_key /home/${user}/.ssh/id_ed25519
     chown ${user}:users /home/${user}/.ssh
     chmod 0700 /home/${user}/.ssh
   '';

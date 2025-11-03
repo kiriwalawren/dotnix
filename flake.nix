@@ -138,7 +138,7 @@
     }: {
       cachix-deploy-spec = cachix-deploy-lib.spec {
         agents = {
-          virtualbox = self.nixosConfigurations.virtualbox.config.system.build.toplevel;
+          home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
         };
       };
     });
