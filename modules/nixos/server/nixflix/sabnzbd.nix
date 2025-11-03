@@ -10,6 +10,11 @@ with lib; {
         inherit (config.nixflix.sabnzbd) group;
         owner = config.nixflix.sabnzbd.user;
       };
+      "sabnzbd/nzb_key" = {
+        inherit (config.nixflix.sabnzbd) group;
+        owner = config.nixflix.sabnzbd.user;
+      };
+
       "usenet/eweka/username" = {};
       "usenet/eweka/password" = {};
       "usenet/newsgroupdirect/username" = {};
@@ -19,6 +24,7 @@ with lib; {
     nixflix.sabnzbd = {
       enable = true;
       apiKeyPath = config.sops.secrets."sabnzbd/api_key".path;
+      nzbKeyPath = config.sops.secrets."sabnzbd/nzb_key".path;
 
       environmentSecrets = [
         {
