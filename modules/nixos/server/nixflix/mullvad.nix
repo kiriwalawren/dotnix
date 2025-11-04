@@ -17,9 +17,9 @@ with lib; {
         # Control D Ads & Trackers (backup ad-blocking DNS)
         "76.76.2.2"
         "76.76.10.2"
-        # Quad9 (fallback with malware blocking)
-        "9.9.9.9"
-        "149.112.112.112"
+        # # Quad9 (fallback with malware blocking)
+        # "9.9.9.9"
+        # "149.112.112.112"
       ];
       killSwitch = {
         enable = true;
