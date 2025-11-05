@@ -5,8 +5,8 @@
   raidDevice2 ? "/dev/sdc",
   withSwap ? false,
   swapSize ? 4,
-  encryptedDataDrive ? false,
-  encryptionPasswordFile ? "/tmp/raid-secret.key",
+  encryptDrives ? false,
+  encryptionPasswordFile ? "/tmp/disk-secret.key",
   ...
 }: {
   disko.devices = {
@@ -34,26 +34,56 @@
             };
             root = {
               size = "100%";
-              content = {
-                type = "btrfs";
-                extraArgs = ["-f"]; # Override existing partition
-                # Subvolumes must set a mountpoint in order to be mounted,
-                # unless their parent is mounted
-                subvolumes = {
-                  "/root" = {
-                    mountpoint = "/";
-                    mountOptions = ["compress=zstd" "noatime"];
+              content =
+                if encryptDrives
+                then {
+                  type = "luks";
+                  name = "cryptroot";
+                  settings = {
+                    allowDiscards = true;
                   };
-                  "/nix" = {
-                    mountpoint = "/nix";
-                    mountOptions = ["compress=zstd" "noatime"];
+                  passwordFile = encryptionPasswordFile;
+                  content = {
+                    type = "btrfs";
+                    extraArgs = ["-f"]; # Override existing partition
+                    # Subvolumes must set a mountpoint in order to be mounted,
+                    # unless their parent is mounted
+                    subvolumes = {
+                      "/root" = {
+                        mountpoint = "/";
+                        mountOptions = ["compress=zstd" "noatime"];
+                      };
+                      "/nix" = {
+                        mountpoint = "/nix";
+                        mountOptions = ["compress=zstd" "noatime"];
+                      };
+                      "/swap" = lib.mkIf withSwap {
+                        mountpoint = "/.swapvol";
+                        swap.swapfile.size = "${swapSize}G";
+                      };
+                    };
                   };
-                  "/swap" = lib.mkIf withSwap {
-                    mountpoint = "/.swapvol";
-                    swap.swapfile.size = "${swapSize}G";
+                }
+                else {
+                  type = "btrfs";
+                  extraArgs = ["-f"]; # Override existing partition
+                  # Subvolumes must set a mountpoint in order to be mounted,
+                  # unless their parent is mounted
+                  subvolumes = {
+                    "/root" = {
+                      mountpoint = "/";
+                      mountOptions = ["compress=zstd" "noatime"];
+                    };
+                    "/nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = ["compress=zstd" "noatime"];
+                    };
+                    "/swap" = lib.mkIf withSwap {
+                      mountpoint = "/.swapvol";
+                      swap.swapfile.size = "${swapSize}G";
+                    };
                   };
                 };
-              };
             };
           };
         };
@@ -107,7 +137,7 @@
             primary = {
               size = "100%";
               content =
-                if encryptedDataDrive
+                if encryptDrives
                 then {
                   type = "luks";
                   name = "cryptraid";

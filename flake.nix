@@ -16,8 +16,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # NixOS system configuration dependencies
     disko = {
       url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
