@@ -31,11 +31,12 @@ in {
       };
 
       # Boot loader configuration
-      # Lanzaboote auto-enables when Secure Boot keys exist at /var/lib/sbctl/keys/
-      # This allows the bootstrap script to generate keys, triggering automatic
-      # lanzaboote enablement on the next rebuild without manual config edits.
+      # Lanzaboote is enabled by default for Secure Boot support.
+      # During initial install, the bootstrap script uses a temporary flake that
+      # overrides this to false (before keys exist), then subsequent rebuilds
+      # use the real configuration with lanzaboote enabled.
       lanzaboote = {
-        enable = builtins.pathExists "/var/lib/sbctl/keys/db/db.key";
+        enable = lib.mkDefault true;
         pkiBundle = "/var/lib/sbctl";
       };
 
