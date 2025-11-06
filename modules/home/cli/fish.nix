@@ -29,6 +29,17 @@ in {
           fish_vi_key_bindings
         '';
 
+        shellAliases = {
+          # Basic
+          dir = "dir --color=auto";
+          egrep = "egrep --color=auto";
+          fgrep = "fgrep --color=auto";
+          grep = "grep --color=auto";
+          la = "ls -lah --group-directories-first";
+          loc = "scc --no-cocomo";
+          ls = "ls -h --color=auto --group-directories-first";
+        };
+
         shellAbbrs = rec {
           # Git
           ga = "git add";
@@ -115,30 +126,27 @@ in {
           tgv = "terragrunt version";
 
           # Pulumi
+          pd = "pulumi down";
+          pdy = "pulumi down -y";
           pl = "pulumi login";
+          pp = "pulumi preview";
+          pss = "pulumi stack select";
           pu = "pulumi up";
           puy = "pulumi up -y";
 
           # Nix Helper
-          nhr = "nh os switch";
-          nhrn = "${nhr} -n";
           nhb = "nh os boot";
-          nht = "nh os test";
-          nhs = "nh search";
           nhc = "nh clean all --keep 10 --keep-since 10d";
           nhcn = "${nhc} -n";
+          nhr = "nh os switch";
           nhrc = "${nhr} && ${nhc}";
           nhrcn = "${nhrn} && ${nhcn}";
+          nhrn = "${nhr} -n";
+          nhs = "nh search";
+          nht = "nh os test";
 
           # Basic
-          ls = "ls -h --color=auto --group-directories-first";
-          la = "ls -lah --group-directories-first";
           md = "mkdir -vp";
-          dir = "dir --color=auto";
-          grep = "grep --color=auto";
-          fgrep = "fgrep --color=auto";
-          egrep = "egrep --color=auto";
-          loc = "scc --no-cocomo";
           rmf = "rm -rf";
 
           # Tmux
@@ -146,9 +154,9 @@ in {
           tmkk = "tmux kill-server";
 
           # Direnv
-          duf = "echo 'use flake' >> .envrc && direnv allow";
           da = "direnv allow";
           dd = "direnv disallow";
+          duf = "echo 'use flake' >> .envrc && direnv allow";
         };
 
         plugins = with pkgs; [
