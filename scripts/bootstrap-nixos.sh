@@ -306,12 +306,56 @@ if [[ "$enable_secureboot" == "true" ]]; then
   # Rebuild to enable lanzaboote (will auto-enable due to key presence)
   blue "Rebuilding system with lanzaboote..."
   "${ssh_cmd[@]}" "cd ~/$nix_src_path/dotnix && sudo nixos-rebuild boot --flake .#$target_hostname"
-  green "System rebuilt with lanzaboote enabled (next generation prepared)"
+  green "System rebuilt with lanzaboote enabled (boot files signed)"
 
-  # TPM2 enrollment immediately (while devices are unlocked)
-  blue "Enrolling TPM2 for autonomous boot..."
+  # Verify signatures on boot files
+  blue "Verifying boot file signatures..."
+  if "${ssh_cmd[@]}" "sudo sbctl verify"; then
+    green "All boot files are properly signed"
+  else
+    yellow "Warning: Some boot files may not be signed correctly"
+  fi
 
-  # Copy encryption key to remote system for TPM2 enrollment
+  # Enroll Secure Boot keys in firmware
+  blue "Enrolling Secure Boot keys in firmware..."
+  if "${ssh_cmd[@]}" "sudo sbctl enroll-keys --microsoft"; then
+    green "Secure Boot keys enrolled (will activate on next reboot)"
+  else
+    yellow "Warning: Secure Boot key enrollment had issues"
+  fi
+
+  # Reboot to activate lanzaboote and Secure Boot
+  blue "Rebooting to activate lanzaboote and Secure Boot..."
+  "${ssh_cmd[@]}" "sudo reboot" || true
+  sleep 30
+
+  # Wait for system to come back (user will enter password one last time)
+  blue "Waiting for system to come back online (enter password at console)..."
+  attempt=0
+  while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+      red "Failed to reconnect to $target_hostname after $max_attempts attempts"
+      exit 1
+    fi
+    sleep 10
+  done
+  green "System is back online"
+
+  # NOW verify Secure Boot is actually enabled
+  blue "Verifying Secure Boot status..."
+  if "${ssh_cmd[@]}" "sudo sbctl status | grep -q 'Secure Boot.*Enabled'"; then
+    green "Secure Boot is now active"
+  else
+    red "ERROR: Secure Boot is still not enabled after sbctl enroll-keys"
+    red "Cannot proceed with TPM2 enrollment"
+    exit 1
+  fi
+
+  # NOW enroll TPM2 (with Secure Boot active, so PCR 7 has correct value)
+  blue "Enrolling TPM2 for autonomous boot (with Secure Boot active)..."
+
+  # Copy encryption key to remote system (ensuring no trailing newline)
   blue "Uploading encryption key for TPM2 enrollment..."
   "${scp_cmd[@]}" "$temp/tmp/disk-secret.key" "$target_user@$target_destination:/tmp/enroll-key.tmp"
   "${ssh_cmd[@]}" "sudo chmod 600 /tmp/enroll-key.tmp"
@@ -336,32 +380,8 @@ if [[ "$enable_secureboot" == "true" ]]; then
   "${ssh_cmd[@]}" "sudo rm -f /tmp/enroll-key.tmp"
   green "TPM2 enrollment complete"
 
-  # Now prompt user to enable Secure Boot in firmware
-  echo ""
-  yellow "==================================================================="
-  yellow "MANUAL ACTION REQUIRED: Enable Secure Boot in Firmware"
-  yellow "==================================================================="
-  echo ""
-  echo "The system is now configured with:"
-  echo "  ✓ Lanzaboote signed bootloader"
-  echo "  ✓ TPM2 enrollment complete"
-  echo "  ✓ Secure Boot keys generated"
-  echo ""
-  echo "Final step - Enable Secure Boot in firmware:"
-  echo "  1. Reboot server and enter UEFI/BIOS firmware settings"
-  echo "  2. Navigate to Security or Boot settings"
-  echo "  3. Enable 'Secure Boot' (or set to 'Setup Mode' if needed)"
-  echo "  4. Save and exit"
-  echo ""
-  echo "After enabling Secure Boot, the system will reboot and:"
-  echo "  • Enroll Secure Boot keys automatically"
-  echo "  • Boot autonomously without password (TPM2 auto-unlock)"
-  echo ""
-  yellow "Press Enter after you've enabled Secure Boot and saved firmware settings..."
-  read -r
-
-  # Final reboot to test everything together
-  blue "Rebooting to activate Secure Boot and test autonomous boot..."
+  # Final reboot to test autonomous boot
+  blue "Performing final reboot to test autonomous boot..."
   "${ssh_cmd[@]}" "sudo reboot" || true
 
   # Wait for autonomous boot
@@ -371,27 +391,14 @@ if [[ "$enable_secureboot" == "true" ]]; then
   while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
     attempt=$((attempt + 1))
     if [ $attempt -ge $max_attempts ]; then
-      red "System did not come back online. TPM2 unlock may have failed."
-      yellow "Check console for password prompt or boot issues."
+      red "System did not come back online. Check console for issues."
+      yellow "If password is required, Secure Boot may not be enabled or TPM2 enrollment failed."
       exit 1
     fi
     sleep 10
   done
 
-  green "SUCCESS! System booted autonomously with TPM2 unlock"
-
-  # Enroll Secure Boot keys in firmware (if Secure Boot is enabled)
-  blue "Enrolling Secure Boot keys in firmware..."
-  if "${ssh_cmd[@]}" "sudo sbctl enroll-keys --microsoft 2>/dev/null"; then
-    green "Secure Boot keys enrolled successfully"
-  else
-    yellow "Note: Secure Boot key enrollment skipped (may already be enrolled or Secure Boot not active)"
-  fi
-
-  # Verify final Secure Boot status
-  blue "Verifying Secure Boot status..."
-  "${ssh_cmd[@]}" "sudo sbctl status" || true
-
+  green "SUCCESS! System booted autonomously with TPM2 unlock and Secure Boot active"
   green "Phase 2+3 complete: Secure Boot and autonomous boot configured"
 fi
 

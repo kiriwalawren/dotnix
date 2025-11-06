@@ -21,6 +21,7 @@ in {
         };
       };
     };
+
     programs.virt-manager.enable = true;
 
     users.extraGroups.libvirt.members = [config.user.name];
