@@ -13,11 +13,19 @@ in {
     virtualisation = {
       libvirtd = {
         enable = true;
-        qemu.package = pkgs.qemu_kvm;
+        qemu = {
+          package = pkgs.qemu_kvm;
+
+          # Software TPM emulation
+          swtpm.enable = true;
+        };
       };
     };
+
     programs.virt-manager.enable = true;
 
     users.extraGroups.libvirt.members = [config.user.name];
+
+    environment.systemPackages = with pkgs; [swtpm libtpms OVMFFull];
   };
 }

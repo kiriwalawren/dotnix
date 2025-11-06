@@ -16,6 +16,7 @@ in {
     ./cachix.nix
     ./docker.nix
     ./dual-function-keys.nix
+    ./encryption
     ./grub.nix
     ./network
     ./nix-helper.nix

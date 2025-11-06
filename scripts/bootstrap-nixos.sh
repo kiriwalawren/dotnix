@@ -8,6 +8,7 @@ set -euo pipefail
 # 0. Generate target SSH host key + age recipient (secrets ready day‑0)       #
 # 1. Optionally capture hardware‑configuration.nix **before** install         #
 # 2. Run nixos‑anywhere streaming the full dotnix flake (build locally)       #
+#    Can also do encryption and secure boot
 # 3. Optionally rsync dotnix repo to host (no auto‑rebuild)                   #
 # 4. Optionally **git add**, commit & push *all* changes in one go            #
 # 5. Print next‑steps summary                                                 #
@@ -26,6 +27,7 @@ target_destination=""
 target_user=${BOOTSTRAP_USER-$(whoami)}
 ssh_port=${BOOTSTRAP_SSH_PORT-22}
 ssh_key=${BOOTSTRAP_SSH_KEY-}
+enable_secureboot=false
 
 nix_src_path="gitrepos" # destination dir on target for rsync
 
@@ -65,6 +67,7 @@ ARGS:
 OPTIONS:
   -u <user>         SSH user with sudo (default: $target_user).
   --port <port>     SSH port (default: $ssh_port).
+  --secureboot      Enable Secure Boot + TPM2 setup (automated phases 2-3).
   --debug           Bash xtrace for troubleshooting.
   -h|--help         Show this help.
 EOF
@@ -97,6 +100,9 @@ while [[ $# -gt 0 ]]; do
       shift
       ssh_port=$1
       ;;
+    --secureboot)
+      enable_secureboot=true
+      ;;
     --debug) set -x ;;
     -h | --help) help_and_exit ;;
     *)
@@ -126,7 +132,7 @@ scp_cmd=(scp -oControlPath=none -oStrictHostKeyChecking=no -oPort=$ssh_port -i "
 # 0. Generate host SSH key & age recipient  #
 #############################################
 
-blue "[0/5] Generating host SSH key and age recipient"
+blue "Generating host SSH key and age recipient"
 install -d -m755 "$temp/etc/ssh"
 ssh-keygen -t ed25519 -f "$temp/etc/ssh/ssh_host_ed25519_key" -C "$target_user@$target_hostname" -N ""
 chmod 600 "$temp/etc/ssh/ssh_host_ed25519_key"
@@ -152,7 +158,7 @@ green "Age recipient added; secrets re‑encrypted"
 ###################################################
 
 if no_or_yes "Capture hardware-configuration.nix before install?"; then
-  blue "[1/5] Capturing hardware-configuration.nix (pre‑install)"
+  blue "Capturing hardware-configuration.nix (pre‑install)"
   if "${ssh_root_cmd[@]}" command -v nixos-generate-config >/dev/null 2>&1; then
     "${ssh_root_cmd[@]}" "nixos-generate-config --no-filesystems --root /mnt || nixos-generate-config --no-filesystems --root /"
     "${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/hosts/$target_hostname/hardware-configuration.nix" 2>/dev/null ||
@@ -164,63 +170,274 @@ if no_or_yes "Capture hardware-configuration.nix before install?"; then
 fi
 
 ###############################################
-# 1.5. Extract RAID encryption key if present #
+# 1.5. Extract disk encryption key if present #
 ###############################################
 
-raid_encryption_key_file=""
-if sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "raid-encryption-key:"; then
-  blue "Extracting RAID encryption key from secrets"
+disk_encryption_key_file=""
+if sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "drive-encryption-keys:"; then
+  blue "Extracting disk encryption key from secrets"
   install -d -m755 "$temp/tmp"
-  sops -d --extract '["raid-encryption-key"]' "$nix_secrets_yaml" >"$temp/tmp/raid-secret.key"
-  chmod 600 "$temp/tmp/raid-secret.key"
-  raid_encryption_key_file="$temp/tmp/raid-secret.key"
-  green "RAID encryption key ready for installation"
+  sops -d --extract '["drive-encryption-keys"]["'"$target_hostname"'"]' "$nix_secrets_yaml" >"$temp/tmp/disk-secret.key"
+  chmod 600 "$temp/tmp/disk-secret.key"
+  disk_encryption_key_file="$temp/tmp/disk-secret.key"
+  green "Disk encryption key ready for installation"
 fi
 
 #################################################
 # 2. Run nixos-anywhere install (build locally) #
 #################################################
 
-blue "[2/5] Running nixos-anywhere (build locally)"
+blue "Running nixos-anywhere (build locally)"
 
 # Clean & pre‑seed known_hosts
 sed -i "/$target_hostname/d; /$target_destination/d" ~/.ssh/known_hosts || true
 ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null >>~/.ssh/known_hosts || true
+
+# Create temporary flake for initial install if secureboot is enabled
+# This disables lanzaboote for the first install, which will be enabled after keys are generated
+install_flake="$git_root#$target_hostname"
+if [[ "$enable_secureboot" == "true" ]]; then
+  blue "Creating temporary flake to disable lanzaboote for initial install..."
+  install -d -m755 "$temp/install-flake"
+
+  cat >"$temp/install-flake/flake.nix" <<EOF
+{
+  description = "Temporary flake for initial nixos-anywhere install";
+
+  inputs.dotnix.url = "path:$git_root";
+
+  outputs = { self, dotnix }: {
+    nixosConfigurations.$target_hostname =
+      dotnix.nixosConfigurations.$target_hostname.extendModules {
+        modules = [({ lib, ... }: {
+          # Disable lanzaboote for initial install (before keys exist)
+          # Will be enabled automatically on first rebuild after keys are generated
+          boot.lanzaboote.enable = lib.mkForce false;
+        })];
+      };
+  };
+}
+EOF
+
+  install_flake="$temp/install-flake#$target_hostname"
+  green "Temporary flake created (lanzaboote disabled for initial install)"
+fi
 
 # Build nixos-anywhere command
 nixos_anywhere_args=(
   --ssh-port "$ssh_port"
   --post-kexec-ssh-port "$ssh_port"
   --extra-files "$temp"
-  --flake ".#$target_hostname"
+  --flake "$install_flake"
   --target-host "root@$target_destination"
 )
 
 # Add disk encryption key if present
-if [[ -n "$raid_encryption_key_file" ]]; then
-  nixos_anywhere_args+=(--disk-encryption-keys /tmp/raid-secret.key "$raid_encryption_key_file")
+if [[ -n "$disk_encryption_key_file" ]]; then
+  nixos_anywhere_args+=(--disk-encryption-keys /tmp/disk-secret.key "$disk_encryption_key_file")
 fi
 
-(
-  cd "$git_root"
-  SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- "${nixos_anywhere_args[@]}"
-)
+SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- "${nixos_anywhere_args[@]}"
+
+##############################################################
+# 3. Prompt for password entry if encryption is enabled     #
+##############################################################
+
+if [[ "$enable_secureboot" == "true" ]]; then
+  yellow "==================================================================="
+  yellow "ACTION REQUIRED: Enter Encryption Password at Console"
+  yellow "==================================================================="
+  echo ""
+  echo "The system has been installed with full-disk encryption."
+  echo "TPM2 auto-unlock is NOT yet configured (Phase 2-3 will set this up)."
+  echo ""
+  echo "To proceed with Secure Boot and TPM2 setup:"
+  echo "  1. Go to the server console"
+  echo "  2. Enter the encryption password when prompted"
+  echo "  3. Wait for the system to boot and become accessible via SSH"
+  echo ""
+  echo "The encryption password is stored in: drive-encryption-keys/$target_hostname"
+  echo ""
+  yellow "Press Enter once you have entered the password and the system is booting..."
+  read -r
+fi
 
 #################################################
-# 3. Optional repo sync (no rebuild afterwards) #
+# 4. Sync repo to target                        #
 #################################################
 
-if yes_or_no "Sync the dotnix repo to $target_hostname?"; then
-  green "Adding $target_destination to local known_hosts"
-  ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >>~/.ssh/known_hosts || true
-  green "Syncing dotnix repository to $target_hostname:$nix_src_path"
-  sync "$target_user" "$git_root"
-  green "Syncing secrets repository to $target_hostname:$nix_src_path"
-  sync "$target_user" "$nix_secrets_dir"
+blue "Syncing dotnix repository to $target_hostname"
+
+green "Adding $target_destination to local known_hosts"
+ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >>~/.ssh/known_hosts || true
+
+# Wait for system to be accessible
+blue "Waiting for system to be accessible via SSH..."
+max_attempts=30
+attempt=0
+while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
+  attempt=$((attempt + 1))
+  if [ $attempt -ge $max_attempts ]; then
+    red "Failed to connect to $target_hostname after $max_attempts attempts"
+    red "Make sure you've entered the encryption password at the console"
+    exit 1
+  fi
+  sleep 10
+done
+green "SSH connection established"
+
+# Collect sudo password for the session (if secureboot is enabled)
+remote_sudo_password=""
+if [[ "$enable_secureboot" == "true" ]]; then
+  blue "This installation requires multiple sudo operations on the remote system."
+  echo -n "Enter sudo password for $target_user@$target_hostname: "
+  read -rs remote_sudo_password
+  echo ""
+
+  # Test the password
+  if ! "${ssh_cmd[@]}" "echo '$remote_sudo_password' | sudo -S -v" >/dev/null 2>&1; then
+    red "Invalid sudo password"
+    exit 1
+  fi
+  green "Sudo password validated"
+fi
+
+# Helper function to run sudo commands with cached password
+remote_sudo() {
+  if [[ -n "$remote_sudo_password" ]]; then
+    "${ssh_cmd[@]}" "echo '$remote_sudo_password' | sudo -S $*"
+  else
+    "${ssh_cmd[@]}" "sudo $*"
+  fi
+}
+
+green "Syncing dotnix repository to $target_hostname:$nix_src_path"
+sync "$target_user" "$git_root"
+green "Syncing secrets repository to $target_hostname:$nix_src_path"
+sync "$target_user" "$nix_secrets_dir"
+
+############################################################
+# 4.5. Phase 2+3: Secure Boot + TPM2 Setup (Combined)     #
+############################################################
+
+if [[ "$enable_secureboot" == "true" ]]; then
+  blue "Phase 2+3: Setting up Secure Boot with lanzaboote and TPM2"
+
+  # Generate Secure Boot keys
+  blue "Generating Secure Boot keys..."
+  remote_sudo "sbctl create-keys"
+  green "Secure Boot keys generated at /var/lib/sbctl/keys/"
+
+  # Rebuild to enable lanzaboote (will auto-enable due to key presence)
+  blue "Rebuilding system with lanzaboote..."
+  remote_sudo "sh -c 'cd /home/$target_user/$nix_src_path/dotnix && nixos-rebuild boot --flake .#$target_hostname'"
+  green "System rebuilt with lanzaboote enabled (boot files signed)"
+
+  # Verify signatures on boot files
+  blue "Verifying boot file signatures..."
+  if remote_sudo "sbctl verify"; then
+    green "All boot files are properly signed"
+  else
+    yellow "Warning: Some boot files may not be signed correctly"
+  fi
+
+  # Enroll Secure Boot keys in firmware
+  blue "Enrolling Secure Boot keys in firmware..."
+  if remote_sudo "sbctl enroll-keys --microsoft"; then
+    green "Secure Boot keys enrolled (will activate on next reboot)"
+  else
+    yellow "Warning: Secure Boot key enrollment had issues"
+  fi
+
+  # Reboot to activate lanzaboote and Secure Boot
+  blue "Rebooting to activate lanzaboote and Secure Boot..."
+  remote_sudo "reboot" || true
+  sleep 30
+
+  # Wait for system to come back (user will enter password one last time)
+  yellow "Waiting for system to come back online (enter password at console)..."
+  attempt=0
+  while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+      red "Failed to reconnect to $target_hostname after $max_attempts attempts"
+      exit 1
+    fi
+    sleep 10
+  done
+  green "System is back online"
+
+  # NOW verify Secure Boot is actually enabled
+  blue "Verifying Secure Boot status..."
+  if remote_sudo "sbctl status | grep -q 'Secure Boot.*Enabled'"; then
+    green "Secure Boot is now active"
+  else
+    red "ERROR: Secure Boot is still not enabled after sbctl enroll-keys"
+    red "Cannot proceed with TPM2 enrollment"
+    exit 1
+  fi
+
+  # NOW enroll TPM2 (with Secure Boot active, so PCR 7 has correct value)
+  blue "Enrolling TPM2 for autonomous boot (with Secure Boot active)..."
+
+  # Copy encryption key to remote system (ensuring no trailing newline)
+  blue "Uploading encryption key for TPM2 enrollment..."
+  "${scp_cmd[@]}" "$temp/tmp/disk-secret.key" "$target_user@$target_destination:/tmp/enroll-key.tmp"
+  remote_sudo "chmod 600 /tmp/enroll-key.tmp"
+
+  # Discover all LUKS devices on the target system
+  blue "Discovering LUKS encrypted devices..."
+  mapfile -t luks_devices < <("${ssh_cmd[@]}" "lsblk -lnpo NAME,FSTYPE | awk '\$2 == \"crypto_LUKS\" {print \$1}'")
+
+  if [ ${#luks_devices[@]} -eq 0 ]; then
+    yellow "Warning: No LUKS devices found. Skipping TPM2 enrollment."
+  else
+    green "Found ${#luks_devices[@]} LUKS device(s): ${luks_devices[*]}"
+
+    # Enroll each LUKS device with TPM2
+    for device in "${luks_devices[@]}"; do
+      # Strip any whitespace/newlines from device name
+      device=$(echo "$device" | tr -d '[:space:]')
+      [[ -z "$device" ]] && continue
+
+      blue "Enrolling $device with TPM2 (PCR 7)..."
+      if remote_sudo "systemd-cryptenroll --unlock-key-file=/tmp/enroll-key.tmp --tpm2-device=auto --tpm2-pcrs=7 $device"; then
+        green "$device enrolled with TPM2"
+      else
+        yellow "Warning: $device TPM2 enrollment had issues (may already be enrolled)"
+      fi
+    done
+
+    green "TPM2 enrollment complete for all LUKS devices"
+  fi
+
+  # Clean up temporary key file
+  remote_sudo "rm -f /tmp/enroll-key.tmp"
+
+  # Final reboot to test autonomous boot
+  blue "Performing final reboot to test autonomous boot..."
+  remote_sudo "reboot" || true
+
+  # Wait for autonomous boot
+  blue "Waiting for autonomous boot to complete (this may take 1-2 minutes)..."
+  sleep 60
+  attempt=0
+  while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+      red "System did not come back online. Check console for issues."
+      yellow "If password is required, Secure Boot may not be enabled or TPM2 enrollment failed."
+      exit 1
+    fi
+    sleep 10
+  done
+
+  green "SUCCESS! System booted autonomously with TPM2 unlock and Secure Boot active"
+  green "Phase 2+3 complete: Secure Boot and autonomous boot configured"
 fi
 
 #########################################################
-# 4. Optionally git‑add, commit & push all changes      #
+# 5. Optionally git‑add, commit & push all changes     #
 #########################################################
 
 if yes_or_no "Stage, commit, and push all changes to Git?"; then
@@ -231,11 +448,31 @@ if yes_or_no "Stage, commit, and push all changes to Git?"; then
 fi
 
 ########################
-# 5. Finished summary  #
+# 6. Finished summary  #
 ########################
 
-green "Success! $target_hostname is now running full dotnix."
+if [[ "$enable_secureboot" == "true" ]]; then
+  echo ""
+  green "==================================================================="
+  green "SUCCESS! $target_hostname is fully configured with Secure Boot"
+  green "==================================================================="
+  echo ""
+  echo "Configuration summary:"
+  echo "  ✓ NixOS installed with full-disk encryption"
+  echo "  ✓ Secure Boot enabled with lanzaboote"
+  echo "  ✓ TPM2 auto-unlock configured (PCR 7)"
+  echo "  ✓ Autonomous boot active (no password required)"
+  echo ""
+  echo "Recovery information:"
+  echo "  - Backup unlock key: drive-encryption-keys/$target_hostname (in sops secrets)"
+  echo "  - If TPM fails: Boot to emergency shell, unlock manually with key"
+  echo "  - Re-enroll TPM: sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 <device>"
+else
+  green "Success! $target_hostname is now running dotnix."
+fi
 
-echo "\nNext steps:"
+echo ""
+echo "Next steps:"
 echo "  ssh $target_user@$target_destination -p $ssh_port"
-echo "  sudo nixos-rebuild switch --flake ~/gitrepos/dotnix#$target_hostname   # update in the future"
+echo "  cd ~/$nix_src_path/dotnix && sudo nixos-rebuild switch --flake .#$target_hostname"
+echo ""

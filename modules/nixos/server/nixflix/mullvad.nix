@@ -7,7 +7,8 @@ with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets.mullvad-account-number = {};
     nixflix.mullvad = {
-      enable = true;
+      # Disable for now, the timing is off and this fails during the initial install
+      enable = false;
       accountNumberPath = config.sops.secrets.mullvad-account-number.path;
       location = ["us" "nyc"];
       dns = [
