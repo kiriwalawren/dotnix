@@ -244,7 +244,7 @@ SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- "${nixos_anywhere_a
 ##############################################################
 
 if [[ "$enable_secureboot" == "true" ]]; then
-  yellow "\n==================================================================="
+  yellow "==================================================================="
   yellow "ACTION REQUIRED: Enter Encryption Password at Console"
   yellow "==================================================================="
   echo ""
@@ -286,6 +286,31 @@ while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
 done
 green "SSH connection established"
 
+# Collect sudo password for the session (if secureboot is enabled)
+remote_sudo_password=""
+if [[ "$enable_secureboot" == "true" ]]; then
+  blue "This installation requires multiple sudo operations on the remote system."
+  echo -n "Enter sudo password for $target_user@$target_hostname: "
+  read -rs remote_sudo_password
+  echo ""
+
+  # Test the password
+  if ! "${ssh_cmd[@]}" "echo '$remote_sudo_password' | sudo -S -v" >/dev/null 2>&1; then
+    red "Invalid sudo password"
+    exit 1
+  fi
+  green "Sudo password validated"
+fi
+
+# Helper function to run sudo commands with cached password
+remote_sudo() {
+  if [[ -n "$remote_sudo_password" ]]; then
+    "${ssh_cmd[@]}" "echo '$remote_sudo_password' | sudo -S $*"
+  else
+    "${ssh_cmd[@]}" "sudo $*"
+  fi
+}
+
 green "Syncing dotnix repository to $target_hostname:$nix_src_path"
 sync "$target_user" "$git_root"
 green "Syncing secrets repository to $target_hostname:$nix_src_path"
@@ -300,17 +325,17 @@ if [[ "$enable_secureboot" == "true" ]]; then
 
   # Generate Secure Boot keys
   blue "Generating Secure Boot keys..."
-  "${ssh_cmd[@]}" "sudo sbctl create-keys"
+  remote_sudo "sbctl create-keys"
   green "Secure Boot keys generated at /var/lib/sbctl/keys/"
 
   # Rebuild to enable lanzaboote (will auto-enable due to key presence)
   blue "Rebuilding system with lanzaboote..."
-  "${ssh_cmd[@]}" "cd ~/$nix_src_path/dotnix && sudo nixos-rebuild boot --flake .#$target_hostname"
+  remote_sudo "sh -c 'cd /home/$target_user/$nix_src_path/dotnix && nixos-rebuild boot --flake .#$target_hostname'"
   green "System rebuilt with lanzaboote enabled (boot files signed)"
 
   # Verify signatures on boot files
   blue "Verifying boot file signatures..."
-  if "${ssh_cmd[@]}" "sudo sbctl verify"; then
+  if remote_sudo "sbctl verify"; then
     green "All boot files are properly signed"
   else
     yellow "Warning: Some boot files may not be signed correctly"
@@ -318,7 +343,7 @@ if [[ "$enable_secureboot" == "true" ]]; then
 
   # Enroll Secure Boot keys in firmware
   blue "Enrolling Secure Boot keys in firmware..."
-  if "${ssh_cmd[@]}" "sudo sbctl enroll-keys --microsoft"; then
+  if remote_sudo "sbctl enroll-keys --microsoft"; then
     green "Secure Boot keys enrolled (will activate on next reboot)"
   else
     yellow "Warning: Secure Boot key enrollment had issues"
@@ -326,11 +351,11 @@ if [[ "$enable_secureboot" == "true" ]]; then
 
   # Reboot to activate lanzaboote and Secure Boot
   blue "Rebooting to activate lanzaboote and Secure Boot..."
-  "${ssh_cmd[@]}" "sudo reboot" || true
+  remote_sudo "reboot" || true
   sleep 30
 
   # Wait for system to come back (user will enter password one last time)
-  blue "Waiting for system to come back online (enter password at console)..."
+  yellow "Waiting for system to come back online (enter password at console)..."
   attempt=0
   while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do
     attempt=$((attempt + 1))
@@ -344,7 +369,7 @@ if [[ "$enable_secureboot" == "true" ]]; then
 
   # NOW verify Secure Boot is actually enabled
   blue "Verifying Secure Boot status..."
-  if "${ssh_cmd[@]}" "sudo sbctl status | grep -q 'Secure Boot.*Enabled'"; then
+  if remote_sudo "sbctl status | grep -q 'Secure Boot.*Enabled'"; then
     green "Secure Boot is now active"
   else
     red "ERROR: Secure Boot is still not enabled after sbctl enroll-keys"
@@ -358,31 +383,40 @@ if [[ "$enable_secureboot" == "true" ]]; then
   # Copy encryption key to remote system (ensuring no trailing newline)
   blue "Uploading encryption key for TPM2 enrollment..."
   "${scp_cmd[@]}" "$temp/tmp/disk-secret.key" "$target_user@$target_destination:/tmp/enroll-key.tmp"
-  "${ssh_cmd[@]}" "sudo chmod 600 /tmp/enroll-key.tmp"
+  remote_sudo "chmod 600 /tmp/enroll-key.tmp"
 
-  # Enroll OS disk with TPM2
-  blue "Enrolling OS disk (cryptroot) with TPM2 (PCR 7)..."
-  if "${ssh_cmd[@]}" "sudo systemd-cryptenroll --unlock-key-file=/tmp/enroll-key.tmp --tpm2-device=auto --tpm2-pcrs=7 /dev/vda2"; then
-    green "OS disk enrolled with TPM2"
-  else
-    yellow "Warning: OS disk TPM2 enrollment had issues (may already be enrolled)"
-  fi
+  # Discover all LUKS devices on the target system
+  blue "Discovering LUKS encrypted devices..."
+  mapfile -t luks_devices < <("${ssh_cmd[@]}" "lsblk -lnpo NAME,FSTYPE | awk '\$2 == \"crypto_LUKS\" {print \$1}'")
 
-  # Enroll RAID with TPM2
-  blue "Enrolling RAID (cryptraid) with TPM2 (PCR 7)..."
-  if "${ssh_cmd[@]}" "sudo systemd-cryptenroll --unlock-key-file=/tmp/enroll-key.tmp --tpm2-device=auto --tpm2-pcrs=7 /dev/md/raid1p1"; then
-    green "RAID enrolled with TPM2"
+  if [ ${#luks_devices[@]} -eq 0 ]; then
+    yellow "Warning: No LUKS devices found. Skipping TPM2 enrollment."
   else
-    yellow "Warning: RAID TPM2 enrollment had issues (may already be enrolled)"
+    green "Found ${#luks_devices[@]} LUKS device(s): ${luks_devices[*]}"
+
+    # Enroll each LUKS device with TPM2
+    for device in "${luks_devices[@]}"; do
+      # Strip any whitespace/newlines from device name
+      device=$(echo "$device" | tr -d '[:space:]')
+      [[ -z "$device" ]] && continue
+
+      blue "Enrolling $device with TPM2 (PCR 7)..."
+      if remote_sudo "systemd-cryptenroll --unlock-key-file=/tmp/enroll-key.tmp --tpm2-device=auto --tpm2-pcrs=7 $device"; then
+        green "$device enrolled with TPM2"
+      else
+        yellow "Warning: $device TPM2 enrollment had issues (may already be enrolled)"
+      fi
+    done
+
+    green "TPM2 enrollment complete for all LUKS devices"
   fi
 
   # Clean up temporary key file
-  "${ssh_cmd[@]}" "sudo rm -f /tmp/enroll-key.tmp"
-  green "TPM2 enrollment complete"
+  remote_sudo "rm -f /tmp/enroll-key.tmp"
 
   # Final reboot to test autonomous boot
   blue "Performing final reboot to test autonomous boot..."
-  "${ssh_cmd[@]}" "sudo reboot" || true
+  remote_sudo "reboot" || true
 
   # Wait for autonomous boot
   blue "Waiting for autonomous boot to complete (this may take 1-2 minutes)..."
