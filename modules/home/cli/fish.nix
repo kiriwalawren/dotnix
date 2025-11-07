@@ -38,6 +38,16 @@ in {
           la = "ls -lah --group-directories-first";
           loc = "scc --no-cocomo";
           ls = "ls -h --color=auto --group-directories-first";
+          c = "wl-copy";
+          p = "wl-paste";
+
+          # Navigation
+          eimer = "cd ~/gitrepos/eimer";
+          dotnix = "cd ~/gitrepos/dotnix";
+          nixflix = "cd ~/gitrepos/nixflix";
+
+          # Nix
+          ns = "NIXPKGS_ALLOW_UNFREE=1 nix-shell -p";
         };
 
         shellAbbrs = rec {
@@ -144,6 +154,19 @@ in {
           nhrn = "${nhr} -n";
           nhs = "nh search";
           nht = "nh os test";
+
+          # systemctl
+          sc = "sudo systemctl";
+          scu = "systemctl --user";
+          scs = "${sc} status";
+          scus = "${scu} status";
+          "sc!" = "${sc} stop";
+          "scu!" = "${scu} stop";
+          scr = "${sc} restart";
+          scur = "${scu} restart";
+          scl = "${sc} list-units";
+          scul = "${scu} list-units";
+          jn = "journalctl -xeu";
 
           # Basic
           md = "mkdir -vp";
