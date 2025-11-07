@@ -23,9 +23,16 @@ in {
     nixflix = {
       enable = true;
       serviceNameIsUrlBase = true;
+      mediaUsers = [config.user.name];
+
       nginx.enable = true;
       postgres.enable = true;
-      mediaUsers = [config.user.name];
+
+      recyclarr = {
+        enable = true;
+        radarr.anime.enable = true;
+        sonarr.anime.enable = true;
+      };
     };
   };
 }
