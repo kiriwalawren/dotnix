@@ -71,7 +71,7 @@
     };
 
     nixflix = {
-      url = "github:kiriwalawren/nixflix/delay-profiles";
+      url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
