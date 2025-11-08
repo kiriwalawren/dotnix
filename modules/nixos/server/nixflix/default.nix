@@ -7,6 +7,7 @@ with lib; let
   cfg = config.server.nixflix;
 in {
   imports = [
+    ./jellyfin.nix
     ./lidarr.nix
     ./mullvad.nix
     ./prowlarr.nix

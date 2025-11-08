@@ -71,7 +71,7 @@
     };
 
     nixflix = {
-      url = "github:kiriwalawren/nixflix";
+      url = "github:kiriwalawren/nixflix/jellyfin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -122,7 +122,7 @@
         text = ''
           ${pkgs.alejandra}/bin/alejandra ./.
           ${pkgs.statix}/bin/statix fix ./.
-          ${pkgs.nodePackages.prettier}/bin/prettier --write . --ignore-pattern "**/*.sh"
+          ${pkgs.nodePackages.prettier}/bin/prettier --write . --ignore-path "**/*.sh"
           ${pkgs.shfmt}/bin/shfmt -l -w -i 2 -ci ./.
         '';
       });

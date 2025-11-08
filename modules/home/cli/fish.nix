@@ -46,6 +46,7 @@ in {
           eimer = "cd ~/gitrepos/eimer";
           dotnix = "cd ~/gitrepos/dotnix";
           nixflix = "cd ~/gitrepos/nixflix";
+          secrets = "cd ~/gitrepos/secrets";
 
           # Nix
           ns = "NIXPKGS_ALLOW_UNFREE=1 nix-shell -p";
