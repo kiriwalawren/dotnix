@@ -255,6 +255,12 @@
       action = "<cmd>qa<cr>";
       options.desc = "Quit all";
     }
+    {
+      mode = ["n"];
+      key = "<leader>wq";
+      action = "<cmd>wqa<cr>";
+      options.desc = "Quit all";
+    }
 
     # Highlights under cursor
     {
