@@ -15,6 +15,21 @@ with lib; {
       config = {
         apiKeyPath = config.sops.secrets."lidarr/api_key".path;
         hostConfig.passwordPath = config.sops.secrets."lidarr/password".path;
+        delayProfiles = [
+          {
+            enableUsenet = true;
+            enableTorrent = true;
+            preferredProtocol = "usenet";
+            usenetDelay = 0;
+            torrentDelay = 360;
+            bypassIfHighestQuality = true;
+            bypassIfAboveCustomFormatScore = false;
+            minimumCustomFormatScore = 0;
+            order = 2147483647;
+            tags = [];
+            id = 1;
+          }
+        ];
       };
     };
   };
