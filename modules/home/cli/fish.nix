@@ -159,8 +159,10 @@ in {
           # systemctl
           sc = "sudo systemctl";
           scu = "systemctl --user";
-          scs = "${sc} status";
-          scus = "${scu} status";
+          sct = "${sc} status";
+          scut = "${scu} status";
+          scs = "${sc} show";
+          scus = "${scu} show";
           "sc!" = "${sc} stop";
           "scu!" = "${scu} stop";
           scr = "${sc} restart";
