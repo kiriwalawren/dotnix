@@ -13,8 +13,8 @@ with lib; {
     nixflix.sonarr = {
       enable = true;
       mediaDirs = [
-        {dir = "${config.nixflix.mediaDir}/tv";}
-        {dir = "${config.nixflix.mediaDir}/anime";}
+        "${config.nixflix.mediaDir}/tv"
+        "${config.nixflix.mediaDir}/anime"
       ];
       config = {
         apiKeyPath = config.sops.secrets."sonarr/api_key".path;
