@@ -10,12 +10,12 @@ DATA_DISK_1="$IMAGE_DIR/home-server-data-1.qcow2"
 DATA_DISK_2="$IMAGE_DIR/home-server-data-2.qcow2"
 
 # Disk sizes
-OS_SIZE="75G"
-DATA_SIZE="100G"
+OS_SIZE="50G"
+DATA_SIZE="700G"
 
 # VM Resources
-MEMORY="16384" # 16GB in MiB (virt-install default unit)
-VCPUS="6"
+MEMORY="32768" # 32GB in MiB (virt-install default unit)
+VCPUS="18"
 
 # Parse arguments
 RECREATE=false
