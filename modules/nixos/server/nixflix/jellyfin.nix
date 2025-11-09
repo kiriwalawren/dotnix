@@ -12,6 +12,7 @@ with lib; {
     nixflix.jellyfin = {
       enable = true;
       apiKeyPath = config.sops.secrets."jellyfin/api_key".path;
+      network.enableRemoteAccess = false;
     };
   };
 }
