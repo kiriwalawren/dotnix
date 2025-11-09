@@ -14,6 +14,7 @@
     {
       system = {
         stateVersion = "25.05"; # Update when reinstalling
+        user.name = "walawren";
         docker.enable = true;
         bootloader.grub.enable = true;
         power-profiles.enable = true;

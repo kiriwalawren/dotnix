@@ -14,6 +14,7 @@
     {
       system = {
         stateVersion = "25.05"; # Update when reinstalling
+        user.name = "kiri";
         docker.enable = true;
         bootloader.grub.enable = true;
         openssh.enable = true;
