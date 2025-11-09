@@ -3,9 +3,9 @@
   modules = [
     ../../modules/nixos
     {
+      user.name = "kiri";
       system = {
         stateVersion = "23.11"; # Update when reinstalling
-        user.name = "kiri";
         docker.enable = true;
         tailscale.enable = true;
       };
