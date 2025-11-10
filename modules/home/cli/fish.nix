@@ -71,7 +71,7 @@ in {
           gdca = "git diff --cached";
           gf = "git fetch";
           gp = "git push";
-          ggp = "git --set-upstream push origin $(git branch --show-current)";
+          ggp = "git push --set-upstream origin $(git branch --show-current)";
           ggf = "${ggp} -f";
           gl = "git pull";
           ggl = "git pull origin $(git branch --show-current)";

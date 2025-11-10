@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  theme,
   ...
 }:
 with lib; let
@@ -22,8 +23,12 @@ in {
   config = mkIf cfg.enable {
     nixflix = {
       enable = true;
-      serviceNameIsUrlBase = true;
       mediaUsers = [config.user.name];
+
+      theme = {
+        enable = true;
+        name = "catppuccin-${theme.variant}";
+      };
 
       nginx.enable = true;
       postgres.enable = true;
