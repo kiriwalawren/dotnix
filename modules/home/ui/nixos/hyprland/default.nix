@@ -33,8 +33,9 @@ with lib; let
 in {
   imports = [
     ./grimblast.nix
-    ./hyprlock.nix
     ./hypridle.nix
+    ./hyprlock.nix
+    ./hyprmon.nix
     ./hyprpaper.nix
   ];
 
@@ -45,6 +46,7 @@ in {
       grimblast.enable = true; # Screenshot utility
       hypridle.enable = true; # Idle daemon
       hyprlock.enable = true; # Lock screen
+      hyprmon.enable = true; # On-demand display manager
       hyprpaper.enable = true; # Configures wallpaper
     };
 

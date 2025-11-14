@@ -8,6 +8,7 @@ with lib; {
     sops.secrets = {
       "indexer-api-keys/DrunkenSlug" = {};
       "indexer-api-keys/NZBFinder" = {};
+      "indexer-api-keys/NzbPlanet" = {};
       "prowlarr/api_key" = {};
       "prowlarr/password" = {};
     };
@@ -25,6 +26,10 @@ with lib; {
           {
             name = "NZBFinder";
             apiKeyPath = config.sops.secrets."indexer-api-keys/NZBFinder".path;
+          }
+          {
+            name = "NzbPlanet";
+            apiKeyPath = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
           }
         ];
       };

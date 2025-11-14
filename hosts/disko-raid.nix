@@ -148,6 +148,7 @@
                   content = {
                     type = "filesystem";
                     format = "ext4";
+                    mountpoint = "/data";
                   };
                 }
                 else {

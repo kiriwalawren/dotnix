@@ -12,6 +12,7 @@
     ../../modules/nixos
 
     {
+      user.name = "walawren";
       system = {
         stateVersion = "25.05"; # Update when reinstalling
         docker.enable = true;
