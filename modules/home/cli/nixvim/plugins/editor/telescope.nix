@@ -5,15 +5,19 @@
     plugins.telescope = {
       enable = true;
 
-      extensions.ui-select.enable = true;
-      extensions.fzf-native.enable = true;
+      extensions = {
+        ui-select.enable = true;
+        fzf-native.enable = true;
+      };
 
       settings = {
-        pickers.find_files = {
-          hidden = true;
-        };
-        pickers.git_files = {
-          hidden = true;
+        pickers = {
+          find_files = {
+            hidden = true;
+          };
+          git_files = {
+            hidden = true;
+          };
         };
       };
 
