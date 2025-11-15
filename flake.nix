@@ -71,7 +71,7 @@
     };
 
     nixflix = {
-      url = "github:kiriwalawren/nixflix";
+      url = "github:kiriwalawren/nixflix/jellyfin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
