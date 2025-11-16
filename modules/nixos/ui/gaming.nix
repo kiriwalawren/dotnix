@@ -20,6 +20,7 @@ in {
       heroic
       mangohud
       protonup-rs
+      bottles
     ];
 
     programs.gamemode.enable = true;
