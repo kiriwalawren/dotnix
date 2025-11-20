@@ -7,7 +7,7 @@ with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
       "jellyfin/api_key" = {};
-      "jellyfin/admin_password_hash" = {};
+      "jellyfin/admin_password" = {};
     };
 
     nixflix.jellyfin = {
@@ -17,8 +17,8 @@ with lib; {
       users = {
         admin = {
           mutable = false;
-          permissions.isAdministrator = true;
-          hashedPasswordFile = config.sops.secrets."jellyfin/admin_password_hash".path;
+          policy.isAdministrator = true;
+          passwordFile = config.sops.secrets."jellyfin/admin_password".path;
         };
       };
     };
