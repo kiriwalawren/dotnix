@@ -13,6 +13,7 @@ with lib; {
     nixflix.jellyfin = {
       enable = true;
       network.enableRemoteAccess = false;
+      apikeys.default = config.sops.secrets."jellyfin/api_key".path;
       users = {
         admin = {
           mutable = false;
