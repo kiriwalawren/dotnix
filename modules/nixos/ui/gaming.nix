@@ -20,6 +20,7 @@ in {
       heroic
       mangohud
       protonup-rs
+      (bottles.override {removeWarningPopup = true;})
     ];
 
     programs.gamemode.enable = true;
