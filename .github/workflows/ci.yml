@@ -9,7 +9,7 @@ jobs:
     name: Check 📋
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup SSH for private repository
         uses: webfactory/ssh-agent@v0.9.1
@@ -37,7 +37,7 @@ jobs:
       configurations: ${{ steps.configurations.outputs.configurations }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -104,7 +104,7 @@ jobs:
           df -h
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
