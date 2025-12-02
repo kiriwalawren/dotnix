@@ -11,6 +11,24 @@ with lib; let
   pamixer = "${pkgs.pamixer}/bin/pamixer";
   playerctl = "${pkgs.playerctl}/bin/playerctl";
 
+  unmutemic = pkgs.writeShellScriptBin "unmutemic" ''
+    ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+      ${pkgs.pamixer}/bin/pamixer -u --source "$source"
+    done
+  '';
+
+  mutemic = pkgs.writeShellScriptBin "mutemic" ''
+    ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+      ${pkgs.pamixer}/bin/pamixer -m --source "$source"
+    done
+  '';
+
+  togglemic = pkgs.writeShellScriptBin "togglemic" ''
+    ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+      ${pkgs.pamixer}/bin/pamixer -t --source "$source"
+    done
+  '';
+
   rgba = color: "rgba(${color}ee)";
   primaryAccent = rgba theme.colors.primaryAccent;
   secondaryAccent = rgba theme.colors.secondaryAccent;
@@ -49,6 +67,8 @@ in {
       hyprmon.enable = true; # On-demand display manager
       hyprpaper.enable = true; # Configures wallpaper
     };
+
+    home.packages = [unmutemic mutemic togglemic];
 
     wayland.windowManager.hyprland = {
       enable = true;
@@ -130,25 +150,39 @@ in {
             "SHIFTSUPER,L,movewindow,r"
             "SHIFTSUPER,K,movewindow,u"
             "SHIFTSUPER,J,movewindow,d"
+
+            ",XF86AudioMute,exec,${pamixer} -t"
+            ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
+
+            "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
           ]
           ++ workspaces;
+
+        # Executes when key is released
+        bindr = [
+          "CTRL,Space,exec,${mutemic}/bin/mutemic"
+        ];
 
         bindm = [
           "SUPER,mouse:272,movewindow"
           "SUPER,mouse:273,resizewindow"
         ];
 
+        # Repeats when held
         binde = [
           ",XF86AudioRaiseVolume,exec,${pamixer} -i 5"
           ",XF86AudioLowerVolume,exec,${pamixer} -d 5"
-          ",XF86AudioMute,exec,${pamixer} -t"
-          ",XF86AudioMicMute,exec,micmute"
         ];
 
+        # Will also work when an input inhibitor (e.g. a lockscreen) is active
         bindl = [
           ",XF86AudioPlay,exec,${playerctl} play-pause"
           ",XF86AudioPrev,exec,${playerctl} previous"
           ",XF86AudioNext,exec,${playerctl} next"
+        ];
+
+        "exec-once" = [
+          "${mutemic}/bin/mutemic"
         ];
       };
     };

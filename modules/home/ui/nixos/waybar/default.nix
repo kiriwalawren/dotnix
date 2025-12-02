@@ -66,11 +66,13 @@ in {
           };
 
           pulseaudio = {
-            format = "{icon}  {volume}%";
-            format-muted = "󰝟";
+            format = "{format_source} {icon}  {volume}%";
+            format-muted = "{format_source} 󰝟";
             format-icons = {
               default = ["󰕿" "󰖀" "󰕾"];
             };
+            format-source-muted = "󰍭";
+            format-source = "󰍬";
             scroll-step = 5;
             on-click = "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
           };
