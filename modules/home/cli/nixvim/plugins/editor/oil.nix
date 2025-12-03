@@ -19,8 +19,8 @@
       {
         mode = ["n"];
         key = "<leader>e";
-        action = "<cmd>Oil --float<cr>";
-        options.desc = "Open Explorer";
+        action = "<cmd>lua if vim.bo.filetype == 'oil' then vim.cmd('bd') else require('oil').open_float() end<cr>";
+        options.desc = "Toggle Explorer";
       }
     ];
   };
