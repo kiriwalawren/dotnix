@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  pkgs,
   ...
 }:
 with lib; let
@@ -16,6 +17,7 @@ in {
   options.cli.nixvim = {enable = mkEnableOption "nixvim";};
 
   config = mkIf cfg.enable {
+    home.packages = [pkgs.claude-code];
     programs = {
       ripgrep.enable = true;
 
