@@ -97,6 +97,10 @@ in {
           key_press_enables_dpms = true;
         };
 
+        ecosystem = {
+          no_update_news = true;
+        };
+
         decoration = {
           rounding = theme.radius;
 
