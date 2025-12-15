@@ -20,7 +20,7 @@ jobs:
   deploy:
     name: Deploy NixOS Configuration 🚀
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     environment: everything
     steps:
