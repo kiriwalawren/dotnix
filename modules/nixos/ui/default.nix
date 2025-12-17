@@ -15,6 +15,7 @@ in {
     ./bluetooth.nix
     ./file-manager.nix
     ./fingerprint.nix
+    ./fonts.nix
     ./gaming.nix
     ./greetd.nix
     ./hyprland.nix
@@ -37,6 +38,7 @@ in {
     ui = {
       bluetooth.enable = true;
       fileManager.enable = true;
+      fonts.enable = true; # Fonts
       greetd.enable = true; # greetd + tuigreet Display Manager
       hyprland.enable = true; # Tiling Manager
       plymouth.enable = true; # Boot Splash Screen

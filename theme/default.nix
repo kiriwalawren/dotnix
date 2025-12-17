@@ -41,7 +41,7 @@ rec {
   defaultWallpaper = ./wallpapers/nixppuccin.png;
   wallpapers = ./wallpapers;
 
-  font = "Fira Code";
+  font = "Maple Mono";
   fontSizeSmall = 12;
   fontSize = 14;
 }

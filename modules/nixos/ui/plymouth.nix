@@ -13,7 +13,7 @@ in {
   config = mkIf cfg.enable {
     boot.plymouth = {
       enable = true;
-      font = "${pkgs.jetbrains-mono}/share/fonts/truetype/JetBrainsMono-Regular.ttf";
+      font = "${pkgs.maple-mono.NF}/share/fonts/truetype/MapleMono-NF-Regular.ttf";
 
       themePackages = [
         (pkgs.catppuccin-plymouth.override {
