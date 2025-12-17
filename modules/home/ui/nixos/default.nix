@@ -13,6 +13,7 @@ in {
     ./impala.nix
     ./mako.nix
     ./waybar
+    ./wiremix.nix
     ./wofi.nix
   ];
 
@@ -29,6 +30,7 @@ in {
       gtk.enable = true;
       hyprland.enable = true; # Wayland Compositor (Tiling)
       impala.enable = true; # WiFi TUI launcher
+      wiremix.enable = true; # Audio Mixer
       mako.enable = true; # Notification daemon
       waybar.enable = true; # Desktop Bar
     };

@@ -125,18 +125,6 @@ in {
           preserve_split = "yes";
         };
 
-        windowrulev2 = [
-          "float,class:(wiremix)"
-          "center,class:(wiremix)"
-          "size 800 600,class:(wiremix)"
-          "stayfocused,class:(wiremix)"
-
-          "float,class:(impala)"
-          "center,class:(impala)"
-          "size 800 700,class:(impala)"
-          "stayfocused,class:(impala)"
-        ];
-
         bind =
           [
             ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
