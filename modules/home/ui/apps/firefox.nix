@@ -30,6 +30,9 @@ in {
           "browser.startup.page" = 3; # remember tabs
           "browser.tabs.inTitlebar" = 0;
 
+          # Font configuration
+          "browser.display.use_document_fonts" = 0; # prevent sites from overriding fonts
+
           # Sidebar configuration
           "sidebar.verticalTabs" = true; # enable vertical tabs
           "sidebar.revamp" = true; # use new sidebar
