@@ -11,8 +11,6 @@ in {
   options.ui.nixos.waybar = {enable = mkEnableOption "waybar";};
 
   config = mkIf cfg.enable {
-    ui.fonts.enable = true;
-
     programs.waybar = {
       enable = true;
 

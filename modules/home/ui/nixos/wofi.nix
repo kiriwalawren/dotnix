@@ -12,8 +12,6 @@ in {
   options.ui.nixos.wofi = {enable = mkEnableOption "wofi";};
 
   config = mkIf cfg.enable {
-    ui.fonts.enable = true;
-
     home.packages = with pkgs; [wofi];
 
     xdg.configFile."wofi/config".text = ''

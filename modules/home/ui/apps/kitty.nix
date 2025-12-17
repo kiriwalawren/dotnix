@@ -10,8 +10,6 @@ in {
   options.ui.apps.kitty = {enable = mkEnableOption "kitty";};
 
   config = mkIf cfg.enable {
-    ui.fonts.enable = true;
-
     programs.kitty = {
       enable = true;
       themeFile = "Catppuccin-${theme.variantUpper}";

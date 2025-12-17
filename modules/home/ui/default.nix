@@ -1,4 +1,5 @@
 {
+  hostConfig,
   lib,
   config,
   ...
@@ -12,13 +13,13 @@ in {
     ./apps
     ./nixos
 
-    ./fonts.nix
     ./cursors.nix
   ];
 
   options.ui = {enable = mkEnableOption "ui";};
 
   config = mkIf cfg.enable {
+    fonts.fontconfig.enable = hostConfig.fonts.fontconfig.enable;
     cli.enable = true;
     ui = {
       cursors.enable = true;
