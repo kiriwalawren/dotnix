@@ -15,6 +15,7 @@ in {
     ./radarr.nix
     ./sabnzbd.nix
     ./sonarr.nix
+    ./sonarr-anime.nix
   ];
 
   options.server.nixflix = {
@@ -37,8 +38,6 @@ in {
       recyclarr = {
         enable = true;
         cleanupUnmanagedProfiles = true;
-        radarr.anime.enable = true;
-        sonarr.anime.enable = true;
       };
     };
   };

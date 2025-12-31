@@ -6,15 +6,15 @@
 with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
-      "sonarr/api_key" = {};
-      "sonarr/password" = {};
+      "sonarr-anime/api_key" = {};
+      "sonarr-anime/password" = {};
     };
 
-    nixflix.sonarr = {
+    nixflix.sonarr-anime = {
       enable = true;
       config = {
-        apiKeyPath = config.sops.secrets."sonarr/api_key".path;
-        hostConfig.passwordPath = config.sops.secrets."sonarr/password".path;
+        apiKeyPath = config.sops.secrets."sonarr-anime/api_key".path;
+        hostConfig.passwordPath = config.sops.secrets."sonarr-anime/password".path;
         delayProfiles = [
           {
             enableUsenet = true;
