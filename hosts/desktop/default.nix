@@ -3,17 +3,15 @@
   modules = [
     ./hardware-configuration.nix
 
-    ({lib, ...}:
-      import ../disko.nix {
-        inherit lib;
-        device = "/dev/nvme1n1";
-      })
-
     ../../modules/nixos
 
     {
       user.name = "kiri";
       system = {
+        disks."/" = {
+          devices = ["/dev/nvme1n1"];
+        };
+
         stateVersion = "25.05"; # Update when reinstalling
         docker.enable = true;
         bootloader.grub.enable = true;
