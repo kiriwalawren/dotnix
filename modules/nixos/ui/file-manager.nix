@@ -14,7 +14,7 @@ in {
 
     programs.thunar = {
       enable = true;
-      plugins = with pkgs.xfce; [
+      plugins = with pkgs; [
         thunar-archive-plugin # Provides file context menus for archives
         thunar-volman # Automatic management of removable drives and media
       ];

@@ -2,6 +2,5 @@
   imports = [
     ./completion
     ./editor
-    ./treesitter
   ];
 }

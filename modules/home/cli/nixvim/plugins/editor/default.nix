@@ -8,6 +8,7 @@
     ./mini.nix
     ./oil.nix
     ./telescope.nix
+    ./treesitter.nix
     ./trouble.nix
   ];
 }
