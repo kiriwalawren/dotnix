@@ -5,9 +5,9 @@
   ...
 }:
 with lib; let
-  cfg = config.ui.apps.vencord;
+  cfg = config.ui.apps.vesktop;
 in {
-  options.ui.apps.vencord = {enable = mkEnableOption "vencord";};
+  options.ui.apps.vesktop = {enable = mkEnableOption "vesktop";};
 
   config = mkIf cfg.enable {
     home.packages = [

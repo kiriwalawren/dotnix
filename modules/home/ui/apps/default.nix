@@ -12,7 +12,7 @@ in {
     ./slack.nix
     ./spotify.nix
     ./teams.nix
-    ./vencord
+    ./vesktop
   ];
 
   options.ui.apps = {enable = mkEnableOption "apps";};
@@ -24,7 +24,7 @@ in {
       slack.enable = true;
       spotify.enable = true;
       teams.enable = true;
-      vencord.enable = true;
+      vesktop.enable = true;
     };
   };
 }
