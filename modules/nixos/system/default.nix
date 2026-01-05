@@ -14,6 +14,7 @@ in {
 
     ./cachix-agent.nix
     ./cachix.nix
+    ./disks
     ./docker.nix
     ./dual-function-keys.nix
     ./encryption

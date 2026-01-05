@@ -3,19 +3,32 @@
   modules = [
     ./hardware-configuration.nix
 
-    ({lib, ...}:
-      import ../disko-raid.nix {
-        inherit lib;
-        device = "/dev/vda";
-        raidDevice1 = "/dev/vdb";
-        raidDevice2 = "/dev/vdc";
-        encryptDrives = true;
-      })
-
     ../../modules/nixos
 
     {
-      system.stateVersion = "25.05"; # Update when reinstalling
+      system = {
+        disks."/" = {
+          devices = ["/dev/vda"];
+          encryptDrives = true;
+        };
+        disks."/data" = {
+          devices = ["/dev/vdb" "/dev/vdc"];
+          type = "data";
+          raidLevel = 1;
+          encryptDrives = true;
+        };
+
+        encryption.tpm2.enable = true;
+        cachix-agent.enable = true;
+        openssh.enable = true;
+        tailscale = {
+          enable = true;
+          mode = "server";
+        };
+
+        stateVersion = "25.11"; # Update when reinstalling
+      };
+
       user.name = "walawren";
 
       boot = {
@@ -25,16 +38,6 @@
           mdadmConf = ''
             MAILADDR root
           '';
-        };
-      };
-
-      system = {
-        encryption.tpm2.enable = true;
-        cachix-agent.enable = true;
-        openssh.enable = true;
-        tailscale = {
-          enable = true;
-          mode = "server";
         };
       };
 

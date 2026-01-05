@@ -310,18 +310,35 @@
         "type": "github"
       }
     },
+    "mkdocs-catppuccin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767028711,
+        "narHash": "sha256-YVIZAtQT2B4Xs2sBaszvyyukm+1klCJdRpsc/BYV1gw=",
+        "owner": "ruslanlap",
+        "repo": "mkdocs-catppuccin",
+        "rev": "fd8ac6106b5b6d32922cd80cbc3d221622a17408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ruslanlap",
+        "repo": "mkdocs-catppuccin",
+        "type": "github"
+      }
+    },
     "nixflix": {
       "inputs": {
+        "mkdocs-catppuccin": "mkdocs-catppuccin",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1767593560,
-        "narHash": "sha256-aKSVxEL5+/AgnuoyyCz/l3L81JRbJ/fxeTIDD+K007Y=",
+        "lastModified": 1767606946,
+        "narHash": "sha256-fckqNo7HokyVN4IA8smqfb8QEB8EcFTg/1q3ESr//XQ=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "4d5bcd4508626bb5e5220f82a8807e84b4d9acd1",
+        "rev": "954bf9160cc1140ad2ae6bd66f688d4b394b1724",
         "type": "github"
       },
       "original": {
