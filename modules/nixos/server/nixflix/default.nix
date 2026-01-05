@@ -9,6 +9,7 @@ with lib; let
 in {
   imports = [
     ./jellyfin.nix
+    ./jellyseerr.nix
     ./lidarr.nix
     ./mullvad.nix
     ./prowlarr.nix
