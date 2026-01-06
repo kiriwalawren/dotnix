@@ -1,38 +1,44 @@
 {
-  lib,
   config,
-  pkgs,
+  inputs,
+  lib,
   ...
 }:
 with lib; let
-  cfg = config.ui.apps.vencord;
+  cfg = config.ui.apps.vesktop;
+
+  inherit (inputs) catppuccin-discord;
+  themeFileNames = builtins.attrNames (builtins.readDir "${catppuccin-discord}/themes");
+  themeFileConfigs = builtins.listToAttrs (map (fileName: {
+      name = ".config/vesktop/themes/${fileName}";
+      value = {source = "${catppuccin-discord}/themes/${fileName}";};
+    })
+    themeFileNames);
 in {
-  options.ui.apps.vencord = {enable = mkEnableOption "vencord";};
+  options.ui.apps.vesktop = {enable = mkEnableOption "vesktop";};
 
   config = mkIf cfg.enable {
-    home.packages = [
-      pkgs.vesktop
-    ];
+    home.file = themeFileConfigs;
 
-    xdg.configFile = {
-      "vesktop/themes/Catppuccin.theme.css".source = ./theme.css;
+    programs.vesktop = {
+      enable = true;
 
-      "vesktop/settings.json".text = builtins.toJSON {
+      settings = {
         discordBranch = "stable";
         firstLaunch = false;
-        arRPC = "on";
-        splashColor = "rgb(219, 222, 225)";
-        splashBackground = "rgb(49, 51, 56)";
+        arRPC = true;
+        splashBackground = "#181825";
+        splashColor = "#cdd6f4";
         minimizeToTray = false;
       };
 
-      "vesktop/settings/settings.json".text = builtins.toJSON {
+      vencord.settings = {
+        enabledThemes = ["mocha.theme.css"];
         notifyAboutUpdates = false;
         autoUpdate = false;
         autoUpdateNotification = false;
         useQuickCss = true;
         themeLinks = [];
-        enabledThemes = ["Catppuccin.theme.css"];
         enableReactDevtools = true;
         frameless = false;
         transparent = true;
@@ -64,6 +70,7 @@ in {
           useNative = "not-focused";
           logLimit = 50;
         };
+
         cloud = {
           authenticated = false;
           url = "https://api.vencord.dev/";
