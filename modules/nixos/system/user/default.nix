@@ -13,12 +13,6 @@ in {
       default = "walawren";
       description = "The name to use for the user account";
     };
-
-    isMinimal = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Used to indicate a minimal host";
-    };
   };
 
   config = {
@@ -31,12 +25,8 @@ in {
       group = "users";
 
       hashedPasswordFile =
-        if !config.isMinimal && !config.wsl.enable
+        if !config.wsl.enable
         then config.sops.secrets."passwords/${config.user.name}".path
-        else null;
-      hashedPassword =
-        if config.isMinimal && !config.wsl.enable
-        then "$y$j9T$M93AAG05U9RRsjhXIamCL/$YT5Eu.P4ci1hx11vb0P/loGWp6Qpz7hcENtUAj2jryC"
         else null;
 
       openssh.authorizedKeys.keys = lists.forEach pubKeys (key: builtins.readFile key);
