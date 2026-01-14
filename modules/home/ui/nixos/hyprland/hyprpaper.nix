@@ -17,8 +17,6 @@ with lib; let
     wallpaper=''${wallpapers[$rand]}
 
     monitor=(`hyprctl monitors | grep Monitor | awk '{print $2}'`)
-    hyprctl hyprpaper unload all
-    hyprctl hyprpaper preload $wallpaper
     for m in ''${monitor[@]}; do
       hyprctl hyprpaper wallpaper "$m,$wallpaper"
     done
@@ -35,7 +33,7 @@ in {
       settings = {
         ipc = "on";
         splash = false;
-        splash_offset = 2.0;
+        splash_offset = 2;
       };
     };
 
@@ -45,7 +43,8 @@ in {
 
         Unit = {
           Description = "Set random desktop background using hyprpaper";
-          After = ["graphical-session.target"];
+          After = ["graphical-session.target" "hyprpaper.service"];
+          Requires = ["hyprpaper.service"];
           PartOf = ["graphical-session.target"];
         };
 

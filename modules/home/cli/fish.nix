@@ -43,7 +43,7 @@ in {
           srcpath = "realpath $(srcpath)";
 
           # Navigation
-          geimer = "cd ~/gitrepos/eimer";
+          eimer = "cd ~/gitrepos/eimer";
           dotnix = "cd ~/gitrepos/dotnix";
           nixflix = "cd ~/gitrepos/nixflix";
           secrets = "cd ~/gitrepos/secrets";

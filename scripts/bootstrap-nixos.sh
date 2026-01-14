@@ -355,7 +355,8 @@ if [[ "$enable_secureboot" == "true" ]]; then
   sleep 30
 
   # Wait for system to come back (user will enter password one last time)
-  yellow "Waiting for system to come back online (enter password at console)..."
+  yellow "Waiting for system to come back online (enter password at console)."
+  yellow "Hit Enter to continue..."
   read -r
   attempt=0
   while ! "${ssh_cmd[@]}" "echo 'SSH connection ready'" >/dev/null 2>&1; do

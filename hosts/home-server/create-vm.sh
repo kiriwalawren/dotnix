@@ -14,7 +14,7 @@ OS_SIZE="50G"
 DATA_SIZE="700G"
 
 # VM Resources
-MEMORY="32768" # 32GB in MiB (virt-install default unit)
+MEMORY="24576" # 32GB in MiB (virt-install default unit)
 VCPUS="18"
 
 # Parse arguments
