@@ -38,7 +38,7 @@ with lib; {
       settings = {
         misc = {
           api_key = {_secret = config.sops.secrets."sabnzbd/api_key".path;};
-          nzb_api_key = {_secret = config.sops.secrets."sabnzbd/nzb_key".path;};
+          nzb_key = {_secret = config.sops.secrets."sabnzbd/nzb_key".path;};
         };
         servers = [
           {
