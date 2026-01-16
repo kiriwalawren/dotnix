@@ -36,16 +36,13 @@
         };
       };
 
-      server = {
-        enable = true;
-
-        nixflix = {
-          sabnzbd.settings.misc.cache_limit = "8G";
-          jellyfin.encoding = {
-            allowHevcEncoding = true;
-            enableHardwareEncoding = true;
-            hardwareAccelerationType = "amf"; # AMD Graphics Card
-          };
+      server.enable = true;
+      nixflix = {
+        sabnzbd.settings.misc.cache_limit = "8G";
+        jellyfin.encoding = {
+          allowHevcEncoding = true;
+          enableHardwareEncoding = true;
+          hardwareAccelerationType = "amf"; # AMD Graphics Card
         };
       };
 
