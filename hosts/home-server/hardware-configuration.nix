@@ -35,7 +35,7 @@
     extraPackages = with pkgs; [
       mesa.drivers
       libva
-      vaapiVdpau
+      libva-vdpau-driver
     ];
   };
 
