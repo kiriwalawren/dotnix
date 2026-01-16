@@ -33,7 +33,7 @@
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
-      mesa.drivers
+      mesa
       libva
       libva-vdpau-driver
     ];
