@@ -45,12 +45,6 @@
         };
       };
 
-      systemd.services.jellyfin = {
-         serviceConfig = {
-           SupplementaryGroups = ["video" "render"];
-         };
-       };
-
       # Uncomment for temporary gaming
       # ui = {
       #   enable = true;
