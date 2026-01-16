@@ -578,10 +578,17 @@
     },
     "secrets": {
       "locked": {
+<<<<<<< Updated upstream
         "lastModified": 1768596015,
         "narHash": "sha256-WLrHWzG2e5S/9WJaaPt7n29wEb4MSG+mGSMR5NYm5FE=",
         "ref": "main",
         "rev": "57eb9358b06a1f6b63011985f63ed390255aa7a9",
+=======
+        "lastModified": 1768596435,
+        "narHash": "sha256-lEAbUZB7v6LKwsmjObOm6/10XL/1wpah3fssFI6AEcI=",
+        "ref": "main",
+        "rev": "5d8d3341d75b05d91358550718dfe01a28d39553",
+>>>>>>> Stashed changes
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
