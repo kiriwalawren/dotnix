@@ -8,13 +8,8 @@
     {
       system = {
         disks."/" = {
-          devices = ["/dev/vda"];
-          encryptDrives = true;
-        };
-        disks."/data" = {
-          devices = ["/dev/vdb" "/dev/vdc"];
-          type = "data";
-          raidLevel = 1;
+          devices = ["/dev/nvme0n1" "/dev/nvme1n1"];
+          raidLevel = 0;
           encryptDrives = true;
         };
 
@@ -42,8 +37,22 @@
       };
 
       server.enable = true;
+
+      # Uncomment for temporary gaming
+      # ui = {
+      #   enable = true;
+      #   gaming.enable = true;
+      # };
     }
   ];
 
-  homeOptions.cli.enable = true;
+  homeOptions = {
+    cli.enable = true;
+
+    # Uncomment for temporary gaming
+    # ui = {
+    #   enable = true;
+    #   nixos.enable = true;
+    # };
+  };
 }

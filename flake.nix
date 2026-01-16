@@ -75,6 +75,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Server Dependencies
     nixflix = {
       url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
