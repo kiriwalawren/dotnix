@@ -10,10 +10,9 @@
         disks."/" = {
           devices = ["/dev/nvme0n1" "/dev/nvme1n1"];
           raidLevel = 0;
-          encryptDrives = true;
         };
 
-        encryption.tpm2.enable = true;
+        bootloader.grub.enable = true;
         cachix-agent.enable = true;
         openssh.enable = true;
         tailscale = {
