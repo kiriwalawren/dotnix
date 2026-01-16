@@ -41,7 +41,7 @@
         jellyfin.encoding = {
           allowHevcEncoding = true;
           enableHardwareEncoding = true;
-          hardwareAccelerationType = "amf"; # AMD Graphics Card
+          hardwareAccelerationType = "vaapi"; # AMD Graphics Card
         };
       };
 
