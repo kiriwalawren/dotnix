@@ -19,9 +19,7 @@ in {
     ./sonarr-anime.nix
   ];
 
-  options.server.nixflix = {
-    enable = mkEnableOption "nixflix media server configuration";
-  };
+  options.server.nixflix = {enable = mkEnableOption "nixflix media server configuration";};
 
   config = mkIf cfg.enable {
     nixflix = {

@@ -93,14 +93,9 @@
       mountPoint: group:
         helpers.mkDiskContent {
           name = helpers.sanitizeMountPoint mountPoint;
-          inherit (group) devices;
-          inherit (group) raidLevel;
+          inherit (group) devices raidLevel withSwap swapSize encryptDrives encryptionPasswordFile;
           diskType = group.type;
           inherit mountPoint;
-          inherit (group) withSwap;
-          inherit (group) swapSize;
-          inherit (group) encryptDrives;
-          inherit (group) encryptionPasswordFile;
         }
     )
     cfg;

@@ -7,9 +7,7 @@
 with lib; let
   cfg = config.ui.nixos.impala;
 in {
-  options.ui.nixos.impala = {
-    enable = mkEnableOption "impala";
-  };
+  options.ui.nixos.impala = {enable = mkEnableOption "impala";};
 
   config = mkIf cfg.enable {
     home.packages = [pkgs.impala];

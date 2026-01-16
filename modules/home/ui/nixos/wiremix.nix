@@ -7,9 +7,7 @@
 with lib; let
   cfg = config.ui.nixos.wiremix;
 in {
-  options.ui.nixos.wiremix = {
-    enable = mkEnableOption "wiremix";
-  };
+  options.ui.nixos.wiremix = {enable = mkEnableOption "wiremix";};
 
   config = mkIf cfg.enable {
     home.packages = [pkgs.wiremix];
