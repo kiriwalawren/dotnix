@@ -16,7 +16,11 @@
         docker.enable = true;
         bootloader.grub.enable = true;
         power-profiles.enable = true;
-        tailscale.enable = true;
+
+        tailscale = {
+          enable = true;
+          vpn.enable = true;
+        };
       };
 
       ui = {
