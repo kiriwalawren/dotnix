@@ -103,26 +103,20 @@
       inputs.hyprland-contrib.overlays.default
     ];
 
-    forEachSystem = f:
+    perSystem = f:
       lib.genAttrs systems (system:
-        f rec {
+        f {
           inherit system;
-          pkgs = pkgsFor.${system};
-          cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
+          pkgs = import nixpkgs {
+            inherit system overlays;
+            config.allowUnfree = true;
+            config.allowUnfreePredicate = _: true;
+          };
         });
-
-    pkgsFor = lib.genAttrs systems (
-      system:
-        import nixpkgs {
-          inherit system overlays;
-          config.allowUnfree = true;
-          config.allowUnfreePredicate = _: true;
-        }
-    );
   in {
     inherit lib;
 
-    formatter = forEachSystem ({pkgs, ...}:
+    formatter = perSystem ({pkgs, ...}:
       pkgs.writeShellApplication {
         name = "dotnix-format";
         text = ''
@@ -133,7 +127,7 @@
         '';
       });
 
-    checks = forEachSystem ({pkgs, ...}: {
+    checks = perSystem ({pkgs, ...}: {
       format = pkgs.callPackage ./checks/format.nix {inherit inputs;};
       statix = pkgs.callPackage ./checks/statix.nix {inherit inputs;};
     });
@@ -143,11 +137,9 @@
 
     nixosConfigurations = import ./hosts (inputs // {inherit overlays;});
 
-    packages = forEachSystem ({
-      cachix-deploy-lib,
-      pkgs,
-      ...
-    }: {
+    packages = perSystem ({pkgs, ...}: let
+      cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
+    in {
       cachix-deploy-spec = cachix-deploy-lib.spec {
         agents = {
           home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
@@ -155,7 +147,7 @@
       };
     });
 
-    devShells = forEachSystem ({pkgs, ...}: {
+    devShells = perSystem ({pkgs, ...}: {
       default = pkgs.mkShell {
         packages = with pkgs; [
           age
