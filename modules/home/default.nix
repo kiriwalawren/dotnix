@@ -13,7 +13,7 @@
   ];
 
   home = {
-    inherit (hostConfig.system) stateVersion; # Don't change this!!!
+    inherit (hostConfig.system) stateVersion;
     username = hostConfig.user.name;
     homeDirectory = hostConfig.users.users.${hostConfig.user.name}.home;
   };

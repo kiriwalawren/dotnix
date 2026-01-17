@@ -86,6 +86,10 @@
       assertion = !group.withSwap || group.type == "os";
       message = "system.disks.\"${mountPoint}\": withSwap is only supported for type='os' (BTRFS), not type='${group.type}'";
     }
+    {
+      assertion = !(mountPoint == "/" && group.raidLevel != null && group.encryptDrives && config.system.encryption.tpm2.enable);
+      message = "system.disks.\"/\": encryption with TPM2/lanzaboote cannot be enabled when RAID is configured on the root drive because lanzaboote doesn't support mirrored ESPs. Use standard GRUB instead.";
+    }
   ];
 
   processedGroups =
@@ -93,14 +97,9 @@
       mountPoint: group:
         helpers.mkDiskContent {
           name = helpers.sanitizeMountPoint mountPoint;
-          inherit (group) devices;
-          inherit (group) raidLevel;
+          inherit (group) devices raidLevel withSwap swapSize encryptDrives encryptionPasswordFile;
           diskType = group.type;
           inherit mountPoint;
-          inherit (group) withSwap;
-          inherit (group) swapSize;
-          inherit (group) encryptDrives;
-          inherit (group) encryptionPasswordFile;
         }
     )
     cfg;

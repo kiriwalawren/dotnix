@@ -42,6 +42,21 @@
     };
   };
 
+  # ESP partition for mirrored boot setups (with custom mountpoint)
+  mkEspPartitionWithMount = mountpoint: {
+    priority = 1;
+    name = "ESP";
+    start = "1M";
+    end = "512M";
+    type = "EF00";
+    content = {
+      type = "filesystem";
+      format = "vfat";
+      inherit mountpoint;
+      mountOptions = ["defaults"];
+    };
+  };
+
   # "/" → "main", "/data" → "data", "/mnt/storage" → "storage"
   sanitizeMountPoint = mountPoint:
     if mountPoint == "/"
@@ -117,15 +132,24 @@
         type = "disk";
         content = {
           type = "gpt";
-          partitions = {
-            raid = {
-              size = "100%";
-              content = {
-                type = "mdraid";
-                inherit name;
+          partitions =
+            (lib.optionalAttrs isOsDisk {
+              "esp${toString i}" =
+                # Mount first ESP to /boot/efi, additional ones to /boot/efi-N
+                # GRUB's mirroredBoots will sync them
+                if i == 0
+                then helpers.mkEspPartition
+                else helpers.mkEspPartitionWithMount "/boot/efi-${toString i}";
+            })
+            // {
+              raid = {
+                size = "100%";
+                content = {
+                  type = "mdraid";
+                  inherit name;
+                };
               };
             };
-          };
         };
       };
     };
@@ -136,13 +160,9 @@
         level = raidLevel;
         content = {
           type = "gpt";
-          partitions =
-            (lib.optionalAttrs isOsDisk {
-              esp = helpers.mkEspPartition;
-            })
-            // {
-              primary = mkRootPartition;
-            };
+          partitions = {
+            primary = mkRootPartition;
+          };
         };
       };
     };

@@ -45,7 +45,6 @@
 in
   mkNixosConfigurations [
     (import ./wsl)
-    (import ./desktop)
     (import ./framework13)
     (import ./home-server)
     (import ./installer)

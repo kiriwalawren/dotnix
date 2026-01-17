@@ -8,17 +8,11 @@
     {
       system = {
         disks."/" = {
-          devices = ["/dev/vda"];
-          encryptDrives = true;
-        };
-        disks."/data" = {
-          devices = ["/dev/vdb" "/dev/vdc"];
-          type = "data";
-          raidLevel = 1;
-          encryptDrives = true;
+          devices = ["/dev/nvme0n1" "/dev/nvme1n1"];
+          raidLevel = 0;
         };
 
-        encryption.tpm2.enable = true;
+        bootloader.grub.enable = true;
         cachix-agent.enable = true;
         openssh.enable = true;
         tailscale = {
@@ -42,8 +36,30 @@
       };
 
       server.enable = true;
+      nixflix = {
+        sabnzbd.settings.misc.cache_limit = "8G";
+        jellyfin.encoding = {
+          allowHevcEncoding = true;
+          enableHardwareEncoding = true;
+          hardwareAccelerationType = "vaapi"; # AMD Graphics Card
+        };
+      };
+
+      # Uncomment for temporary gaming
+      # ui = {
+      #   enable = true;
+      #   gaming.enable = true;
+      # };
     }
   ];
 
-  homeOptions.cli.enable = true;
+  homeOptions = {
+    cli.enable = true;
+
+    # Uncomment for temporary gaming
+    # ui = {
+    #   enable = true;
+    #   nixos.enable = true;
+    # };
+  };
 }

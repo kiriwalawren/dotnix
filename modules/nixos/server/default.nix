@@ -10,9 +10,7 @@ in {
     ./nixflix
   ];
 
-  options.server = {
-    enable = mkEnableOption "media server configuration";
-  };
+  options.server = {enable = mkEnableOption "media server configuration";};
 
   config = mkIf cfg.enable {
     server.nixflix.enable = true;
