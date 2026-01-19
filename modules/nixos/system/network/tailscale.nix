@@ -24,8 +24,8 @@ in {
 
       exitNode = mkOption {
         type = types.str;
-        default = "home-server";
-        description = "The Tailscale exit node to use";
+        default = "home-server.ruffe-locrian.ts.net.";
+        description = "The Tailscale exit node to use (fully qualified domain name)";
       };
     };
   };
