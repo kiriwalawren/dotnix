@@ -59,10 +59,21 @@ in {
         family = "inet";
         content = ''
           chain prerouting {
-            type filter hook prerouting priority -100; policy accept;
-            ip saddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
-            # Allow incoming UDP on Tailscale port to bypass Mullvad
+            type filter hook prerouting priority -50; policy accept;
+
+            # Allow Tailscale protocol traffic to bypass Mullvad
             udp dport 41641 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+
+            # Allow direct mesh traffic (Tailscale device to Tailscale device) to bypass Mullvad
+            ip saddr 100.64.0.0/10 ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+
+            # Exit node traffic: DON'T mark it - let it route through VPN without bypass mark
+            # Clear meta mark so it routes through Mullvad (no ct mark means Mullvad won't drop in NAT)
+            iifname "tailscale0" ip daddr != 100.64.0.0/10 meta mark set 0;
+
+            # Return traffic from VPN: Mark it so it routes via Tailscale table
+            # Use bypass mark so it doesn't get routed back through Mullvad
+            iifname "wg0-mullvad" ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
           }
 
           chain outgoing {
@@ -71,6 +82,13 @@ in {
             ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
             # Allow outgoing UDP from Tailscale port to bypass Mullvad
             udp sport 41641 ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+          }
+
+          chain postrouting {
+            type nat hook postrouting priority 100; policy accept;
+
+            # Masquerade exit node traffic going through Mullvad
+            iifname "tailscale0" oifname "wg0-mullvad" masquerade;
           }
         '';
       };
