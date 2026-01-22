@@ -38,10 +38,13 @@
       server.enable = true;
       nixflix = {
         sabnzbd.settings.misc.cache_limit = "8G";
-        jellyfin.encoding = {
-          allowHevcEncoding = true;
-          enableHardwareEncoding = true;
-          hardwareAccelerationType = "vaapi"; # AMD Graphics Card
+        jellyfin = {
+          encoding = {
+            allowHevcEncoding = true;
+            enableHardwareEncoding = true;
+            hardwareAccelerationType = "vaapi"; # AMD Graphics Card
+          };
+          system.trickPlay.enableHwEncoding = true;
         };
       };
 
