@@ -13,8 +13,8 @@ with lib; {
     nixflix.radarr = {
       enable = true;
       config = {
-        apiKeyPath = config.sops.secrets."radarr/api_key".path;
-        hostConfig.passwordPath = config.sops.secrets."radarr/password".path;
+        apiKey = {_secret = config.sops.secrets."radarr/api_key".path;};
+        hostConfig.password = {_secret = config.sops.secrets."radarr/password".path;};
         delayProfiles = [
           {
             enableUsenet = true;

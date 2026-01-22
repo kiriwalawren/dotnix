@@ -14,7 +14,7 @@ with lib; {
         Kiri = {
           mutable = false;
           policy.isAdministrator = true;
-          passwordFile = config.sops.secrets."jellyfin/kiri_password".path;
+          password = {_secret = config.sops.secrets."jellyfin/kiri_password".path;};
         };
       };
     };

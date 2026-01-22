@@ -6,30 +6,12 @@
 with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
-      "sabnzbd/api_key" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
-      "sabnzbd/nzb_key" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
-      "usenet/eweka/username" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
-      "usenet/eweka/password" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
-      "usenet/newsgroupdirect/username" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
-      "usenet/newsgroupdirect/password" = {
-        inherit (config.nixflix.sabnzbd) group;
-        owner = config.nixflix.sabnzbd.user;
-      };
+      "sabnzbd/api_key" = {};
+      "sabnzbd/nzb_key" = {};
+      "usenet/eweka/username" = {};
+      "usenet/eweka/password" = {};
+      "usenet/newsgroupdirect/username" = {};
+      "usenet/newsgroupdirect/password" = {};
     };
 
     nixflix.sabnzbd = {

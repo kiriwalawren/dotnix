@@ -13,8 +13,8 @@ with lib; {
     nixflix.lidarr = {
       enable = true;
       config = {
-        apiKeyPath = config.sops.secrets."lidarr/api_key".path;
-        hostConfig.passwordPath = config.sops.secrets."lidarr/password".path;
+        apiKey = {_secret = config.sops.secrets."lidarr/api_key".path;};
+        hostConfig.password = {_secret = config.sops.secrets."lidarr/password".path;};
         delayProfiles = [
           {
             enableUsenet = true;

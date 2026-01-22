@@ -9,7 +9,7 @@ with lib; {
     nixflix.mullvad = {
       # Disable for now, the timing is off and this fails during the initial install
       enable = true;
-      accountNumberPath = config.sops.secrets.mullvad-account-number.path;
+      accountNumber = {_secret = config.sops.secrets.mullvad-account-number.path;};
       location = ["us" "nyc"];
       dns = [
         # AdGuard DNS (primary ad-blocking DNS)

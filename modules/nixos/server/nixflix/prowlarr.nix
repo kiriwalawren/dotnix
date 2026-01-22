@@ -16,20 +16,20 @@ with lib; {
     nixflix.prowlarr = {
       enable = true;
       config = {
-        apiKeyPath = config.sops.secrets."prowlarr/api_key".path;
-        hostConfig.passwordPath = config.sops.secrets."prowlarr/password".path;
+        apiKey = {_secret = config.sops.secrets."prowlarr/api_key".path;};
+        hostConfig.password = {_secret = config.sops.secrets."prowlarr/password".path;};
         indexers = [
           {
             name = "DrunkenSlug";
-            apiKeyPath = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
+            apiKey = {_secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;};
           }
           {
             name = "NZBFinder";
-            apiKeyPath = config.sops.secrets."indexer-api-keys/NZBFinder".path;
+            apiKey = {_secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;};
           }
           {
             name = "NzbPlanet";
-            apiKeyPath = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
+            apiKey = {_secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;};
           }
         ];
       };
