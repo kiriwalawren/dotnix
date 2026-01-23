@@ -44,7 +44,7 @@
             enableHardwareEncoding = true;
             hardwareAccelerationType = "vaapi"; # AMD Graphics Card
           };
-          system.trickPlay.enableHwEncoding = true;
+          system.trickplayOptions.enableHwEncoding = true;
         };
       };
 
