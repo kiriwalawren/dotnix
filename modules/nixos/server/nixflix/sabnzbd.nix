@@ -6,6 +6,8 @@
 with lib; {
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
+      "sabnzbd/username" = {};
+      "sabnzbd/password" = {};
       "sabnzbd/api_key" = {};
       "sabnzbd/nzb_key" = {};
       "usenet/eweka/username" = {};
@@ -19,6 +21,8 @@ with lib; {
 
       settings = {
         misc = {
+          username = {_secret = config.sops.secrets."sabnzbd/username".path;};
+          password = {_secret = config.sops.secrets."sabnzbd/password".path;};
           api_key = {_secret = config.sops.secrets."sabnzbd/api_key".path;};
           nzb_key = {_secret = config.sops.secrets."sabnzbd/nzb_key".path;};
         };
