@@ -19,7 +19,8 @@
 
         tailscale = {
           enable = true;
-          vpn.enable = true;
+          # The world is not ready for this yet
+          # vpn.enable = true;
         };
       };
 

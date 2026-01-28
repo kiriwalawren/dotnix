@@ -47,8 +47,14 @@ in {
           else "client";
         extraUpFlags =
           (optionals (cfg.mode == "server") ["--advertise-exit-node"])
-          ++ (optionals cfg.vpn.enable ["--exit-node=${cfg.vpn.exitNode}"])
-          ++ ["--accept-routes=false"];
+          ++ [
+            "--accept-routes=false"
+            "--exit-node=${
+              if cfg.vpn.enable
+              then cfg.vpn.exitNode
+              else "\"\""
+            }"
+          ];
       };
     };
 

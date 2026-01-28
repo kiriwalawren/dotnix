@@ -115,6 +115,7 @@ in {
           bitwarden
           darkreader
           firefox-color
+          hover-zoom-plus
           stylus
           ublock-origin
           vimium
