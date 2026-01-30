@@ -34,10 +34,7 @@ in {
       nginx.enable = true;
       postgres.enable = true;
 
-      recyclarr = {
-        enable = true;
-        cleanupUnmanagedProfiles = true;
-      };
+      recyclarr.cleanupUnmanagedProfiles = true;
     };
   };
 }
