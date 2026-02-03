@@ -3,12 +3,16 @@
     enable = true;
 
     settings = {
+      flavor = "mocha";
+
       transparent_background = true;
+      float.transparent = true;
 
       integrations = {
         cmp = true;
         flash = true;
         gitsigns = true;
+        harpoon = true;
         leap = true;
         mini.enabled = true;
         telescope.enabled = true;
