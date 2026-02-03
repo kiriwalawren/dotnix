@@ -26,17 +26,5 @@
       };
       enableIPv6 = true;
     };
-
-    # Enable Avahi for mDNS/Zeroconf service discovery (Spotify Connect, etc.)
-    services.avahi = {
-      enable = !config.wsl.enable;
-      nssmdns4 = true;
-      nssmdns6 = true;
-      publish = {
-        enable = true;
-        addresses = true;
-        workstation = true;
-      };
-    };
   };
 }
