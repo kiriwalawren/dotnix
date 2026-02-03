@@ -52,7 +52,7 @@ in {
             "--exit-node=${
               if cfg.vpn.enable
               then cfg.vpn.exitNode
-              else "\"\""
+              else ""
             }"
           ];
       };
