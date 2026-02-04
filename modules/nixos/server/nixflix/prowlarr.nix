@@ -9,6 +9,7 @@ with lib; {
       "indexer-api-keys/DrunkenSlug" = {};
       "indexer-api-keys/NZBFinder" = {};
       "indexer-api-keys/NzbPlanet" = {};
+      "indexer-api-keys/NZBgeek" = {};
       "prowlarr/api_key" = {};
       "prowlarr/password" = {};
     };
@@ -30,6 +31,10 @@ with lib; {
           {
             name = "NzbPlanet";
             apiKey = {_secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;};
+          }
+          {
+            name = "NZBgeek";
+            apiKey = {_secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;};
           }
         ];
       };
