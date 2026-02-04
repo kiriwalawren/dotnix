@@ -18,7 +18,7 @@
         power-profiles.enable = true;
 
         tailscale = {
-          enable = false;
+          enable = true;
           # The world is not ready for this yet
           # vpn.enable = true;
         };
