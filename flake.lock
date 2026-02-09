@@ -48,22 +48,6 @@
         "type": "github"
       }
     },
-    "catppuccin-discord": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1770426312,
-        "narHash": "sha256-rxvHIifq5CYIBPwFA2SpOrWT+sG/z0ItXT3sx2wbEqg=",
-        "owner": "catppuccin",
-        "repo": "discord",
-        "rev": "b9b5547f0b32296d2389716ef606de87b3c1e7c7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "catppuccin",
-        "repo": "discord",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1754269165,
@@ -351,11 +335,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1770620563,
-        "narHash": "sha256-HCf/eymck47UluaItqB/4V69txKvkWzuWaLCiOqpAUQ=",
+        "lastModified": 1770647943,
+        "narHash": "sha256-D+P4aq9moofkvyIv5uzO+RCjOftbhBuR2KamtwO3u3M=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "e53e674ca67bc3a429ee871f7a5f5b7c5abb3d37",
+        "rev": "ad28eddf3f8ba95d1153c05a8106596e409422fa",
         "type": "github"
       },
       "original": {
@@ -540,7 +524,6 @@
       "inputs": {
         "cachix-deploy-flake": "cachix-deploy-flake",
         "catppuccin": "catppuccin",
-        "catppuccin-discord": "catppuccin-discord",
         "disko": "disko",
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",

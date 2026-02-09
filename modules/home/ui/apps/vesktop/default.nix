@@ -1,23 +1,11 @@
 {
   config,
-  inputs,
   lib,
   ...
 }:
 with lib;
 let
   cfg = config.ui.apps.vesktop;
-
-  inherit (inputs) catppuccin-discord;
-  themeFileNames = builtins.attrNames (builtins.readDir "${catppuccin-discord}/themes");
-  themeFileConfigs = builtins.listToAttrs (
-    map (fileName: {
-      name = ".config/vesktop/themes/${fileName}";
-      value = {
-        source = "${catppuccin-discord}/themes/${fileName}";
-      };
-    }) themeFileNames
-  );
 in
 {
   options.ui.apps.vesktop = {
@@ -25,7 +13,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.file = themeFileConfigs;
+    catppuccin.vesktop.enable = true;
 
     programs.vesktop = {
       enable = true;
@@ -40,12 +28,10 @@ in
       };
 
       vencord.settings = {
-        enabledThemes = [ "mocha.theme.css" ];
         notifyAboutUpdates = false;
         autoUpdate = false;
         autoUpdateNotification = false;
         useQuickCss = true;
-        themeLinks = [ ];
         enableReactDevtools = true;
         frameless = false;
         transparent = true;

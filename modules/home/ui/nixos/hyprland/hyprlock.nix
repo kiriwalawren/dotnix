@@ -20,6 +20,8 @@ in
   config = mkIf cfg.enable {
     home.packages = mkIf fingerprint.enable [ pkgs.polkit_gnome ];
 
+    catppuccin.hyprlock.enable = true;
+
     programs.hyprlock = {
       enable = true;
 
@@ -47,10 +49,6 @@ in
 
             outline_thickness = 2;
 
-            outer_color = "rgb(${primaryAccent})";
-            inner_color = "rgb(${base})";
-            font_color = "rgb(${text})";
-            fail_color = "rgb(${red})";
             rounding = theme.radius;
 
             fade_on_empty = false;
@@ -67,7 +65,6 @@ in
             text = "$TIME";
             font_family = theme.font;
             font_size = 64;
-            color = "rgb(${lavender})";
 
             position = "0, 80";
 

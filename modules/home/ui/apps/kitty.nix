@@ -14,9 +14,10 @@ in
   };
 
   config = mkIf cfg.enable {
+    catppuccin.kitty.enable = true;
+
     programs.kitty = {
       enable = true;
-      themeFile = "Catppuccin-${theme.variantUpper}";
 
       font = {
         name = theme.font;

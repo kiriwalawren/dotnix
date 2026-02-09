@@ -19,5 +19,8 @@
     homeDirectory = hostConfig.users.users.${hostConfig.user.name}.home;
   };
 
-  catppuccin.flavor = theme.variant;
+  catppuccin = {
+    flavor = theme.variant;
+    accent = theme.primaryAccent;
+  };
 }

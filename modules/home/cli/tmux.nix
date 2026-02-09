@@ -14,6 +14,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    catppuccin.tmux.enable = true;
+
     programs.tmux = {
       enable = true;
       shortcut = "a";
@@ -38,22 +40,6 @@ in
         # Allow (n)vim to see TMUX focus events
         set -g focus-events on
       '';
-
-      plugins = with pkgs; [
-        {
-          plugin = tmuxPlugins.catppuccin;
-          extraConfig = ''
-            set -g @catppuccin-flavor "mocha"
-            set -g @catppuccin_icon_window_last "󰖰 "
-            set -g @catppuccin_icon_window_current "󰖯 "
-            set -g @catppuccin_icon_window_zoom "󰁌 "
-            set -g @catppuccin_icon_window_mark "󰃀 "
-            set -g @catppuccin_icon_window_silent "󰂛 "
-            set -g @catppuccin_icon_window_activity "󱅫 "
-            set -g @catppuccin_icon_window_bell "󰂞 "
-          '';
-        }
-      ];
     };
   };
 }

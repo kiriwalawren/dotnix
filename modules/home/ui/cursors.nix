@@ -1,8 +1,6 @@
 {
   lib,
   config,
-  pkgs,
-  theme,
   ...
 }:
 with lib;
@@ -15,12 +13,11 @@ in
   };
 
   config = mkIf cfg.enable {
+    catppuccin.cursors.enable = true;
+
     home.pointerCursor = {
       gtk.enable = true;
       x11.enable = true;
-
-      name = "catppuccin-${theme.variant}-teal-cursors";
-      package = pkgs.catppuccin-cursors."${theme.variant}Teal";
       size = 24;
     };
   };

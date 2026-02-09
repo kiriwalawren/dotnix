@@ -31,7 +31,10 @@ in
   };
 
   config = mkIf cfg.enable {
-    catppuccin.flavor = theme.variant;
+    catppuccin = {
+      flavor = theme.variant;
+      accent = theme.primaryAccent;
+    };
 
     environment.systemPackages = with pkgs; [
       gnome-calculator

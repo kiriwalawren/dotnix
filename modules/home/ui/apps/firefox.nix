@@ -14,6 +14,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    catppuccin.firefox.enable = true;
+
     programs.firefox = {
       enable = true;
 
@@ -122,7 +124,6 @@ in
           bitwarden
           darkreader
           firefox-color
-          hover-zoom-plus
           stylus
           ublock-origin
           vimium

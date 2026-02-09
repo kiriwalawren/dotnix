@@ -191,7 +191,7 @@ The following are also installed and configured:
 - [Hyprlock](https://github.com/hyprwm/hyprlock) lock screen
 - [Hypridle](https://github.com/hyprwm/hypridle) idle daemon
 - [Hyprpaper](https://github.com/hyprwm/hyprpaper) wallpaper utility and selector
-- [fuzzel](https://codeberg.org/dnkl/fuzzel) app launcher
+- [Wofi](https://github.com/SimplyCEO/wofi) app launcher
 
 ```nix
 imports = [ ./modules/home ];
@@ -205,7 +205,7 @@ Each module can be individually enabled as well.
 imports = [ ./modules/home ];
 
 ui.nixos.hyprland.enable = true;
-ui.nixos.fuzzel.enable = true;
+ui.nixos.wofi.enable = true;
 ...
 ```
 

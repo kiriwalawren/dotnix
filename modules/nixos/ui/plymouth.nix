@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  theme,
   ...
 }:
 with lib;
@@ -15,16 +14,10 @@ in
   };
 
   config = mkIf cfg.enable {
+    catppuccin.plymouth.enable = true;
     boot.plymouth = {
       enable = true;
       font = "${pkgs.maple-mono.NF}/share/fonts/truetype/MapleMono-NF-Regular.ttf";
-
-      themePackages = [
-        (pkgs.catppuccin-plymouth.override {
-          inherit (theme) variant;
-        })
-      ];
-      theme = theme.name;
     };
   };
 }
