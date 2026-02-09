@@ -4,10 +4,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.apps.firefox;
-in {
-  options.ui.apps.firefox = {enable = mkEnableOption "firefox";};
+in
+{
+  options.ui.apps.firefox = {
+    enable = mkEnableOption "firefox";
+  };
 
   config = mkIf cfg.enable {
     programs.firefox = {
@@ -65,7 +69,7 @@ in {
           # Toolbar layout configuration
           "browser.uiCustomization.state" = builtins.toJSON {
             placements = {
-              widget-overflow-fixed-list = [];
+              widget-overflow-fixed-list = [ ];
               unified-extensions-area = [
                 "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action"
                 "ublock0_raymondhill_net-browser-action"
@@ -83,10 +87,13 @@ in {
                 "unified-extensions-button"
                 "sidebar-button"
               ];
-              toolbar-menubar = ["menubar-items"];
-              TabsToolbar = [];
-              vertical-tabs = ["tabbrowser-tabs"];
-              PersonalToolbar = ["import-button" "personal-bookmarks"];
+              toolbar-menubar = [ "menubar-items" ];
+              TabsToolbar = [ ];
+              vertical-tabs = [ "tabbrowser-tabs" ];
+              PersonalToolbar = [
+                "import-button"
+                "personal-bookmarks"
+              ];
             };
             seen = [
               "developer-button"
@@ -124,7 +131,10 @@ in {
         search = {
           force = true;
           default = "ddg";
-          order = ["ddg" "google"];
+          order = [
+            "ddg"
+            "google"
+          ];
           engines = {
             "Nix Packages" = {
               urls = [
@@ -143,7 +153,10 @@ in {
                 }
               ];
               icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-              definedAliases = ["@np" "@nixpkgs"];
+              definedAliases = [
+                "@np"
+                "@nixpkgs"
+              ];
             };
             "Nix Options" = {
               urls = [
@@ -162,13 +175,19 @@ in {
                 }
               ];
               icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-              definedAliases = ["@no" "@nixopts"];
+              definedAliases = [
+                "@no"
+                "@nixopts"
+              ];
             };
             "NixOS Wiki" = {
-              urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
+              urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
               iconUpdateUrl = "https://nixos.wiki/favicon.png";
               updateInterval = 24 * 60 * 60 * 1000; # every day
-              definedAliases = ["@nw" "@nixwiki"];
+              definedAliases = [
+                "@nw"
+                "@nixwiki"
+              ];
             };
             "bing".metaData.hidden = true;
             "google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias

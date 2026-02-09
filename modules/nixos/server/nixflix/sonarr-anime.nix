@@ -3,18 +3,23 @@
   lib,
   ...
 }:
-with lib; {
+with lib;
+{
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
-      "sonarr-anime/api_key" = {};
-      "sonarr-anime/password" = {};
+      "sonarr-anime/api_key" = { };
+      "sonarr-anime/password" = { };
     };
 
     nixflix.sonarr-anime = {
       enable = true;
       config = {
-        apiKey = {_secret = config.sops.secrets."sonarr-anime/api_key".path;};
-        hostConfig.password = {_secret = config.sops.secrets."sonarr-anime/password".path;};
+        apiKey = {
+          _secret = config.sops.secrets."sonarr-anime/api_key".path;
+        };
+        hostConfig.password = {
+          _secret = config.sops.secrets."sonarr-anime/password".path;
+        };
         delayProfiles = [
           {
             enableUsenet = true;
@@ -26,7 +31,7 @@ with lib; {
             bypassIfAboveCustomFormatScore = false;
             minimumCustomFormatScore = 0;
             order = 2147483647;
-            tags = [];
+            tags = [ ];
             id = 1;
           }
         ];

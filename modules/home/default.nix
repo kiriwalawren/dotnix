@@ -3,7 +3,8 @@
   inputs,
   theme,
   ...
-}: {
+}:
+{
   imports = [
     ./cli
     ./sops.nix

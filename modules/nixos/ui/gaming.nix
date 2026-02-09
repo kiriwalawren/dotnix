@@ -4,10 +4,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.gaming;
-in {
-  options.ui.gaming = {enable = mkEnableOption "gaming";};
+in
+{
+  options.ui.gaming = {
+    enable = mkEnableOption "gaming";
+  };
 
   config = mkIf cfg.enable {
     programs.steam = {
@@ -20,7 +24,7 @@ in {
       heroic
       mangohud
       protonup-rs
-      (bottles.override {removeWarningPopup = true;})
+      (bottles.override { removeWarningPopup = true; })
     ];
 
     programs.gamemode.enable = true;
@@ -40,7 +44,7 @@ in {
 
     systemd.timers.protonup-rs = {
       description = "Daily GE-Proton update timer";
-      wantedBy = ["timers.target"];
+      wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = "daily";
         Persistent = true;

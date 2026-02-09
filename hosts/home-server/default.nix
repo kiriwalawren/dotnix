@@ -8,7 +8,10 @@
     {
       system = {
         disks."/" = {
-          devices = ["/dev/nvme0n1" "/dev/nvme1n1"];
+          devices = [
+            "/dev/nvme0n1"
+            "/dev/nvme1n1"
+          ];
           raidLevel = 0;
         };
 

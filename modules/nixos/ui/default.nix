@@ -6,9 +6,11 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui;
-in {
+in
+{
   imports = [
     inputs.catppuccin.nixosModules.catppuccin
 
@@ -24,7 +26,9 @@ in {
     ./virtualisation.nix
   ];
 
-  options.ui = {enable = mkEnableOption "ui";};
+  options.ui = {
+    enable = mkEnableOption "ui";
+  };
 
   config = mkIf cfg.enable {
     catppuccin.flavor = theme.variant;

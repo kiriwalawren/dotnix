@@ -4,9 +4,11 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.server.nixflix;
-in {
+in
+{
   imports = [
     ./jellyfin.nix
     ./jellyseerr.nix
@@ -19,12 +21,14 @@ in {
     ./sonarr-anime.nix
   ];
 
-  options.server.nixflix = {enable = mkEnableOption "nixflix media server configuration";};
+  options.server.nixflix = {
+    enable = mkEnableOption "nixflix media server configuration";
+  };
 
   config = mkIf cfg.enable {
     nixflix = {
       enable = true;
-      mediaUsers = [config.user.name];
+      mediaUsers = [ config.user.name ];
 
       theme = {
         enable = true;

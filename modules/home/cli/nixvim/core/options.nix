@@ -11,7 +11,14 @@
       # * the name of a detector function like `lsp` or `cwd`
       # * a pattern or array of patterns like `.git` or `lua`.
       # * a function with signature `function(buf) -> string|string[]`
-      root_spec = ["lsp" [".git" "lua"] "cwd"];
+      root_spec = [
+        "lsp"
+        [
+          ".git"
+          "lua"
+        ]
+        "cwd"
+      ];
     };
 
     opts = {
@@ -48,7 +55,16 @@
       pumheight = 10; # Maximum number of entries in a popup
       relativenumber = false; # Relative line numbers
       scrolloff = 6; # Lines of context
-      sessionoptions = ["buffers" "curdir" "tabpages" "winsize" "help" "globals" "skiprtp" "folds"];
+      sessionoptions = [
+        "buffers"
+        "curdir"
+        "tabpages"
+        "winsize"
+        "help"
+        "globals"
+        "skiprtp"
+        "folds"
+      ];
       shiftround = true; # Round indent
       shiftwidth = 2; # Size of an indent
       # opt.shortmess:append({ W = true, I = true, c = true, C = true })
@@ -59,7 +75,7 @@
       smartindent = true; # Insert indents automatically
       # smoothscroll = true;
       softtabstop = 2;
-      spelllang = ["en"];
+      spelllang = [ "en" ];
       splitbelow = true; # Put new windows below current
       splitkeep = "screen";
       splitright = true; # Put new windows right of current

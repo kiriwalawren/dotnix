@@ -5,9 +5,11 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.encryption.tpm2;
-in {
+in
+{
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
@@ -49,7 +51,10 @@ in {
         };
 
         # Add TPM kernel modules
-        availableKernelModules = ["tpm_tis" "tpm_crb"];
+        availableKernelModules = [
+          "tpm_tis"
+          "tpm_crb"
+        ];
       };
     };
 

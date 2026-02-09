@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   programs.ssh = lib.optionalAttrs pkgs.stdenv.isLinux {
     knownHostsFiles = [
       (pkgs.writeText "custom_known_hosts" ''

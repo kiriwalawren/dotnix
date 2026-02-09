@@ -3,9 +3,10 @@
   lib,
   ...
 }:
-with lib; {
+with lib;
+{
   config = mkIf config.server.nixflix.enable {
-    sops.secrets."jellyfin/kiri_password" = {};
+    sops.secrets."jellyfin/kiri_password" = { };
 
     nixflix.jellyfin = {
       enable = true;
@@ -14,7 +15,9 @@ with lib; {
         Kiri = {
           mutable = false;
           policy.isAdministrator = true;
-          password = {_secret = config.sops.secrets."jellyfin/kiri_password".path;};
+          password = {
+            _secret = config.sops.secrets."jellyfin/kiri_password".path;
+          };
         };
       };
     };

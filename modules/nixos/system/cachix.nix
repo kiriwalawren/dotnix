@@ -4,10 +4,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.cachix;
-in {
-  options.system.cachix = {enable = mkEnableOption "cachix";};
+in
+{
+  options.system.cachix = {
+    enable = mkEnableOption "cachix";
+  };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
@@ -16,7 +20,10 @@ in {
 
     nix = {
       settings = {
-        trusted-users = ["root" config.user.name];
+        trusted-users = [
+          "root"
+          config.user.name
+        ];
 
         substituters = [
           "https://cache.nixos.org"

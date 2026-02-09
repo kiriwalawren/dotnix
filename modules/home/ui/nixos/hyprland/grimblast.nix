@@ -4,10 +4,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.hyprland.grimblast;
-in {
-  options.ui.nixos.hyprland.grimblast = {enable = mkEnableOption "grimblast";};
+in
+{
+  options.ui.nixos.hyprland.grimblast = {
+    enable = mkEnableOption "grimblast";
+  };
 
   config = mkIf cfg.enable {
     home = {

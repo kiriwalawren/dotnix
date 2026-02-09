@@ -4,9 +4,11 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   pubKeys = filesystem.listFilesRecursive ./keys;
-in {
+in
+{
   options = {
     user.name = mkOption {
       type = types.str;
@@ -25,13 +27,19 @@ in {
       group = "users";
 
       hashedPasswordFile =
-        if !config.wsl.enable
-        then config.sops.secrets."passwords/${config.user.name}".path
-        else null;
+        if !config.wsl.enable then config.sops.secrets."passwords/${config.user.name}".path else null;
 
       openssh.authorizedKeys.keys = lists.forEach pubKeys (key: builtins.readFile key);
 
-      extraGroups = ["wheel" "networkmanager" "audio" "sound" "video" "input" "tty"];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "audio"
+        "sound"
+        "video"
+        "input"
+        "tty"
+      ];
     };
 
     # Set fish as default in bash

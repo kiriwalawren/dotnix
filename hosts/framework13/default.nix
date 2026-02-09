@@ -9,7 +9,7 @@
       user.name = "walawren";
       system = {
         disks."/" = {
-          devices = ["/dev/nvme0n1"];
+          devices = [ "/dev/nvme0n1" ];
         };
 
         stateVersion = "25.05"; # Update when reinstalling

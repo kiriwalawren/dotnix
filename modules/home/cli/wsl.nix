@@ -4,7 +4,8 @@
   pkgs,
   ...
 }:
-with lib; {
+with lib;
+{
   config = mkIf hostConfig.wsl.enable {
     home = {
       packages = with pkgs; [

@@ -4,16 +4,21 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.wiremix;
-in {
-  options.ui.nixos.wiremix = {enable = mkEnableOption "wiremix";};
+in
+{
+  options.ui.nixos.wiremix = {
+    enable = mkEnableOption "wiremix";
+  };
 
   config = mkIf cfg.enable {
-    home.packages = [pkgs.wiremix];
+    home.packages = [ pkgs.wiremix ];
 
     # Waybar integration - override the pulseaudio on-click
-    programs.waybar.settings.mainBar.pulseaudio.on-click = "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
+    programs.waybar.settings.mainBar.pulseaudio.on-click =
+      "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
 
     wayland.windowManager.hyprland.settings.windowrulev2 = [
       "float,class:(wiremix)"

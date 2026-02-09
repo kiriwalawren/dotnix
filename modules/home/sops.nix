@@ -4,8 +4,9 @@
   lib,
   pkgs,
   ...
-}: {
-  imports = [inputs.sops-nix.homeManagerModules.sops];
+}:
+{
+  imports = [ inputs.sops-nix.homeManagerModules.sops ];
 
   sops = {
     defaultSopsFile = "${inputs.secrets}/secrets.yaml";
@@ -13,7 +14,7 @@
 
     age = {
       # automatcally import host SSH keys as age keys
-      sshKeyPaths = ["/home/${hostConfig.user.name}/.ssh/${hostConfig.user.name}_ssh_key"];
+      sshKeyPaths = [ "/home/${hostConfig.user.name}/.ssh/${hostConfig.user.name}_ssh_key" ];
 
       keyFile = "/home/${hostConfig.user.name}/.config/sops/age/keys.txt";
 
@@ -23,7 +24,7 @@
   };
 
   # I need this because `sops.age.generateKey` is not working
-  home.activation.ensureAgeKeyDir = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
+  home.activation.ensureAgeKeyDir = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
     mkdir -p ~/.config/sops/age
     chmod 700 ~/.config/sops
     chmod 700 ~/.config/sops/age

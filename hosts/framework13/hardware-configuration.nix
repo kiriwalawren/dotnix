@@ -1,5 +1,6 @@
-{inputs, ...}: {
-  imports = [inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series];
+{ inputs, ... }:
+{
+  imports = [ inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series ];
 
   hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;

@@ -3,10 +3,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.sound;
-in {
-  options.ui.sound = {enable = mkEnableOption "sound";};
+in
+{
+  options.ui.sound = {
+    enable = mkEnableOption "sound";
+  };
 
   config = mkIf cfg.enable {
     programs.noisetorch.enable = true; # Mic Noise Filter

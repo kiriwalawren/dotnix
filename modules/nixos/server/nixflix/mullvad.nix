@@ -3,14 +3,20 @@
   lib,
   ...
 }:
-with lib; {
+with lib;
+{
   config = mkIf config.server.nixflix.enable {
-    sops.secrets.mullvad-account-number = {};
+    sops.secrets.mullvad-account-number = { };
     nixflix.mullvad = {
       # Disable for now, the timing is off and this fails during the initial install
       enable = true;
-      accountNumber = {_secret = config.sops.secrets.mullvad-account-number.path;};
-      location = ["us" "nyc"];
+      accountNumber = {
+        _secret = config.sops.secrets.mullvad-account-number.path;
+      };
+      location = [
+        "us"
+        "nyc"
+      ];
       dns = [
         # AdGuard DNS (primary ad-blocking DNS)
         "94.140.14.14"

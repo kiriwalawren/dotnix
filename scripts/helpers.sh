@@ -38,8 +38,8 @@ function yes_or_no() {
     read -rp "" yn
     yn=${yn:-y}
     case $yn in
-      [Yy]*) return 0 ;;
-      [Nn]*) return 1 ;;
+    [Yy]*) return 0 ;;
+    [Nn]*) return 1 ;;
     esac
   done
 }
@@ -51,8 +51,8 @@ function no_or_yes() {
     read -rp "" yn
     yn=${yn:-n}
     case $yn in
-      [Yy]*) return 0 ;;
-      [Nn]*) return 1 ;;
+    [Yy]*) return 0 ;;
+    [Nn]*) return 1 ;;
     esac
   done
 }

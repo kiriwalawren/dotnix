@@ -17,7 +17,7 @@
 
     keymaps = [
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "<leader>e";
         action = "<cmd>lua if vim.bo.filetype == 'oil' then vim.cmd('bd') else require('oil').open_float() end<cr>";
         options.desc = "Toggle Explorer";

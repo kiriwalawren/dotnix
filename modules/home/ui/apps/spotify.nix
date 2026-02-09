@@ -6,15 +6,19 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.apps.spotify;
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-in {
+in
+{
   imports = [
     inputs.spicetify-nix.homeManagerModules.spicetify
   ];
 
-  options.ui.apps.spotify = {enable = mkEnableOption "spotify";};
+  options.ui.apps.spotify = {
+    enable = mkEnableOption "spotify";
+  };
 
   config = mkIf cfg.enable {
     programs.spicetify = {

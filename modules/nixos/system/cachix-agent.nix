@@ -3,13 +3,17 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.cachix-agent;
-in {
-  options.system.cachix-agent = {enable = mkEnableOption "cachix-agent";};
+in
+{
+  options.system.cachix-agent = {
+    enable = mkEnableOption "cachix-agent";
+  };
 
   config = mkIf cfg.enable {
-    sops.secrets.cachix-agent-token = {};
+    sops.secrets.cachix-agent-token = { };
 
     services.cachix-agent = {
       enable = true;

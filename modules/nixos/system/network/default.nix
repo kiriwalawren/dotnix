@@ -2,7 +2,8 @@
   config,
   name,
   ...
-}: {
+}:
+{
   imports = [
     ./ddns.nix
     ./tailscale.nix
@@ -22,7 +23,10 @@
       firewall = {
         enable = true;
         # For spotify connect, chromecast, and mDNS
-        allowedUDPPorts = [5353 1900];
+        allowedUDPPorts = [
+          5353
+          1900
+        ];
       };
       enableIPv6 = true;
     };

@@ -80,35 +80,35 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -n)
-      shift
-      target_hostname=$1
-      ;;
-    -d)
-      shift
-      target_destination=$1
-      ;;
-    -u)
-      shift
-      target_user=$1
-      ;;
-    -k)
-      shift
-      ssh_key=$1
-      ;;
-    --port)
-      shift
-      ssh_port=$1
-      ;;
-    --secureboot)
-      enable_secureboot=true
-      ;;
-    --debug) set -x ;;
-    -h | --help) help_and_exit ;;
-    *)
-      red "Invalid option: $1"
-      help_and_exit
-      ;;
+  -n)
+    shift
+    target_hostname=$1
+    ;;
+  -d)
+    shift
+    target_destination=$1
+    ;;
+  -u)
+    shift
+    target_user=$1
+    ;;
+  -k)
+    shift
+    ssh_key=$1
+    ;;
+  --port)
+    shift
+    ssh_port=$1
+    ;;
+  --secureboot)
+    enable_secureboot=true
+    ;;
+  --debug) set -x ;;
+  -h | --help) help_and_exit ;;
+  *)
+    red "Invalid option: $1"
+    help_and_exit
+    ;;
   esac
   shift
 done
@@ -123,10 +123,10 @@ fi
 ##########################################
 
 ssh_base=(ssh -oControlPath=none -oForwardAgent=yes -oStrictHostKeyChecking=no
-  -oUserKnownHostsFile=/dev/null -oPort=$ssh_port -i "$ssh_key")
+  -oUserKnownHostsFile=/dev/null -oPort="$ssh_port" -i "$ssh_key")
 ssh_cmd=("${ssh_base[@]}" -t "$target_user@$target_destination")
 ssh_root_cmd=("${ssh_base[@]}" -t "root@$target_destination")
-scp_cmd=(scp -oControlPath=none -oStrictHostKeyChecking=no -oPort=$ssh_port -i "$ssh_key")
+scp_cmd=(scp -oControlPath=none -oStrictHostKeyChecking=no -oPort="$ssh_port" -i "$ssh_key")
 
 #############################################
 # 0. Generate host SSH key & age recipient  #
@@ -196,7 +196,7 @@ ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null >>~/.ssh/known_host
 # Create temporary flake for initial install if secureboot is enabled
 # This disables lanzaboote for the first install, which will be enabled after keys are generated
 install_flake="$git_root#$target_hostname"
-if [[ "$enable_secureboot" == "true" ]]; then
+if [[ $enable_secureboot == "true" ]]; then
   blue "Creating temporary flake to disable lanzaboote for initial install..."
   install -d -m755 "$temp/install-flake"
 
@@ -233,7 +233,7 @@ nixos_anywhere_args=(
 )
 
 # Add disk encryption key if present
-if [[ -n "$disk_encryption_key_file" ]]; then
+if [[ -n $disk_encryption_key_file ]]; then
   nixos_anywhere_args+=(--disk-encryption-keys /tmp/disk-secret.key "$disk_encryption_key_file")
 fi
 
@@ -243,7 +243,7 @@ SHELL=/bin/sh nix run github:nix-community/nixos-anywhere -- "${nixos_anywhere_a
 # 3. Prompt for password entry if encryption is enabled     #
 ##############################################################
 
-if [[ "$enable_secureboot" == "true" ]]; then
+if [[ $enable_secureboot == "true" ]]; then
   yellow "==================================================================="
   yellow "ACTION REQUIRED: Enter Encryption Password at Console"
   yellow "==================================================================="
@@ -288,7 +288,7 @@ green "SSH connection established"
 
 # Collect sudo password for the session (if secureboot is enabled)
 remote_sudo_password=""
-if [[ "$enable_secureboot" == "true" ]]; then
+if [[ $enable_secureboot == "true" ]]; then
   blue "This installation requires multiple sudo operations on the remote system."
   echo -n "Enter sudo password for $target_user@$target_hostname: "
   read -rs remote_sudo_password
@@ -304,7 +304,7 @@ fi
 
 # Helper function to run sudo commands with cached password
 remote_sudo() {
-  if [[ -n "$remote_sudo_password" ]]; then
+  if [[ -n $remote_sudo_password ]]; then
     "${ssh_cmd[@]}" "echo '$remote_sudo_password' | sudo -S $*"
   else
     "${ssh_cmd[@]}" "sudo $*"
@@ -320,7 +320,7 @@ sync "$target_user" "$nix_secrets_dir"
 # 4.5. Phase 2+3: Secure Boot + TPM2 Setup (Combined)     #
 ############################################################
 
-if [[ "$enable_secureboot" == "true" ]]; then
+if [[ $enable_secureboot == "true" ]]; then
   blue "Phase 2+3: Setting up Secure Boot with lanzaboote and TPM2"
 
   # Generate Secure Boot keys
@@ -400,7 +400,7 @@ if [[ "$enable_secureboot" == "true" ]]; then
     for device in "${luks_devices[@]}"; do
       # Strip any whitespace/newlines from device name
       device=$(echo "$device" | tr -d '[:space:]')
-      [[ -z "$device" ]] && continue
+      [[ -z $device ]] && continue
 
       blue "Enrolling $device with TPM2 (PCR 7)..."
       if remote_sudo "systemd-cryptenroll --unlock-key-file=/tmp/enroll-key.tmp --tpm2-device=auto --tpm2-pcrs=7 $device"; then
@@ -453,7 +453,7 @@ fi
 # 6. Finished summary  #
 ########################
 
-if [[ "$enable_secureboot" == "true" ]]; then
+if [[ $enable_secureboot == "true" ]]; then
   echo ""
   green "==================================================================="
   green "SUCCESS! $target_hostname is fully configured with Secure Boot"

@@ -4,10 +4,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.bluetooth;
-in {
-  options.ui.bluetooth = {enable = mkEnableOption "bluetooth";};
+in
+{
+  options.ui.bluetooth = {
+    enable = mkEnableOption "bluetooth";
+  };
 
   config = mkIf cfg.enable {
     hardware.bluetooth = {
@@ -18,6 +22,6 @@ in {
     services.blueman.enable = true;
 
     # PS5 DualSense Control
-    environment.systemPackages = [pkgs.dualsensectl];
+    environment.systemPackages = [ pkgs.dualsensectl ];
   };
 }

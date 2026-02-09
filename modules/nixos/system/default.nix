@@ -5,11 +5,13 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   # Create short revision for display
   shortRev = lib.strings.substring 0 7 gitRev;
   locale = "en_US.UTF-8";
-in {
+in
+{
   imports = [
     inputs.nixos-wsl.nixosModules.wsl
 
@@ -46,7 +48,10 @@ in {
   nixpkgs.config.allowUnfreePredicate = _: true;
 
   nix = {
-    settings.experimental-features = ["nix-command" "flakes"];
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     optimise.automatic = true;
   };
 

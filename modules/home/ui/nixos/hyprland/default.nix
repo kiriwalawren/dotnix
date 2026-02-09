@@ -5,7 +5,8 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.hyprland;
 
   pamixer = "${pkgs.pamixer}/bin/pamixer";
@@ -37,18 +38,19 @@ with lib; let
 
   # binds $meh + [SUPER +] {1...8} to [move to] workspace {1...8} (stolen from sioodmy)
   workspaces = builtins.concatLists (
-    builtins.genList
-    (
-      i: let
+    builtins.genList (
+      i:
+      let
         workspace = builtins.toString (i + 1);
-      in [
+      in
+      [
         "SUPER, ${workspace}, workspace, ${workspace}"
         "SHIFTSUPER, ${workspace}, movetoworkspace, ${workspace}"
       ]
-    )
-    8
+    ) 8
   );
-in {
+in
+{
   imports = [
     ./grimblast.nix
     ./hypridle.nix
@@ -57,7 +59,9 @@ in {
     ./hyprpaper.nix
   ];
 
-  options.ui.nixos.hyprland = {enable = mkEnableOption "hyprland";};
+  options.ui.nixos.hyprland = {
+    enable = mkEnableOption "hyprland";
+  };
 
   config = mkIf cfg.enable {
     ui.nixos.hyprland = {
@@ -68,7 +72,11 @@ in {
       hyprpaper.enable = true; # Configures wallpaper
     };
 
-    home.packages = [unmutemic mutemic togglemic];
+    home.packages = [
+      unmutemic
+      mutemic
+      togglemic
+    ];
 
     wayland.windowManager.hyprland = {
       enable = true;
@@ -80,7 +88,7 @@ in {
           sensitivity = 0.4;
         };
 
-        gesture = ["3, horizontal, workspace"];
+        gesture = [ "3, horizontal, workspace" ];
 
         general = {
           gaps_in = 2;
@@ -125,30 +133,29 @@ in {
           preserve_split = "yes";
         };
 
-        bind =
-          [
-            ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
-            ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
-            "SUPER,Q,killactive"
-            "SUPER,F, fullscreen"
-            "SUPER,P,exec,${pkgs.hyprpicker}/bin/hyprpicker -a"
+        bind = [
+          ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
+          ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
+          "SUPER,Q,killactive"
+          "SUPER,F, fullscreen"
+          "SUPER,P,exec,${pkgs.hyprpicker}/bin/hyprpicker -a"
 
-            "SUPER,H,movefocus,l"
-            "SUPER,L,movefocus,r"
-            "SUPER,K,movefocus,u"
-            "SUPER,J,movefocus,d"
+          "SUPER,H,movefocus,l"
+          "SUPER,L,movefocus,r"
+          "SUPER,K,movefocus,u"
+          "SUPER,J,movefocus,d"
 
-            "SHIFTSUPER,H,movewindow,l"
-            "SHIFTSUPER,L,movewindow,r"
-            "SHIFTSUPER,K,movewindow,u"
-            "SHIFTSUPER,J,movewindow,d"
+          "SHIFTSUPER,H,movewindow,l"
+          "SHIFTSUPER,L,movewindow,r"
+          "SHIFTSUPER,K,movewindow,u"
+          "SHIFTSUPER,J,movewindow,d"
 
-            ",XF86AudioMute,exec,${pamixer} -t"
-            ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
+          ",XF86AudioMute,exec,${pamixer} -t"
+          ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
 
-            "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
-          ]
-          ++ workspaces;
+          "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
+        ]
+        ++ workspaces;
 
         # Executes when key is released
         bindr = [

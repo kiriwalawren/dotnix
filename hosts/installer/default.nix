@@ -1,16 +1,18 @@
 {
   name = "installer";
   modules = [
-    ({
-      config,
-      lib,
-      modulesPath,
-      pkgs,
-      ...
-    }:
-      with lib; let
+    (
+      {
+        lib,
+        modulesPath,
+        pkgs,
+        ...
+      }:
+      with lib;
+      let
         pubKeys = filesystem.listFilesRecursive ../../modules/nixos/system/user/keys;
-      in {
+      in
+      {
         imports = [
           "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
           "${modulesPath}/installer/cd-dvd/channel.nix"
@@ -27,7 +29,10 @@
           };
         };
 
-        nix.settings.experimental-features = ["nix-command" "flakes"];
+        nix.settings.experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
 
         # The default compression-level is (6) and takes too long on some machines (>30m). 3 takes <2m
         isoImage.squashfsCompression = "zstd -Xcompression-level 3";
@@ -40,7 +45,7 @@
         services = {
           openssh = {
             enable = true;
-            ports = [22];
+            ports = [ 22 ];
             settings = {
               PermitRootLogin = lib.mkForce "yes";
             };
@@ -54,6 +59,7 @@
             "vfat"
           ];
         };
-      })
+      }
+    )
   ];
 }

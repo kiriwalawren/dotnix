@@ -4,10 +4,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.hyprland;
-in {
-  options.ui.hyprland = {enable = mkEnableOption "hyprland";};
+in
+{
+  options.ui.hyprland = {
+    enable = mkEnableOption "hyprland";
+  };
 
   config = mkIf cfg.enable {
     programs = {
@@ -18,7 +22,7 @@ in {
     };
 
     environment = {
-      systemPackages = [pkgs.brightnessctl]; # For controllings screen brightness
+      systemPackages = [ pkgs.brightnessctl ]; # For controllings screen brightness
       sessionVariables = {
         # Hint electron apps to use wayland
         NIXOS_OZONE_WL = "1";

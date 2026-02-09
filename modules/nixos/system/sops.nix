@@ -2,11 +2,13 @@
   config,
   inputs,
   ...
-}: let
+}:
+let
   inherit (config.users.users.${config.user.name}) group;
   user = config.user.name;
-in {
-  imports = [inputs.sops-nix.nixosModules.sops];
+in
+{
+  imports = [ inputs.sops-nix.nixosModules.sops ];
 
   sops = {
     defaultSopsFile = "${inputs.secrets}/secrets.yaml";

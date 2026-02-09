@@ -5,10 +5,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.waybar;
-in {
-  options.ui.nixos.waybar = {enable = mkEnableOption "waybar";};
+in
+{
+  options.ui.nixos.waybar = {
+    enable = mkEnableOption "waybar";
+  };
 
   config = mkIf cfg.enable {
     programs.waybar = {
@@ -27,9 +31,9 @@ in {
           height = 26;
           spacing = 0;
 
-          modules-left = ["hyprland/workspaces"];
+          modules-left = [ "hyprland/workspaces" ];
 
-          modules-center = ["clock"];
+          modules-center = [ "clock" ];
 
           modules-right = [
             "tray"
@@ -67,7 +71,11 @@ in {
             format = "{format_source} {icon}  {volume}%";
             format-muted = "{format_source} 󰝟";
             format-icons = {
-              default = ["󰕿" "󰖀" "󰕾"];
+              default = [
+                "󰕿"
+                "󰖀"
+                "󰕾"
+              ];
             };
             format-source-muted = "󰍭";
             format-source = "󰍬";
@@ -96,7 +104,13 @@ in {
             format-charging = "  {capacity}%";
             format-plugged = "  {capacity}% ";
             format-alt = "{icon}  {time}";
-            format-icons = ["" "" "" "" ""];
+            format-icons = [
+              ""
+              ""
+              ""
+              ""
+              ""
+            ];
           };
 
           clock = {
@@ -128,7 +142,7 @@ in {
         };
       };
 
-      style = import ./style.nix {inherit theme;};
+      style = import ./style.nix { inherit theme; };
     };
   };
 }

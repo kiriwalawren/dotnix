@@ -3,15 +3,19 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.openssh;
-in {
-  options.system.openssh = {enable = mkEnableOption "openssh";};
+in
+{
+  options.system.openssh = {
+    enable = mkEnableOption "openssh";
+  };
 
   config = mkIf cfg.enable {
     services.openssh = {
       enable = true;
-      ports = [22];
+      ports = [ 22 ];
       settings = {
         PasswordAuthentication = false;
         StreamLocalBindUnlink = "yes";
@@ -39,6 +43,6 @@ in {
       ];
     };
 
-    networking.firewall.allowedTCPPorts = [22];
+    networking.firewall.allowedTCPPorts = [ 22 ];
   };
 }

@@ -3,14 +3,22 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   prettierd_with_fallback = {
     __unkeyed-1 = "prettierd";
     __unkeyed-2 = "prettier";
     stop_after_first = true;
   };
-in {
-  config.home.packages = lib.mkIf config.programs.nixvim.enable (with pkgs; [shfmt prettierd]);
+in
+{
+  config.home.packages = lib.mkIf config.programs.nixvim.enable (
+    with pkgs;
+    [
+      shfmt
+      prettierd
+    ]
+  );
 
   config.programs.nixvim.plugins.conform-nvim = {
     enable = true;
@@ -20,15 +28,19 @@ in {
 
       formatters = {
         shfmt = {
-          prepend_args = ["-i" "2" "-ci"];
+          prepend_args = [
+            "-i"
+            "2"
+            "-ci"
+          ];
         };
       };
 
       formatters_by_ft = {
-        cs = ["csharpier"];
+        cs = [ "csharpier" ];
         css = prettierd_with_fallback;
-        elixir = ["mix"];
-        go = ["gofmt"];
+        elixir = [ "mix" ];
+        go = [ "gofmt" ];
         html = prettierd_with_fallback;
         javascript = prettierd_with_fallback;
         javascriptreact = prettierd_with_fallback;
@@ -39,10 +51,10 @@ in {
           __unkeyed-3 = "nixpkgs-fmt";
           stop_after_first = true;
         };
-        python = ["black"];
+        python = [ "black" ];
         typescript = prettierd_with_fallback;
         typescriptreact = prettierd_with_fallback;
-        sh = ["shfmt"];
+        sh = [ "shfmt" ];
       };
 
       format_on_save = {

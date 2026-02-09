@@ -6,7 +6,7 @@
       enable = true;
 
       modules = {
-        comment = {};
+        comment = { };
       };
     };
   };

@@ -4,10 +4,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.virtualisation;
-in {
-  options.ui.virtualisation = {enable = mkEnableOption "virtualisation";};
+in
+{
+  options.ui.virtualisation = {
+    enable = mkEnableOption "virtualisation";
+  };
 
   config = mkIf cfg.enable {
     virtualisation = {
@@ -24,8 +28,12 @@ in {
 
     programs.virt-manager.enable = true;
 
-    users.extraGroups.libvirt.members = [config.user.name];
+    users.extraGroups.libvirt.members = [ config.user.name ];
 
-    environment.systemPackages = with pkgs; [swtpm libtpms OVMFFull];
+    environment.systemPackages = with pkgs; [
+      swtpm
+      libtpms
+      OVMFFull
+    ];
   };
 }

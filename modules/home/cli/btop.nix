@@ -3,10 +3,14 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli.btop;
-in {
-  options.cli.btop = {enable = mkEnableOption "btop";};
+in
+{
+  options.cli.btop = {
+    enable = mkEnableOption "btop";
+  };
 
   config = mkIf cfg.enable {
     catppuccin.btop.enable = true;

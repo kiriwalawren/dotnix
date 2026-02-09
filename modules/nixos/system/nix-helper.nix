@@ -3,10 +3,14 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.nix-helper;
-in {
-  options.system.nix-helper = {enable = mkEnableOption "nix-helper";};
+in
+{
+  options.system.nix-helper = {
+    enable = mkEnableOption "nix-helper";
+  };
 
   config = mkIf cfg.enable {
     programs.nh = {

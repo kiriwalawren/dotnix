@@ -4,10 +4,14 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.apps.kitty;
-in {
-  options.ui.apps.kitty = {enable = mkEnableOption "kitty";};
+in
+{
+  options.ui.apps.kitty = {
+    enable = mkEnableOption "kitty";
+  };
 
   config = mkIf cfg.enable {
     programs.kitty = {
