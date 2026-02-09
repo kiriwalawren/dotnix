@@ -7,14 +7,18 @@
   ...
 }:
 with theme.colors;
-with lib; let
+with lib;
+let
   inherit (hostConfig.ui) fingerprint;
   cfg = config.ui.nixos.hyprland.hyprlock;
-in {
-  options.ui.nixos.hyprland.hyprlock = {enable = mkEnableOption "hyprlock";};
+in
+{
+  options.ui.nixos.hyprland.hyprlock = {
+    enable = mkEnableOption "hyprlock";
+  };
 
   config = mkIf cfg.enable {
-    home.packages = mkIf fingerprint.enable [pkgs.polkit_gnome];
+    home.packages = mkIf fingerprint.enable [ pkgs.polkit_gnome ];
 
     programs.hyprlock = {
       enable = true;
@@ -86,12 +90,12 @@ in {
     systemd.user.services.hyprlock-before-suspend = {
       Unit = {
         Description = "Lock with hyprlock before system suspend";
-        PartOf = ["graphical-session.target"];
-        After = ["graphical-session.target"];
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
       };
 
       Install = {
-        WantedBy = ["graphical-session.target"];
+        WantedBy = [ "graphical-session.target" ];
       };
 
       Service = {

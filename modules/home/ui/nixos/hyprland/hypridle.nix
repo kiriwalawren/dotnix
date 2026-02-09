@@ -3,10 +3,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.hyprland.hypridle;
-in {
-  options.ui.nixos.hyprland.hypridle = {enable = mkEnableOption "hypridle";};
+in
+{
+  options.ui.nixos.hyprland.hypridle = {
+    enable = mkEnableOption "hypridle";
+  };
 
   config = mkIf cfg.enable {
     ui.nixos.hyprland.hyprlock.enable = true;

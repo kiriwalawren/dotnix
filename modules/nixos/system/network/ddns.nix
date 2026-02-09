@@ -3,20 +3,22 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.ddns;
-in {
+in
+{
   options.system.ddns = with lib.types; {
     enable = mkEnableOption "ddns";
 
     domains = lib.mkOption {
-      default = [""];
+      default = [ "" ];
       type = listOf str;
     };
   };
 
   config = mkIf cfg.enable {
-    sops.secrets.cloudflare-api-token = {};
+    sops.secrets.cloudflare-api-token = { };
     services.cloudflare-dyndns = {
       inherit (cfg) domains;
 

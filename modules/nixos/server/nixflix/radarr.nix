@@ -3,18 +3,23 @@
   lib,
   ...
 }:
-with lib; {
+with lib;
+{
   config = mkIf config.server.nixflix.enable {
     sops.secrets = {
-      "radarr/api_key" = {};
-      "radarr/password" = {};
+      "radarr/api_key" = { };
+      "radarr/password" = { };
     };
 
     nixflix.radarr = {
       enable = true;
       config = {
-        apiKey = {_secret = config.sops.secrets."radarr/api_key".path;};
-        hostConfig.password = {_secret = config.sops.secrets."radarr/password".path;};
+        apiKey = {
+          _secret = config.sops.secrets."radarr/api_key".path;
+        };
+        hostConfig.password = {
+          _secret = config.sops.secrets."radarr/password".path;
+        };
         delayProfiles = [
           {
             enableUsenet = true;
@@ -26,7 +31,7 @@ with lib; {
             bypassIfAboveCustomFormatScore = false;
             minimumCustomFormatScore = 0;
             order = 2147483647;
-            tags = [];
+            tags = [ ];
             id = 1;
           }
         ];

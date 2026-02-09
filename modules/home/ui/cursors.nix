@@ -5,10 +5,14 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.cursors;
-in {
-  options.ui.cursors = {enable = mkEnableOption "cursors";};
+in
+{
+  options.ui.cursors = {
+    enable = mkEnableOption "cursors";
+  };
 
   config = mkIf cfg.enable {
     home.pointerCursor = {

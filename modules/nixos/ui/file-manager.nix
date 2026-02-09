@@ -4,13 +4,17 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.fileManager;
-in {
-  options.ui.fileManager = {enable = mkEnableOption "fileManager";};
+in
+{
+  options.ui.fileManager = {
+    enable = mkEnableOption "fileManager";
+  };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [unzip];
+    environment.systemPackages = with pkgs; [ unzip ];
 
     programs.thunar = {
       enable = true;

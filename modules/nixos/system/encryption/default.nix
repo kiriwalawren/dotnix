@@ -1,3 +1,3 @@
 {
-  imports = [./tpm2.nix];
+  imports = [ ./tpm2.nix ];
 }

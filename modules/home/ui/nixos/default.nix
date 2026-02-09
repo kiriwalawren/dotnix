@@ -4,9 +4,11 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos;
-in {
+in
+{
   imports = [
     ./gtk.nix
     ./hyprland
@@ -17,7 +19,9 @@ in {
     ./wofi.nix
   ];
 
-  options.ui.nixos = {enable = mkEnableOption "nixos";};
+  options.ui.nixos = {
+    enable = mkEnableOption "nixos";
+  };
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [

@@ -3,9 +3,11 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.apps;
-in {
+in
+{
   imports = [
     ./firefox.nix
     ./kitty.nix
@@ -15,7 +17,9 @@ in {
     ./vesktop
   ];
 
-  options.ui.apps = {enable = mkEnableOption "apps";};
+  options.ui.apps = {
+    enable = mkEnableOption "apps";
+  };
 
   config = mkIf cfg.enable {
     ui.apps = {

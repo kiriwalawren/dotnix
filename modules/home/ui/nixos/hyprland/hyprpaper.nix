@@ -5,12 +5,15 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.hyprland.hyprpaper;
 
   wallpapers = filesystem.listFilesRecursive theme.wallpapers;
 
-  wallpaperBashArray = "(\"${strings.concatStrings (strings.intersperse "\" \"" (map (wallpaper: "${wallpaper}") wallpapers))}\")";
+  wallpaperBashArray = "(\"${
+    strings.concatStrings (strings.intersperse "\" \"" (map (wallpaper: "${wallpaper}") wallpapers))
+  }\")";
   wallpaperRandomizer = pkgs.writeShellScriptBin "wallpaperRandomizer" ''
     wallpapers=${wallpaperBashArray}
     rand=$[$RANDOM % ''${#wallpapers[@]}]
@@ -21,11 +24,14 @@ with lib; let
       hyprctl hyprpaper wallpaper "$m,$wallpaper"
     done
   '';
-in {
-  options.ui.nixos.hyprland.hyprpaper = {enable = mkEnableOption "hyprpaper";};
+in
+{
+  options.ui.nixos.hyprland.hyprpaper = {
+    enable = mkEnableOption "hyprpaper";
+  };
 
   config = mkIf cfg.enable {
-    home.packages = [wallpaperRandomizer];
+    home.packages = [ wallpaperRandomizer ];
 
     services.hyprpaper = {
       enable = true;
@@ -39,13 +45,18 @@ in {
 
     systemd.user = {
       services.wallpaperRandomizer = {
-        Install = {WantedBy = ["graphical-session.target"];};
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
 
         Unit = {
           Description = "Set random desktop background using hyprpaper";
-          After = ["graphical-session.target" "hyprpaper.service"];
-          Requires = ["hyprpaper.service"];
-          PartOf = ["graphical-session.target"];
+          After = [
+            "graphical-session.target"
+            "hyprpaper.service"
+          ];
+          Requires = [ "hyprpaper.service" ];
+          PartOf = [ "graphical-session.target" ];
         };
 
         Service = {
@@ -56,11 +67,17 @@ in {
       };
 
       timers.wallpaperRandomizer = {
-        Unit = {Description = "Set random desktop background using hyprpaper on an interval";};
+        Unit = {
+          Description = "Set random desktop background using hyprpaper on an interval";
+        };
 
-        Timer = {OnUnitActiveSec = "1h";};
+        Timer = {
+          OnUnitActiveSec = "1h";
+        };
 
-        Install = {WantedBy = ["timers.target"];};
+        Install = {
+          WantedBy = [ "timers.target" ];
+        };
       };
     };
   };

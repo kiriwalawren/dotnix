@@ -4,11 +4,15 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli.restish;
-in {
-  options.cli.restish = {enable = mkEnableOption "restish";};
+in
+{
+  options.cli.restish = {
+    enable = mkEnableOption "restish";
+  };
   config = mkIf cfg.enable {
-    home.packages = [pkgs.restish];
+    home.packages = [ pkgs.restish ];
   };
 }

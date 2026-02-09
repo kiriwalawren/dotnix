@@ -5,10 +5,14 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.greetd;
-in {
-  options.ui.greetd = {enable = mkEnableOption "greetd";};
+in
+{
+  options.ui.greetd = {
+    enable = mkEnableOption "greetd";
+  };
 
   config = mkIf cfg.enable {
     services.greetd = {

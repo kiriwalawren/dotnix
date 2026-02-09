@@ -4,10 +4,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.fonts;
-in {
-  options.ui.fonts = {enable = mkEnableOption "fonts";};
+in
+{
+  options.ui.fonts = {
+    enable = mkEnableOption "fonts";
+  };
 
   config = mkIf cfg.enable {
     fonts.packages = with pkgs; [
@@ -25,9 +29,12 @@ in {
       };
       antialias = true;
       defaultFonts = {
-        monospace = ["Maple Mono" "Fira Code"];
-        sansSerif = ["Inter"];
-        serif = ["Source Serif 4"];
+        monospace = [
+          "Maple Mono"
+          "Fira Code"
+        ];
+        sansSerif = [ "Inter" ];
+        serif = [ "Source Serif 4" ];
       };
     };
   };

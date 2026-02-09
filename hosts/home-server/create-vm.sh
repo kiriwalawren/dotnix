@@ -19,7 +19,7 @@ VCPUS="18"
 
 # Parse arguments
 RECREATE=false
-if [[ "${1:-}" == "--recreate" ]]; then
+if [[ ${1:-} == "--recreate" ]]; then
   RECREATE=true
 fi
 
@@ -28,12 +28,12 @@ create_disk_if_needed() {
   local disk_path="$1"
   local disk_size="$2"
 
-  if [[ "$RECREATE" == "true" ]] && [[ -f "$disk_path" ]]; then
+  if [[ $RECREATE == "true" ]] && [[ -f $disk_path ]]; then
     echo "Removing existing disk: $disk_path"
     sudo rm -f "$disk_path"
   fi
 
-  if [[ ! -f "$disk_path" ]]; then
+  if [[ ! -f $disk_path ]]; then
     echo "Creating disk: $disk_path ($disk_size)"
     sudo qemu-img create -f qcow2 "$disk_path" "$disk_size"
   else
@@ -43,7 +43,7 @@ create_disk_if_needed() {
 
 # Check if VM exists
 if virsh -c qemu:///system list --all --name | grep -q "^${VM_NAME}$"; then
-  if [[ "$RECREATE" == "true" ]]; then
+  if [[ $RECREATE == "true" ]]; then
     echo "Undefining existing VM: $VM_NAME"
     virsh -c qemu:///system destroy "$VM_NAME" 2>/dev/null || true
     virsh -c qemu:///system undefine "$VM_NAME" --nvram || true
@@ -54,9 +54,9 @@ if virsh -c qemu:///system list --all --name | grep -q "^${VM_NAME}$"; then
 fi
 
 # Clean up leftover NVRAM files from failed creations
-if [[ "$RECREATE" == "true" ]]; then
+if [[ $RECREATE == "true" ]]; then
   NVRAM_FILE="/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.fd"
-  if [[ -f "$NVRAM_FILE" ]]; then
+  if [[ -f $NVRAM_FILE ]]; then
     echo "Removing leftover NVRAM file: $NVRAM_FILE"
     sudo rm -f "$NVRAM_FILE"
   fi

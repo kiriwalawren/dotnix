@@ -5,10 +5,14 @@
   ...
 }:
 with lib;
-with builtins; let
+with builtins;
+let
   cfg = config.ui.nixos.mako;
-in {
-  options.ui.nixos.mako = {enable = mkEnableOption "mako";};
+in
+{
+  options.ui.nixos.mako = {
+    enable = mkEnableOption "mako";
+  };
 
   config = mkIf cfg.enable {
     catppuccin.mako.enable = true;

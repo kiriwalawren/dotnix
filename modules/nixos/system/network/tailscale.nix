@@ -3,14 +3,19 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.tailscale;
-in {
+in
+{
   options.system.tailscale = {
     enable = mkEnableOption "tailscale";
 
     mode = mkOption {
-      type = types.enum ["client" "server"];
+      type = types.enum [
+        "client"
+        "server"
+      ];
       default = "client";
       description = ''
         Tailscale mode:
@@ -31,8 +36,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    sops.secrets.tailscale-auth-key = {};
-    networking.firewall.trustedInterfaces = ["tailscale0"];
+    sops.secrets.tailscale-auth-key = { };
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
     services = {
       # resolved prevent DNS fighting between tailscale and NetworkManager
@@ -41,20 +46,11 @@ in {
         enable = true;
         authKeyFile = config.sops.secrets.tailscale-auth-key.path;
         openFirewall = true;
-        useRoutingFeatures =
-          if cfg.mode == "server"
-          then "both"
-          else "client";
-        extraUpFlags =
-          (optionals (cfg.mode == "server") ["--advertise-exit-node"])
-          ++ [
-            "--accept-routes=false"
-            "--exit-node=${
-              if cfg.vpn.enable
-              then cfg.vpn.exitNode
-              else ""
-            }"
-          ];
+        useRoutingFeatures = if cfg.mode == "server" then "both" else "client";
+        extraUpFlags = (optionals (cfg.mode == "server") [ "--advertise-exit-node" ]) ++ [
+          "--accept-routes=false"
+          "--exit-node=${if cfg.vpn.enable then cfg.vpn.exitNode else ""}"
+        ];
       };
     };
 

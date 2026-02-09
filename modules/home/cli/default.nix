@@ -5,9 +5,11 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli;
-in {
+in
+{
   imports = [
     ./btop.nix
     ./dircolors.nix
@@ -20,10 +22,11 @@ in {
     ./wsl.nix
   ];
 
-  options.cli = {enable = mkEnableOption "cli";};
+  options.cli = {
+    enable = mkEnableOption "cli";
+  };
 
-  config = mkIf (cfg.enable
-    || hostConfig.wsl.enable) {
+  config = mkIf (cfg.enable || hostConfig.wsl.enable) {
     home.packages = [
       pkgs.scc
       pkgs.wl-clipboard

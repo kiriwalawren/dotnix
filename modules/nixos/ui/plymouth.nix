@@ -5,10 +5,14 @@
   theme,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.plymouth;
-in {
-  options.ui.plymouth = {enable = mkEnableOption "plymouth";};
+in
+{
+  options.ui.plymouth = {
+    enable = mkEnableOption "plymouth";
+  };
 
   config = mkIf cfg.enable {
     boot.plymouth = {

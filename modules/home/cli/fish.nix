@@ -4,11 +4,15 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli.fish;
   gitMainOrMaster = "git branch -l main master --format '%(refname:short)'";
-in {
-  options.cli.fish = {enable = mkEnableOption "fish";};
+in
+{
+  options.cli.fish = {
+    enable = mkEnableOption "fish";
+  };
   config = mkIf cfg.enable {
     catppuccin.fish.enable = true;
 

@@ -3,17 +3,27 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli.git;
-in {
-  options.cli.git = {enable = mkEnableOption "git";};
+in
+{
+  options.cli.git = {
+    enable = mkEnableOption "git";
+  };
 
   config = mkIf cfg.enable {
     programs = {
       git = {
         enable = true;
 
-        ignores = ["Session.vim" "secrets.sh" "secrets.tfvars" "local.tfvars" ".claude/"];
+        ignores = [
+          "Session.vim"
+          "secrets.sh"
+          "secrets.tfvars"
+          "local.tfvars"
+          ".claude/"
+        ];
 
         settings = {
           user = {
@@ -38,7 +48,10 @@ in {
       diff-so-fancy = {
         enable = true;
         enableGitIntegration = true;
-        pagerOpts = ["--tabs=4" "-RFX"];
+        pagerOpts = [
+          "--tabs=4"
+          "-RFX"
+        ];
       };
 
       gh = {

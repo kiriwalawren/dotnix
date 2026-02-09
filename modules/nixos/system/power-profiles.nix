@@ -3,7 +3,8 @@
   lib,
   config,
   ...
-}: {
+}:
+{
   options = {
     system.power-profiles.enable = lib.mkEnableOption "automatic power profile switching";
   };

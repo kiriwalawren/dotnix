@@ -4,10 +4,14 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.nixos.hyprland.hyprmon;
-in {
-  options.ui.nixos.hyprland.hyprmon = {enable = mkEnableOption "hyprmon";};
+in
+{
+  options.ui.nixos.hyprland.hyprmon = {
+    enable = mkEnableOption "hyprmon";
+  };
 
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland.settings = {

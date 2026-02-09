@@ -6,13 +6,17 @@
   ...
 }:
 with lib;
-with builtins; let
+with builtins;
+let
   cfg = config.ui.nixos.wofi;
-in {
-  options.ui.nixos.wofi = {enable = mkEnableOption "wofi";};
+in
+{
+  options.ui.nixos.wofi = {
+    enable = mkEnableOption "wofi";
+  };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [wofi];
+    home.packages = with pkgs; [ wofi ];
 
     xdg.configFile."wofi/config".text = ''
       width=600

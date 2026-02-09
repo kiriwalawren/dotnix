@@ -3,10 +3,14 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.cli.direnv;
-in {
-  options.cli.direnv = {enable = mkEnableOption "direnv";};
+in
+{
+  options.cli.direnv = {
+    enable = mkEnableOption "direnv";
+  };
 
   config = mkIf cfg.enable {
     programs.direnv = {

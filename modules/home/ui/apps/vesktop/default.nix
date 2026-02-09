@@ -4,18 +4,25 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui.apps.vesktop;
 
   inherit (inputs) catppuccin-discord;
   themeFileNames = builtins.attrNames (builtins.readDir "${catppuccin-discord}/themes");
-  themeFileConfigs = builtins.listToAttrs (map (fileName: {
+  themeFileConfigs = builtins.listToAttrs (
+    map (fileName: {
       name = ".config/vesktop/themes/${fileName}";
-      value = {source = "${catppuccin-discord}/themes/${fileName}";};
-    })
-    themeFileNames);
-in {
-  options.ui.apps.vesktop = {enable = mkEnableOption "vesktop";};
+      value = {
+        source = "${catppuccin-discord}/themes/${fileName}";
+      };
+    }) themeFileNames
+  );
+in
+{
+  options.ui.apps.vesktop = {
+    enable = mkEnableOption "vesktop";
+  };
 
   config = mkIf cfg.enable {
     home.file = themeFileConfigs;
@@ -33,12 +40,12 @@ in {
       };
 
       vencord.settings = {
-        enabledThemes = ["mocha.theme.css"];
+        enabledThemes = [ "mocha.theme.css" ];
         notifyAboutUpdates = false;
         autoUpdate = false;
         autoUpdateNotification = false;
         useQuickCss = true;
-        themeLinks = [];
+        themeLinks = [ ];
         enableReactDevtools = true;
         frameless = false;
         transparent = true;

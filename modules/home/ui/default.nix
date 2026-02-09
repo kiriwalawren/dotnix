@@ -4,9 +4,11 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.ui;
-in {
+in
+{
   imports = [
     ../cli
 
@@ -16,7 +18,9 @@ in {
     ./cursors.nix
   ];
 
-  options.ui = {enable = mkEnableOption "ui";};
+  options.ui = {
+    enable = mkEnableOption "ui";
+  };
 
   config = mkIf cfg.enable {
     fonts.fontconfig.enable = hostConfig.fonts.fontconfig.enable;

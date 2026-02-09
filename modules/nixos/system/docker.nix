@@ -3,10 +3,14 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.system.docker;
-in {
-  options.system.docker = {enable = mkEnableOption "docker";};
+in
+{
+  options.system.docker = {
+    enable = mkEnableOption "docker";
+  };
 
   config = mkIf cfg.enable {
     virtualisation.docker = {
@@ -17,6 +21,6 @@ in {
       };
     };
 
-    users.extraGroups.docker.members = [config.user.name];
+    users.extraGroups.docker.members = [ config.user.name ];
   };
 }
