@@ -19,6 +19,8 @@ in
   config = mkIf cfg.enable {
     home.packages = mkIf cfg.fingerprint.enable [ pkgs.polkit_gnome ];
 
+    catppuccin.hyprlock.enable = true;
+
     programs.hyprlock = {
       enable = true;
 
@@ -35,43 +37,6 @@ in
           {
             monitor = "";
             path = "${theme.defaultWallpaper}";
-          }
-        ];
-
-        input-field = [
-          {
-            monitor = "";
-
-            size = "300, 50";
-
-            outline_thickness = 2;
-
-            outer_color = "rgb(${primaryAccent})";
-            inner_color = "rgb(${base})";
-            font_color = "rgb(${text})";
-            fail_color = "rgb(${red})";
-            rounding = theme.radius;
-
-            fade_on_empty = false;
-            placeholder_text = ''<span font_family="${theme.font}" foreground="##${subtext1}">Password...</span>'';
-
-            dots_spacing = 0.3;
-            dots_center = true;
-          }
-        ];
-
-        label = [
-          {
-            monitor = "";
-            text = "$TIME";
-            font_family = theme.font;
-            font_size = 64;
-            color = "rgb(${lavender})";
-
-            position = "0, 80";
-
-            valign = "center";
-            halign = "center";
           }
         ];
       };
