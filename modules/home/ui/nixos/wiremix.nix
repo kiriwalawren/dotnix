@@ -20,11 +20,8 @@ in
     programs.waybar.settings.mainBar.pulseaudio.on-click =
       "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
 
-    wayland.windowManager.hyprland.settings.windowrulev2 = [
-      "float,class:(wiremix)"
-      "center,class:(wiremix)"
-      "size 750 700,class:(wiremix)"
-      "stayfocused,class:(wiremix)"
+    wayland.windowManager.hyprland.settings.windowrule = [
+      "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on"
     ];
   };
 }

@@ -14,7 +14,10 @@ in
   };
 
   config = mkIf cfg.enable {
-    catppuccin.firefox.enable = true;
+    catppuccin.firefox = {
+      enable = true;
+      profiles.${config.home.username}.force = true;
+    };
 
     programs.firefox = {
       enable = true;
@@ -26,7 +29,7 @@ in
         SearchBar = "unified";
       };
 
-      profiles.default = {
+      profiles.${config.home.username} = {
         id = 0;
         name = "default";
         isDefault = true;
@@ -120,14 +123,18 @@ in
           };
         };
 
-        extensions.packages = with pkgs.firefox-addons; [
-          bitwarden
-          darkreader
-          firefox-color
-          stylus
-          ublock-origin
-          vimium
-        ];
+        extensions = {
+          force = true;
+
+          packages = with pkgs.firefox-addons; [
+            bitwarden
+            darkreader
+            firefox-color
+            stylus
+            ublock-origin
+            vimium
+          ];
+        };
 
         search = {
           force = true;

@@ -1,5 +1,4 @@
 {
-  hostConfig,
   inputs,
   theme,
   ...
@@ -13,14 +12,9 @@
     inputs.catppuccin.homeModules.catppuccin
   ];
 
-  home = {
-    inherit (hostConfig.system) stateVersion;
-    username = hostConfig.user.name;
-    homeDirectory = hostConfig.users.users.${hostConfig.user.name}.home;
-  };
-
   catppuccin = {
+    enable = true;
+    inherit (theme) accent;
     flavor = theme.variant;
-    accent = theme.primaryAccent;
   };
 }

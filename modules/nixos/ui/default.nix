@@ -32,6 +32,8 @@ in
 
   config = mkIf cfg.enable {
     catppuccin = {
+      enable = true;
+      tty.enable = true;
       flavor = theme.variant;
       accent = theme.primaryAccent;
     };
