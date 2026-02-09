@@ -1,5 +1,4 @@
 {
-  hostConfig,
   lib,
   config,
   ...
@@ -23,7 +22,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    fonts.fontconfig.enable = hostConfig.fonts.fontconfig.enable;
+    fonts.fontconfig.enable = true;
     cli.enable = true;
     ui = {
       cursors.enable = true;

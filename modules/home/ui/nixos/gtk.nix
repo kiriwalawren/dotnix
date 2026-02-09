@@ -27,7 +27,7 @@ in
         };
       };
 
-      iconTheme = {
+      iconTheme = lib.mkDefault {
         package = pkgs.yaru-theme;
         name = "Yaru-dark";
       };

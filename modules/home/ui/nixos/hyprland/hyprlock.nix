@@ -1,6 +1,5 @@
 {
   config,
-  hostConfig,
   lib,
   pkgs,
   theme,
@@ -9,16 +8,18 @@
 with theme.colors;
 with lib;
 let
-  inherit (hostConfig.ui) fingerprint;
   cfg = config.ui.nixos.hyprland.hyprlock;
 in
 {
   options.ui.nixos.hyprland.hyprlock = {
     enable = mkEnableOption "hyprlock";
+    fingerprint.enable = mkEnableOption "fingerprint";
   };
 
   config = mkIf cfg.enable {
-    home.packages = mkIf fingerprint.enable [ pkgs.polkit_gnome ];
+    home.packages = mkIf cfg.fingerprint.enable [ pkgs.polkit_gnome ];
+
+    catppuccin.hyprlock.enable = true;
 
     programs.hyprlock = {
       enable = true;
@@ -28,7 +29,7 @@ in
           hide_cursor = false;
         };
 
-        auth = mkIf fingerprint.enable {
+        auth = mkIf cfg.fingerprint.enable {
           fingerprint.enabled = true;
         };
 
@@ -36,43 +37,6 @@ in
           {
             monitor = "";
             path = "${theme.defaultWallpaper}";
-          }
-        ];
-
-        input-field = [
-          {
-            monitor = "";
-
-            size = "300, 50";
-
-            outline_thickness = 2;
-
-            outer_color = "rgb(${primaryAccent})";
-            inner_color = "rgb(${base})";
-            font_color = "rgb(${text})";
-            fail_color = "rgb(${red})";
-            rounding = theme.radius;
-
-            fade_on_empty = false;
-            placeholder_text = ''<span font_family="${theme.font}" foreground="##${subtext1}">Password...</span>'';
-
-            dots_spacing = 0.3;
-            dots_center = true;
-          }
-        ];
-
-        label = [
-          {
-            monitor = "";
-            text = "$TIME";
-            font_family = theme.font;
-            font_size = 64;
-            color = "rgb(${lavender})";
-
-            position = "0, 80";
-
-            valign = "center";
-            halign = "center";
           }
         ];
       };
@@ -83,7 +47,7 @@ in
         "SUPER,N,exec,hyprlock"
       ];
       exec-once = [
-        (mkIf fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
+        (mkIf cfg.fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
       ];
     };
 

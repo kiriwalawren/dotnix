@@ -52,20 +52,14 @@ in
       #input {
         padding: 8px 12px;
         margin: 8px;
-        border: 1px solid #${theme.colors.surface2};
         border-radius: ${toString (theme.radius - 2)}px;
-        background-color: #${theme.colors.surface0};
-        color: #${theme.colors.text};
       }
 
-      #input:focus {
-        border: 1px solid #${theme.colors.primaryAccent};
-      }
+      #input:focus { }
 
       #inner-box {
         margin: 5px;
         padding: 5px;
-        background-color: transparent;
       }
 
       #outer-box {
@@ -87,26 +81,19 @@ in
         padding: 8px;
         margin: 2px 0px;
         border-radius: ${toString (theme.radius - 4)}px;
-        background-color: transparent;
-        color: #${theme.colors.text};
       }
 
       #entry:selected {
-        background-color: #${theme.colors.surface2};
-        color: #${theme.colors.text};
       }
 
       #entry:hover {
-        background-color: #${theme.colors.surface1};
       }
 
       #text {
         margin: 0px 8px;
-        color: #${theme.colors.text};
       }
 
       #entry:selected #text {
-        color: #${theme.colors.text};
         font-weight: bold;
       }
 

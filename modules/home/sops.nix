@@ -1,5 +1,5 @@
 {
-  hostConfig,
+  config,
   inputs,
   lib,
   pkgs,
@@ -14,9 +14,9 @@
 
     age = {
       # automatcally import host SSH keys as age keys
-      sshKeyPaths = [ "/home/${hostConfig.user.name}/.ssh/${hostConfig.user.name}_ssh_key" ];
+      sshKeyPaths = [ "/home/${config.home.username}/.ssh/${config.home.username}_ssh_key" ];
 
-      keyFile = "/home/${hostConfig.user.name}/.config/sops/age/keys.txt";
+      keyFile = "/home/${config.home.username}/.config/sops/age/keys.txt";
 
       # generate a new key if the key specified above does not exist
       generateKey = true;
@@ -28,6 +28,6 @@
     mkdir -p ~/.config/sops/age
     chmod 700 ~/.config/sops
     chmod 700 ~/.config/sops/age
-    ${pkgs.ssh-to-age}/bin/ssh-to-age -private-key -i ~/.ssh/${hostConfig.user.name}_ssh_key > ~/.config/sops/age/keys.txt
+    ${pkgs.ssh-to-age}/bin/ssh-to-age -private-key -i ~/.ssh/${config.home.username}_ssh_key > ~/.config/sops/age/keys.txt
   '';
 }

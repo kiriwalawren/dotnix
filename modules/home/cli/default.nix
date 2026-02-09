@@ -1,6 +1,5 @@
 {
   config,
-  hostConfig,
   lib,
   pkgs,
   ...
@@ -17,16 +16,14 @@ in
     ./fish.nix
     ./git.nix
     ./nixvim
-    ./restish.nix
     ./tmux.nix
-    ./wsl.nix
   ];
 
   options.cli = {
     enable = mkEnableOption "cli";
   };
 
-  config = mkIf (cfg.enable || hostConfig.wsl.enable) {
+  config = mkIf cfg.enable {
     home.packages = [
       pkgs.scc
       pkgs.wl-clipboard
@@ -39,7 +36,6 @@ in
       fish.enable = true;
       git.enable = true;
       nixvim.enable = true;
-      restish.enable = true;
       tmux.enable = true;
     };
   };

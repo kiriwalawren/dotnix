@@ -36,6 +36,7 @@ rec {
 
   variant = "mocha";
   variantUpper = "Mocha";
+  accent = "teal";
   name = "catppuccin-${variant}";
 
   defaultWallpaper = ./wallpapers/nixppuccin.png;
