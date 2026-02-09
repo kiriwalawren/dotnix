@@ -34,8 +34,9 @@ in {
         javascriptreact = prettierd_with_fallback;
         markdown = prettierd_with_fallback;
         nix = {
-          __unkeyed-1 = "alejandra";
-          __unkeyed-2 = "nixpkgs-fmt";
+          __unkeyed-1 = "nixfmt";
+          __unkeyed-2 = "alejandra";
+          __unkeyed-3 = "nixpkgs-fmt";
           stop_after_first = true;
         };
         python = ["black"];

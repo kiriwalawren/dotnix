@@ -347,14 +347,15 @@
         "mkdocs-catppuccin": "mkdocs-catppuccin",
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1770515616,
-        "narHash": "sha256-xlcrgzF1iTps5Jy6qxD34ZNhQsy7YOu7kjzBNcMdffY=",
+        "lastModified": 1770613124,
+        "narHash": "sha256-dvQ9fqUVCydrgmiwW6D4/YKg2EKPB/3aVrY/Y2OoBys=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "e1b65c1d4ffe8d04737deaf64ee2469317bce5a2",
+        "rev": "f143c184d92f668c5bb173eb3dde59b77ecde9c3",
         "type": "github"
       },
       "original": {
@@ -678,6 +679,27 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "rev": "1bff2ba6ec22bc90e9ad3f7e94cca0d37870afa3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "nixflix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770228511,
+        "narHash": "sha256-wQ6NJSuFqAEmIg2VMnLdCnUc0b7vslUohqqGGD+Fyxk=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "337a4fe074be1042a35086f15481d763b8ddc0e7",
         "type": "github"
       },
       "original": {
