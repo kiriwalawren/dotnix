@@ -10,6 +10,7 @@ let
 in
 {
   imports = [
+    ./fuzzel.nix
     ./gtk.nix
     ./hyprland
     ./impala.nix
@@ -30,7 +31,8 @@ in
     ];
 
     ui.nixos = {
-      wofi.enable = true; # Application launcher
+      wofi.enable = false; # Application launcher
+      fuzzel.enable = true; # Application launcher
       gtk.enable = true;
       hyprland.enable = true; # Wayland Compositor (Tiling)
       impala.enable = true; # WiFi TUI launcher

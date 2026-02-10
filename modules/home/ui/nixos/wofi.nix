@@ -16,7 +16,12 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [ wofi ];
+    home.packages = [ pkgs.wofi ];
+    wayland.windowManager.hyprland.settings = {
+      bind = [
+        "SUPER,Space,exec,${pkgs.wofi}/bin/wofi --show drun"
+      ];
+    };
 
     xdg.configFile."wofi/config".text = ''
       width=600
@@ -101,11 +106,5 @@ in
         margin-right: 8px;
       }
     '';
-
-    wayland.windowManager.hyprland.settings = {
-      bind = [
-        "SUPER,Space,exec,wofi --show drun"
-      ];
-    };
   };
 }

@@ -80,5 +80,9 @@ in
         };
       };
     };
+
+    wayland.windowManager.hyprland.settings."exec-once" = [
+      "${wallpaperRandomizer}/bin/wallpaperRandomizer"
+    ];
   };
 }
