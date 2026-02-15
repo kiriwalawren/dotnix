@@ -18,6 +18,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    # I have to override the user so that I can configure
+    # Mullvan VPN Bypass
     users.users.adguardhome = {
       isSystemUser = true;
       uid = 300;
@@ -33,6 +35,20 @@ in
       User = "adguardhome";
       Group = "adguardhome";
     };
+
+    networking.nftables.tables."mullvad-adguard" =
+      let
+        adguardUid = toString config.users.users.adguardhome.uid;
+      in
+      {
+        family = "inet";
+        content = ''
+          chain outgoing {
+            type route hook output priority -100; policy accept;
+            meta skuid ${adguardUid} ct mark set 0x00000f41 meta mark set 0x6d6f6c65;
+          }
+        '';
+      };
 
     services.adguardhome = {
       enable = true;
@@ -71,6 +87,29 @@ in
               answer = cfg.serverIP;
             }
           ];
+          blocked_services = {
+            schedule =
+              let
+                dailyAccessWindow = {
+                  start = "5h";
+                  end = "23h";
+                };
+              in
+              {
+                time_zone = "Local";
+                sun = dailyAccessWindow;
+                mon = dailyAccessWindow;
+                tue = dailyAccessWindow;
+                wed = dailyAccessWindow;
+                thu = dailyAccessWindow;
+                fri = dailyAccessWindow;
+                sat = dailyAccessWindow;
+              };
+            ids = [
+              "instagram"
+              "reddit"
+            ];
+          };
         };
         filters =
           map

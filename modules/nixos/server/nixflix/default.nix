@@ -37,6 +37,7 @@ in
 
       nginx = {
         enable = true;
+        addHostsEntries = false;
         domain = "nixflix";
       };
 
