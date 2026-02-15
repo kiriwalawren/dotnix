@@ -54,15 +54,8 @@ in
             "2620:fe::fe:10"
           ];
           upstream_dns = [
-            # AdGuard DNS (primary ad-blocking DNS)
-            "94.140.14.14"
-            "94.140.15.15"
-            # Control D Ads & Trackers (backup ad-blocking DNS)
-            "76.76.2.2"
-            "76.76.10.2"
-            # # Quad9 (fallback with malware blocking)
-            # "9.9.9.9"
-            # "149.112.112.112"
+            "https://unfiltered.adguard-dns.com/dns-query"
+            "https://cloudflare-dns.com/dns-query"
           ];
         };
         filtering = {
@@ -70,6 +63,11 @@ in
             {
               enabled = true;
               domain = "*.homelab";
+              answer = cfg.serverIP;
+            }
+            {
+              enabled = true;
+              domain = "*.nixflix";
               answer = cfg.serverIP;
             }
           ];

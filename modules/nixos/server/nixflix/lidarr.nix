@@ -13,6 +13,8 @@ with lib;
 
     nixflix.lidarr = {
       enable = true;
+      subdomain = "music";
+
       config = {
         apiKey = {
           _secret = config.sops.secrets."lidarr/api_key".path;

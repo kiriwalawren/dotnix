@@ -19,6 +19,7 @@ with lib;
 
     nixflix.sabnzbd = {
       enable = true;
+      subdomain = "nzb";
 
       settings = {
         misc = {

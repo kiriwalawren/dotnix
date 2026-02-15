@@ -37,7 +37,7 @@ in
 
       nginx = {
         enable = true;
-        domain = "homelab";
+        domain = "nixflix";
       };
 
       postgres.enable = true;

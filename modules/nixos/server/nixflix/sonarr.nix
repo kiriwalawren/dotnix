@@ -13,6 +13,8 @@ with lib;
 
     nixflix.sonarr = {
       enable = true;
+      subdomain = "tv";
+
       config = {
         apiKey = {
           _secret = config.sops.secrets."sonarr/api_key".path;

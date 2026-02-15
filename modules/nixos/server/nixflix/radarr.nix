@@ -13,6 +13,7 @@ with lib;
 
     nixflix.radarr = {
       enable = true;
+      subdomain = "movies";
       config = {
         apiKey = {
           _secret = config.sops.secrets."radarr/api_key".path;

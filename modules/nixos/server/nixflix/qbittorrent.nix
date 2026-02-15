@@ -10,6 +10,8 @@ with lib;
 
     nixflix.qbittorrent = {
       enable = true;
+      subdomain = "torrent";
+
       password = "test123";
       serverConfig = {
         LegalNotice.Accepted = true;
