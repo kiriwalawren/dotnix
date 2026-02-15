@@ -35,7 +35,11 @@ in
         name = "catppuccin-${theme.variant}";
       };
 
-      nginx.enable = true;
+      nginx = {
+        enable = true;
+        domain = "homelab";
+      };
+
       postgres.enable = true;
 
       recyclarr = {
