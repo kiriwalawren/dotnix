@@ -10,7 +10,7 @@ with lib;
 
     nixflix.jellyseerr = {
       enable = true;
-      subdomain = "requests";
+      subdomain = "request";
       apiKey = {
         _secret = config.sops.secrets."jellyseerr/api_key".path;
       };
