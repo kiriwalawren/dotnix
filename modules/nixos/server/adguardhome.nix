@@ -6,6 +6,8 @@
 with lib;
 let
   cfg = config.server.adguardhome;
+
+  webUIPort = 3000;
 in
 {
   options.server.adguardhome = {
@@ -54,6 +56,9 @@ in
       enable = true;
       mutableSettings = false;
       settings = {
+        http = {
+          address = "0.0.0.0:${webUIPort}";
+        };
         users = [
           {
             name = "admin";
@@ -130,6 +135,23 @@ in
               "https://adguardteam.github.io/HostlistsRegistry/assets/filter_47.txt" # Block gambling sites
               "https://big.oisd.nl"
             ];
+      };
+    };
+
+    services.nginx.virtualHosts."dns.homelab" = {
+      serverName = "dns.homelab";
+      listen = [
+        {
+          addr = "0.0.0.0";
+          port = 80;
+        }
+      ];
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${webUIPort}";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          proxy_redirect off;
+        '';
       };
     };
   };
