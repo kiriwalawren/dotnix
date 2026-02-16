@@ -78,12 +78,6 @@ in
     nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
     configurationRevision = gitRev;
 
-    autoUpgrade = {
-      enable = true;
-      flake = "github:kiriwalawren/dotnix";
-      persistent = true;
-    };
-
     cachix.enable = true; # Binary Cache
     nix-helper.enable = true;
     dual-function-keys = {
