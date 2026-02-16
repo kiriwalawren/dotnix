@@ -57,7 +57,7 @@ in
       mutableSettings = false;
       settings = {
         http = {
-          address = "0.0.0.0:${webUIPort}";
+          address = "0.0.0.0:${builtins.toString webUIPort}";
         };
         users = [
           {
@@ -147,7 +147,7 @@ in
         }
       ];
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${webUIPort}";
+        proxyPass = "http://127.0.0.1:${builtins.toString webUIPort}";
         recommendedProxySettings = true;
         extraConfig = ''
           proxy_redirect off;
