@@ -57,7 +57,7 @@ in
       mutableSettings = false;
       settings = {
         http = {
-          address = "0.0.0.0:${builtins.toString webUIPort}";
+          address = "127.0.0.1:${builtins.toString webUIPort}";
         };
         users = [
           {
