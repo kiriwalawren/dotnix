@@ -50,22 +50,10 @@
           system.trickplayOptions.enableHwEncoding = true;
         };
       };
-
-      # Uncomment for temporary gaming
-      # ui = {
-      #   enable = true;
-      #   gaming.enable = true;
-      # };
     }
   ];
 
   homeOptions = {
     cli.enable = true;
-
-    # Uncomment for temporary gaming
-    # ui = {
-    #   enable = true;
-    #   nixos.enable = true;
-    # };
   };
 }

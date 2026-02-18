@@ -1,0 +1,57 @@
+{
+  flake.modules.nixos.nixflix =
+    {
+      config,
+      ...
+    }:
+    {
+      sops.secrets = {
+        "indexer-api-keys/DrunkenSlug" = { };
+        "indexer-api-keys/NZBFinder" = { };
+        "indexer-api-keys/NzbPlanet" = { };
+        "indexer-api-keys/NZBgeek" = { };
+        "prowlarr/api_key" = { };
+        "prowlarr/password" = { };
+      };
+
+      nixflix.prowlarr = {
+        enable = true;
+        subdomain = "indexers";
+
+        config = {
+          apiKey = {
+            _secret = config.sops.secrets."prowlarr/api_key".path;
+          };
+          hostConfig.password = {
+            _secret = config.sops.secrets."prowlarr/password".path;
+          };
+          indexers = [
+            {
+              name = "DrunkenSlug";
+              apiKey = {
+                _secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
+              };
+            }
+            {
+              name = "NZBFinder";
+              apiKey = {
+                _secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
+              };
+            }
+            {
+              name = "NzbPlanet";
+              apiKey = {
+                _secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
+              };
+            }
+            {
+              name = "NZBgeek";
+              apiKey = {
+                _secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
+              };
+            }
+          ];
+        };
+      };
+    };
+}

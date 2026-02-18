@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# TODO: fixup hardware-configuration configuration generation to match
+# configuration.nixos.<host>.module format
+# I think we can just create `modules/hosts/<host>/_hardware-configuration.nix`
+
 ###############################################################################
 # Full "dotnix" bootstrap — one‑shot install with nixos‑anywhere              #
 #                                                                             #
