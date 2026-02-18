@@ -335,16 +335,15 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1771316424,
-        "narHash": "sha256-oaCuMONS238syjpWV37IyH4uwuC8x1w4pFW2XwodBao=",
+        "lastModified": 1771390982,
+        "narHash": "sha256-JzywoSetFSlsKCu5mwIdVGq9aMcU/ORfJr4QLFmpZiM=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "a8ac4dcc37a7641ad95cceec0fd2469a11fd9fb2",
+        "rev": "cf19c71ce0f4db2229f183bc63c801bc700f04e7",
         "type": "github"
       },
       "original": {
         "owner": "kiriwalawren",
-        "ref": "subdomains",
         "repo": "nixflix",
         "type": "github"
       }

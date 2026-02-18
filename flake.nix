@@ -77,7 +77,7 @@
 
     # Server Dependencies
     nixflix = {
-      url = "github:kiriwalawren/nixflix/subdomains";
+      url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
