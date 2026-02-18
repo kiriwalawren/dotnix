@@ -1,7 +1,6 @@
 {
   nixpkgs,
   self,
-  overlays,
   ...
 }:
 let
@@ -22,8 +21,8 @@ let
       modules = [
         {
           nixpkgs = {
-            inherit overlays;
             config.allowUnfree = true;
+            overlays = import ../overlays.nix { inherit inputs; };
           };
         }
         inputs.disko.nixosModules.disko

@@ -4,7 +4,12 @@
   inputs = {
     # Repo configuration dependencies
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+    };
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -29,7 +34,10 @@
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.3";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
     cachix-deploy-flake = {
@@ -51,7 +59,10 @@
 
     nixvim = {
       url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
     # UI deps
@@ -85,93 +96,72 @@
   outputs =
     {
       cachix-deploy-flake,
-      home-manager,
+      flake-parts,
       treefmt-nix,
       nixpkgs,
       self,
       ...
     }@inputs:
-    let
-      lib = nixpkgs.lib // home-manager.lib;
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
       ];
 
-      overlays = [
-        inputs.firefox-addons.overlays.default
-        inputs.hyprland-contrib.overlays.default
-      ];
+      flake = {
+        nixosConfigurations = import ./hosts inputs;
+
+        nixosModules = import ./modules/nixos;
+        homeManagerModules.dotnix = import ./modules/home;
+      };
 
       perSystem =
-        f:
-        lib.genAttrs systems (
-          system:
-          f rec {
-            inherit system;
-            pkgs = import nixpkgs {
-              inherit system overlays;
-              config.allowUnfree = true;
-              config.allowUnfreePredicate = _: true;
-            };
-            treefmt = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-          }
-        );
-    in
-    {
-      inherit lib;
-
-      formatter = perSystem ({ treefmt, ... }: treefmt.config.build.wrapper);
-
-      checks = perSystem (
-        { treefmt, ... }:
-        {
-          formatting = treefmt.config.build.check self;
-        }
-      );
-
-      nixosModules = import ./modules/nixos;
-      homeManagerModules.dotnix = import ./modules/home;
-
-      nixosConfigurations = import ./hosts (inputs // { inherit overlays; });
-
-      packages = perSystem (
-        { pkgs, ... }:
+        { pkgs, system, ... }:
         let
-          cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
+          treefmt = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         in
         {
-          cachix-deploy-spec = cachix-deploy-lib.spec {
-            agents = {
-              home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
+          _module.args.pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            config.allowUnfreePredicate = _: true;
+
+            overlays = import ./overlays.nix { inherit inputs; };
+          };
+
+          formatter = treefmt.config.build.wrapper;
+
+          checks = {
+            formatting = treefmt.config.build.check self;
+          };
+
+          packages =
+            let
+              cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
+            in
+            {
+              cachix-deploy-spec = cachix-deploy-lib.spec {
+                agents = {
+                  home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
+                };
+              };
+            };
+
+          devShells = {
+            default = pkgs.mkShell {
+              nativeBuildInputs =
+                with pkgs;
+                [ treefmt.config.build.wrapper ]
+                ++ (lib.attrValues treefmt.config.build.programs)
+                ++ [
+                  age
+                  cachix
+                  sops
+                  ssh-to-age
+                  yq-go
+                ];
             };
           };
-        }
-      );
-
-      devShells = perSystem (
-        {
-          pkgs,
-          treefmt,
-          ...
-        }:
-        {
-          default = pkgs.mkShell {
-            nativeBuildInputs =
-              with pkgs;
-              [ treefmt.config.build.wrapper ]
-              ++ (lib.attrValues treefmt.config.build.programs)
-              ++ [
-                age
-                cachix
-                sops
-                ssh-to-age
-                yq-go
-              ];
-          };
-        }
-      );
+        };
     };
 }
