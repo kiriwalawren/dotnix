@@ -24,16 +24,6 @@
       };
     };
 
-    boot = {
-      # Configure mdadm for RAID
-      swraid = {
-        enable = true;
-        mdadmConf = ''
-          MAILADDR root
-        '';
-      };
-    };
-
     # Hardware specific media server settings
     nixflix = {
       sabnzbd.settings.misc.cache_limit = "8G";

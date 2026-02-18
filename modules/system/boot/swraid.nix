@@ -7,14 +7,12 @@
       );
     in
     {
-      boot = lib.mkIf hasRaid {
-        # Configure mdadm for RAID
-        swraid = {
-          enable = true;
-          mdadmConf = ''
-            MAILADDR root
-          '';
-        };
+      # Configure mdadm for RAID
+      boot.swraid = lib.mkIf hasRaid {
+        enable = true;
+        mdadmConf = ''
+          MAILADDR root
+        '';
       };
     };
 }
