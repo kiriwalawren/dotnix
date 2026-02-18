@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: fixup hardware-configuration configuration generation to match
-# configuration.nixos.<host>.module format
-# I think we can just create `modules/hosts/<host>/_hardware-configuration.nix`
-
 ###############################################################################
 # Full "dotnix" bootstrap — one‑shot install with nixos‑anywhere              #
 #                                                                             #
@@ -84,35 +80,35 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -n)
-    shift
-    target_hostname=$1
-    ;;
-  -d)
-    shift
-    target_destination=$1
-    ;;
-  -u)
-    shift
-    target_user=$1
-    ;;
-  -k)
-    shift
-    ssh_key=$1
-    ;;
-  --port)
-    shift
-    ssh_port=$1
-    ;;
-  --secureboot)
-    enable_secureboot=true
-    ;;
-  --debug) set -x ;;
-  -h | --help) help_and_exit ;;
-  *)
-    red "Invalid option: $1"
-    help_and_exit
-    ;;
+    -n)
+      shift
+      target_hostname=$1
+      ;;
+    -d)
+      shift
+      target_destination=$1
+      ;;
+    -u)
+      shift
+      target_user=$1
+      ;;
+    -k)
+      shift
+      ssh_key=$1
+      ;;
+    --port)
+      shift
+      ssh_port=$1
+      ;;
+    --secureboot)
+      enable_secureboot=true
+      ;;
+    --debug) set -x ;;
+    -h | --help) help_and_exit ;;
+    *)
+      red "Invalid option: $1"
+      help_and_exit
+      ;;
   esac
   shift
 done
@@ -165,8 +161,8 @@ if no_or_yes "Capture hardware-configuration.nix before install?"; then
   blue "Capturing hardware-configuration.nix (pre‑install)"
   if "${ssh_root_cmd[@]}" command -v nixos-generate-config >/dev/null 2>&1; then
     "${ssh_root_cmd[@]}" "nixos-generate-config --no-filesystems --root /mnt || nixos-generate-config --no-filesystems --root /"
-    "${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/hosts/$target_hostname/hardware-configuration.nix" 2>/dev/null ||
-      "${scp_cmd[@]}" root@"$target_destination":/etc/nixos/hardware-configuration.nix "$git_root/hosts/$target_hostname/hardware-configuration.nix" 2>/dev/null ||
+    "${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/modules/hosts/$target_hostname/_hardware-configuration.nix" 2>/dev/null ||
+      "${scp_cmd[@]}" root@"$target_destination":/etc/nixos/hardware-configuration.nix "$git_root/modules/hosts/$target_hostname/_hardware-configuration.nix" 2>/dev/null ||
       yellow "Unable to fetch hardware-configuration.nix; continuing"
   else
     yellow "nixos-generate-config not available on target; skipping capture"
