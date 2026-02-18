@@ -35,7 +35,12 @@ in
         name = "catppuccin-${theme.variant}";
       };
 
-      nginx.enable = true;
+      nginx = {
+        enable = true;
+        addHostsEntries = false;
+        domain = "nixflix";
+      };
+
       postgres.enable = true;
 
       recyclarr = {

@@ -9,6 +9,7 @@ let
 in
 {
   imports = [
+    ./adguardhome.nix
     ./nixflix
   ];
 
@@ -18,5 +19,6 @@ in
 
   config = mkIf cfg.enable {
     server.nixflix.enable = true;
+    server.adguardhome.enable = true;
   };
 }

@@ -10,11 +10,10 @@ with lib;
 
     nixflix.jellyseerr = {
       enable = true;
+      subdomain = "request";
       apiKey = {
         _secret = config.sops.secrets."jellyseerr/api_key".path;
       };
-
-      externalBaseUrl = "http://home-server";
     };
   };
 }

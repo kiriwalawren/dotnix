@@ -13,6 +13,8 @@ with lib;
 
     nixflix.sonarr-anime = {
       enable = true;
+      subdomain = "anime";
+
       config = {
         apiKey = {
           _secret = config.sops.secrets."sonarr-anime/api_key".path;
@@ -26,7 +28,7 @@ with lib;
             enableTorrent = true;
             preferredProtocol = "usenet";
             usenetDelay = 0;
-            torrentDelay = 360;
+            torrentDelay = 0;
             bypassIfHighestQuality = true;
             bypassIfAboveCustomFormatScore = false;
             minimumCustomFormatScore = 0;

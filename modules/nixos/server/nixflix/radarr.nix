@@ -13,6 +13,7 @@ with lib;
 
     nixflix.radarr = {
       enable = true;
+      subdomain = "movies";
       config = {
         apiKey = {
           _secret = config.sops.secrets."radarr/api_key".path;
@@ -26,7 +27,7 @@ with lib;
             enableTorrent = true;
             preferredProtocol = "usenet";
             usenetDelay = 0;
-            torrentDelay = 360;
+            torrentDelay = 0;
             bypassIfHighestQuality = true;
             bypassIfAboveCustomFormatScore = false;
             minimumCustomFormatScore = 0;
