@@ -46,7 +46,6 @@
             fgrep = "fgrep --color=auto";
             grep = "grep --color=auto";
             la = "ls -lah --group-directories-first";
-            loc = "scc --no-cocomo";
             ls = "ls -h --color=auto --group-directories-first";
             c = "wl-copy";
             p = "wl-paste";

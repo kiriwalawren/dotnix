@@ -1,19 +1,7 @@
 {
-  config,
-  lib,
-  ...
-}:
-with lib;
-let
-  cfg = config.cli.tmux;
-in
-{
-  options.cli.tmux = {
-    enable = mkEnableOption "tmux";
-  };
-
-  config = mkIf cfg.enable {
-    catppuccin.tmux.enable = true;
+  flake.modules.homeManager.base = {
+    # TODO: theming
+    # catppuccin.tmux.enable = true;
 
     programs.tmux = {
       enable = true;
