@@ -1,8 +1,5 @@
 {
   description = "NixOS configuration";
-  nixConfig = {
-    extra-experimental-features = [ "pipe-operators" ];
-  };
 
   inputs = {
     # Repo configuration dependencies
@@ -13,6 +10,7 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
+    import-tree.url = "github:vic/import-tree";
 
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -97,74 +95,10 @@
   };
 
   outputs =
-    {
-      cachix-deploy-flake,
-      flake-parts,
-      treefmt-nix,
-      nixpkgs,
-      self,
-      ...
-    }@inputs:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ (inputs.import-tree ./modules-temp) ];
 
-      flake = {
-        nixosConfigurations = import ./hosts inputs;
-
-        nixosModules = import ./modules/nixos;
-        homeManagerModules.dotnix = import ./modules/home;
-      };
-
-      perSystem =
-        { pkgs, system, ... }:
-        let
-          treefmt = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-        in
-        {
-          _module.args.pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-            config.allowUnfreePredicate = _: true;
-
-            overlays = import ./overlays.nix { inherit inputs; };
-          };
-
-          formatter = treefmt.config.build.wrapper;
-
-          checks = {
-            formatting = treefmt.config.build.check self;
-          };
-
-          packages =
-            let
-              cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
-            in
-            {
-              cachix-deploy-spec = cachix-deploy-lib.spec {
-                agents = {
-                  home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
-                };
-              };
-            };
-
-          devShells = {
-            default = pkgs.mkShell {
-              nativeBuildInputs =
-                with pkgs;
-                [ treefmt.config.build.wrapper ]
-                ++ (lib.attrValues treefmt.config.build.programs)
-                ++ [
-                  age
-                  cachix
-                  sops
-                  ssh-to-age
-                  yq-go
-                ];
-            };
-          };
-        };
+      _module.args.rootPath = ./.;
     };
 }

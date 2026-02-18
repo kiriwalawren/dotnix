@@ -15,15 +15,12 @@
       _name: { module }: lib.nixosSystem { modules = [ module ]; }
     );
 
-    checks =
-      config.flake.nixosConfigurations
-      |> lib.mapAttrsToList (
-        name: nixos: {
-          ${nixos.config.nixpkgs.hostPlatform.system} = {
-            "configurations/nixos/${name}" = nixos.config.system.build.toplevel;
-          };
-        }
-      )
-      |> lib.mkMerge;
+    checks = lib.mkMerge (
+      lib.mapAttrsToList (name: nixos: {
+        ${nixos.config.nixpkgs.hostPlatform.system} = {
+          "configurations/nixos/${name}" = nixos.config.system.build.toplevel;
+        };
+      }) config.flake.nixosConfigurations
+    );
   };
 }

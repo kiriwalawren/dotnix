@@ -2,7 +2,6 @@
   lib,
   config,
   inputs,
-  withSystem,
   ...
 }:
 {
@@ -32,12 +31,5 @@
           inherit (config.nixpkgs) config overlays;
         };
       };
-
-    flake.modules.nixos.base = nixosArgs: {
-      nixpkgs = {
-        pkgs = withSystem nixosArgs.config.facter.report.system (psArgs: psArgs.pkgs);
-        hostPlatform = nixosArgs.config.facter.report.system;
-      };
-    };
   };
 }
