@@ -1,5 +1,8 @@
 {
   description = "NixOS configuration";
+  nixConfig = {
+    extra-experimental-features = [ "pipe-operators" ];
+  };
 
   inputs = {
     # Repo configuration dependencies
