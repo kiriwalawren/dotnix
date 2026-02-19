@@ -120,8 +120,8 @@ in
 
           general = {
             gaps_in = 2;
-            gaps_out = 5;
-            border_size = 3;
+            gaps_out = 2;
+            border_size = 2;
             layout = "dwindle";
             "col.active_border" = "${primaryAccent} ${secondaryAccent} ${tertiaryAccent} 45deg";
             "col.inactive_border" = "${crust}";
