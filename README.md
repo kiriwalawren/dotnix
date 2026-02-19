@@ -27,6 +27,14 @@
   </a>
 </h1>
 
+## Prequisites
+
+- [Flakes](https://nixos-and-flakes.thiscute.world/nixos-with-flakes/nixos-with-flakes-enabled) enabled
+
+## Developing
+
+Enter the development shell with `nix develop`. Run `nix fmt` to format the repo.
+
 ## Origin of the dendritic pattern
 
 This repository follows [the dendritic pattern](https://github.com/mightyiam/dendritic).
