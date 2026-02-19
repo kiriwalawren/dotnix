@@ -1,6 +1,12 @@
 { inputs, ... }:
 {
   nixpkgs.config.allowUnfreePackages = [ "spotify" ];
+  flake.modules.nixos.gui = {
+    networking.firewall.allowedUDPPorts = [
+      5353
+      1900
+    ];
+  };
 
   flake.modules.homeManager.gui =
     { config, pkgs, ... }:

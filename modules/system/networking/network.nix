@@ -9,16 +9,7 @@
         };
 
         wireless.iwd.enable = true;
-
-        firewall = {
-          enable = true;
-          # TODO: move to spotify implementation
-          # For spotify connect, chromecast, and mDNS
-          allowedUDPPorts = [
-            5353
-            1900
-          ];
-        };
+        networking.firewall.enable = true;
         enableIPv6 = true;
       };
     };
