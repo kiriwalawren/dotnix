@@ -4,11 +4,15 @@
     inherit (config.flake.modules.nixos)
       auto-deploy
       base
-      bluetooth
       homelab
       nixflix
-      sound
       tailscale-server
+
+      # Uncomment for temporary gaming
+      # bluetooth
+      # gaming
+      # gui
+      # sound
       ;
   };
 }
