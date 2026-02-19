@@ -3,7 +3,6 @@ let
     pkgs: with pkgs; [
       curl
       jq
-      wget
     ];
 in
 {

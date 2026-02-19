@@ -7,7 +7,6 @@
     };
     wallpapers = lib.mkOption {
       type = lib.types.path;
-      readonly = true;
       default = ./_wallpapers;
     };
   };

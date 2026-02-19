@@ -4,7 +4,7 @@ let
   wm = config.desktop.windowManager;
 in
 {
-  flake.modules.homeManaber.gui = lib.mkIf (wm == "hyprland") (
+  flake.modules.homeManager.gui = lib.mkIf (wm == "hyprland") (
     { pkgs, ... }:
     let
 
