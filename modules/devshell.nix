@@ -3,7 +3,12 @@
   imports = [ inputs.treefmt-nix.flakeModule ];
 
   perSystem =
-    { config, pkgs, ... }:
+    {
+      config,
+      self',
+      pkgs,
+      ...
+    }:
     {
       devShells.default = pkgs.mkShell {
         nativeBuildInputs =
@@ -13,6 +18,7 @@
           ++ [
             age
             cachix
+            self'.packages.bootstrap-nixos
             sops
             ssh-to-age
             yq-go

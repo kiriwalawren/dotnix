@@ -48,12 +48,14 @@ This means files can be moved around and nested in directories freely.
 
 ## Installation
 
-The `scripts/bootstrap-nixos.sh` script performs a one-shot NixOS install on a remote machine using [nixos-anywhere](https://github.com/nix-community/nixos-anywhere).
+The `bootstrap-nixos` application performs a one-shot NixOS install on a remote machine using [nixos-anywhere](https://github.com/nix-community/nixos-anywhere).
 
 ### Usage
 
+In `nix develop`:
+
 ```bash
-./scripts/bootstrap-nixos.sh -n <hostname> -d <ip-or-domain> -k <ssh_key> [OPTIONS]
+bootstrap-nixos -n <hostname> -d <ip-or-domain> -k <ssh_key> [OPTIONS]
 ```
 
 ### Required arguments
