@@ -14,7 +14,7 @@
       };
     };
 
-  flake.modules.homeManager.base =
+  flake.modules.homeManager.gui =
     { pkgs, ... }:
     {
       home.packages = [ pkgs.impala ];
