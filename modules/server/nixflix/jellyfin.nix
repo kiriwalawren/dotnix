@@ -17,6 +17,15 @@
             };
           };
         };
+        system.pluginRepositories = [
+          {
+            content = {
+              enabled = true;
+              name = "Moonfin";
+              url = "https://raw.githubusercontent.com/Moonfin-Client/Plugin/refs/heads/master/manifest.json";
+            };
+          }
+        ];
       };
     };
 }
