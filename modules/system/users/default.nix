@@ -33,10 +33,6 @@ in
         extraGroups = [
           "wheel"
           "networkmanager"
-          # TODO: move to sound
-          "audio"
-          # TODO: move to sound
-          "sound"
           "video"
           "input"
           "tty"

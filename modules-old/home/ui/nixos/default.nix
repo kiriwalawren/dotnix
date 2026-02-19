@@ -25,9 +25,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    # recorder goes with slack
     home.packages = with pkgs; [
       wf-recorder
-      wl-clipboard
     ];
 
     ui.nixos = {

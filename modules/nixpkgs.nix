@@ -33,7 +33,13 @@
       };
 
     flake.modules.nixos.base.nixpkgs = {
-      inherit (config.nixpkgs) config overlays;
+      config = {
+        allowUnfreePredicate =
+          pkg:
+          builtins.elem (lib.getName pkg) config.nixpkgs.config.allowUnfreePackages
+          || config.nixpkgs.config.allowUnfreePredicate pkg;
+      };
+      inherit (config.nixpkgs) overlays;
     };
   };
 }

@@ -1,20 +1,9 @@
-{
-  lib,
-  config,
-  ...
-}:
-with lib;
+{ config, lib, ... }:
 let
-  cfg = config.ui.nixos.hyprland.hypridle;
+  wm = config.desktop.windowManager;
 in
 {
-  options.ui.nixos.hyprland.hypridle = {
-    enable = mkEnableOption "hypridle";
-  };
-
-  config = mkIf cfg.enable {
-    ui.nixos.hyprland.hyprlock.enable = true;
-
+  flake.modules.homeManager.gui = lib.mkIf (wm == "hyprland") {
     services.hypridle = {
       enable = true;
 
