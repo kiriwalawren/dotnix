@@ -4,7 +4,6 @@
   homeOptions ? { },
   inputs,
   lib,
-  theme,
   ...
 }:
 {

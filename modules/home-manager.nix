@@ -5,6 +5,8 @@
       inputs.home-manager.nixosModules.home-manager
     ];
 
+    programs.dconf.enable = true; # Configuration System & Setting Management - required for Home Manager
+
     home-manager = {
       backupFileExtension = "backup";
       useGlobalPkgs = true;

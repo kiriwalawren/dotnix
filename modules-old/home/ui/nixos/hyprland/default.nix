@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  theme,
   ...
 }:
 with lib;
@@ -31,10 +30,10 @@ let
   '';
 
   rgba = color: "rgba(${color}ee)";
-  primaryAccent = rgba theme.colors.primaryAccent;
-  secondaryAccent = rgba theme.colors.secondaryAccent;
-  tertiaryAccent = rgba theme.colors.tertiaryAccent;
-  crust = rgba theme.colors.crust;
+  primaryAccent = rgba config.catppuccin.colors.primaryAccent;
+  secondaryAccent = rgba config.catppuccinheme.colors.secondaryAccent;
+  tertiaryAccent = rgba config.catppuccinheme.colors.tertiaryAccent;
+  crust = rgba config.catppuccinheme.colors.crust;
 
   # binds $meh + [SUPER +] {1...8} to [move to] workspace {1...8} (stolen from sioodmy)
   workspaces = builtins.concatLists (
@@ -110,7 +109,7 @@ in
         };
 
         decoration = {
-          rounding = theme.radius;
+          rounding = config.theme.radius;
 
           shadow = {
             enabled = true;

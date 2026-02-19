@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  theme,
   pkgs,
   ...
 }:
@@ -142,7 +141,7 @@ in
         };
       };
 
-      style = import ./style.nix { inherit theme; };
+      style = import ./style.nix { inherit config; };
     };
   };
 }

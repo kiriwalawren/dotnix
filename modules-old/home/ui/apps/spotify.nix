@@ -3,7 +3,6 @@
   config,
   pkgs,
   inputs,
-  theme,
   ...
 }:
 with lib;
@@ -26,7 +25,7 @@ in
 
       theme = spicePkgs.themes.catppuccin;
 
-      colorScheme = theme.variant;
+      colorScheme = config.catppuccin.flavor;
 
       enabledExtensions = with spicePkgs.extensions; [
         # Official extensions

@@ -22,6 +22,7 @@
     flake.modules = {
       nixos.base.nix = {
         inherit (config.nix) settings;
+        optimise.automatic = true;
       };
 
       homeManager.base.nix = {

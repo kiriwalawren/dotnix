@@ -20,7 +20,7 @@ in
       theme = {
         name = "Colloid-Teal-Dark-Compact-Catppuccin";
         package = pkgs.colloid-gtk-theme.override {
-          themeVariants = [ "teal" ];
+          themeVariants = [ config.catppuccin.accent ];
           colorVariants = [ "dark" ];
           sizeVariants = [ "compact" ];
           tweaks = [ "catppuccin" ];

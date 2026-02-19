@@ -80,35 +80,35 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -n)
-      shift
-      target_hostname=$1
-      ;;
-    -d)
-      shift
-      target_destination=$1
-      ;;
-    -u)
-      shift
-      target_user=$1
-      ;;
-    -k)
-      shift
-      ssh_key=$1
-      ;;
-    --port)
-      shift
-      ssh_port=$1
-      ;;
-    --secureboot)
-      enable_secureboot=true
-      ;;
-    --debug) set -x ;;
-    -h | --help) help_and_exit ;;
-    *)
-      red "Invalid option: $1"
-      help_and_exit
-      ;;
+  -n)
+    shift
+    target_hostname=$1
+    ;;
+  -d)
+    shift
+    target_destination=$1
+    ;;
+  -u)
+    shift
+    target_user=$1
+    ;;
+  -k)
+    shift
+    ssh_key=$1
+    ;;
+  --port)
+    shift
+    ssh_port=$1
+    ;;
+  --secureboot)
+    enable_secureboot=true
+    ;;
+  --debug) set -x ;;
+  -h | --help) help_and_exit ;;
+  *)
+    red "Invalid option: $1"
+    help_and_exit
+    ;;
   esac
   shift
 done

@@ -2,22 +2,19 @@
   config,
   lib,
   pkgs,
-  theme,
   ...
 }:
-with theme.colors;
-with lib;
 let
   cfg = config.ui.nixos.hyprland.hyprlock;
 in
 {
   options.ui.nixos.hyprland.hyprlock = {
-    enable = mkEnableOption "hyprlock";
-    fingerprint.enable = mkEnableOption "fingerprint";
+    enable = lib.mkEnableOption "hyprlock";
+    fingerprint.enable = lib.mkEnableOption "fingerprint";
   };
 
-  config = mkIf cfg.enable {
-    home.packages = mkIf cfg.fingerprint.enable [ pkgs.polkit_gnome ];
+  config = lib.mkIf cfg.enable {
+    home.packages = lib.mkIf cfg.fingerprint.enable [ pkgs.polkit_gnome ];
 
     catppuccin.hyprlock.enable = true;
 
@@ -29,14 +26,14 @@ in
           hide_cursor = false;
         };
 
-        auth = mkIf cfg.fingerprint.enable {
+        auth = lib.mkIf cfg.fingerprint.enable {
           fingerprint.enabled = true;
         };
 
         background = [
           {
             monitor = "";
-            path = "${theme.defaultWallpaper}";
+            path = "${config.theme.defaultWallpaper}";
           }
         ];
       };
@@ -47,7 +44,7 @@ in
         "SUPER,N,exec,hyprlock"
       ];
       exec-once = [
-        (mkIf cfg.fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
+        (lib.mkIf cfg.fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
       ];
     };
 

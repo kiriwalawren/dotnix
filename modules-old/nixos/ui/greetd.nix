@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  theme,
   ...
 }:
 with lib;
@@ -33,23 +32,23 @@ in
     # Configure TTY colors to match Catppuccin theme
     # These colors will style the tuigreet interface
     console = {
-      colors = [
-        theme.colors.surface0 # black
-        theme.colors.red # red
-        theme.colors.green # green
-        theme.colors.yellow # yellow
-        theme.colors.blue # blue
-        theme.colors.mauve # magenta
-        theme.colors.teal # cyan
-        theme.colors.text # white
-        theme.colors.overlay0 # bright black
-        theme.colors.red # bright red
-        theme.colors.green # bright green
-        theme.colors.yellow # bright yellow
-        theme.colors.blue # bright blue
-        theme.colors.mauve # bright magenta
-        theme.colors.teal # bright cyan
-        theme.colors.text # bright white
+      colors = with config.catppuccin.colors; [
+        surface0
+        red
+        green
+        yellow
+        blue
+        mauve
+        teal
+        text
+        overlay0
+        red
+        green
+        yellow
+        blue
+        mauve
+        teal
+        text
       ];
     };
 

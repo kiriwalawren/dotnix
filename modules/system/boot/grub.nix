@@ -21,8 +21,8 @@
           [ ];
     in
     {
-      # TODO: theming
-      # catppuccin.grub.enable = true;
+      catppuccin.grub.enable = true;
+
       boot.loader = {
         efi = {
           canTouchEfiVariables = true;

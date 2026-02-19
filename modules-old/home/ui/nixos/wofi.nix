@@ -2,7 +2,6 @@
   pkgs,
   config,
   lib,
-  theme,
   ...
 }:
 with lib;
@@ -43,21 +42,21 @@ in
 
     xdg.configFile."wofi/style.css".text = ''
       * {
-        font-family: "${theme.font}", monospace;
-        font-size: ${toString theme.fontSize}px;
+        font-family: "${config.theme.font}", monospace;
+        font-size: ${toString config.theme.fontSize}px;
       }
 
       window {
         margin: 0px;
         padding: 0px;
-        border-radius: ${toString theme.radius}px;
+        border-radius: ${toString config.theme.radius}px;
         background-color: transparent;
       }
 
       #input {
         padding: 8px 12px;
         margin: 8px;
-        border-radius: ${toString (theme.radius - 2)}px;
+        border-radius: ${toString (config.theme.radius - 2)}px;
       }
 
       #input:focus { }
@@ -71,9 +70,9 @@ in
         margin: 0px;
         padding: 10px;
         border: 2px solid transparent;
-        border-radius: ${toString theme.radius}px;
-        background: linear-gradient(#${theme.colors.base}, #${theme.colors.base}) padding-box,
-                    linear-gradient(45deg, #${theme.colors.primaryAccent}, #${theme.colors.secondaryAccent}, #${theme.colors.tertiaryAccent}) border-box;
+        border-radius: ${toString config.theme.radius}px;
+        background: linear-gradient(#${config.catppuccin.colors.base}, #${config.catppuccin.colors.base}) padding-box,
+                    linear-gradient(45deg, #${config.catppuccin.colors.primaryAccent}, #${config.catppuccin.colors.secondaryAccent}, #${config.catppuccin.colors.tertiaryAccent}) border-box;
       }
 
       #scroll {
@@ -85,7 +84,7 @@ in
       #entry {
         padding: 8px;
         margin: 2px 0px;
-        border-radius: ${toString (theme.radius - 4)}px;
+        border-radius: ${toString (config.theme.radius - 4)}px;
       }
 
       #entry:selected {

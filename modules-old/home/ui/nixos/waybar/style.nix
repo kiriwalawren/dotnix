@@ -1,14 +1,14 @@
-{ theme }:
+{ config }:
 with builtins;
 let
-  radius = "${toString theme.radius}px";
+  radius = "${toString config.theme.radius}px";
 in
-with theme.colors;
+with config.catppuccin.colors;
 ''
   * {
     border: none;
-    font-family: "${theme.font}";
-    font-size: ${toString theme.fontSizeSmall}px;
+    font-family: "${config.theme.font}";
+    font-size: ${toString config.theme.fontSizeSmall}px;
     margin: 0px;
     padding: 0px;
   }

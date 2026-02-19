@@ -2,14 +2,13 @@
   pkgs,
   lib,
   config,
-  theme,
   ...
 }:
 with lib;
 let
   cfg = config.ui.nixos.hyprland.hyprpaper;
 
-  wallpapers = filesystem.listFilesRecursive theme.wallpapers;
+  wallpapers = filesystem.listFilesRecursive config.theme.wallpapers;
 
   wallpaperBashArray = "(\"${
     strings.concatStrings (strings.intersperse "\" \"" (map (wallpaper: "${wallpaper}") wallpapers))

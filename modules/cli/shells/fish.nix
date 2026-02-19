@@ -19,8 +19,7 @@
       gitMainOrMaster = "git branch -l main master --format '%(refname:short)'";
     in
     {
-      # TODO: theming
-      # catppuccin.fish.enable = true;
+      catppuccin.fish.enable = true;
 
       programs = {
         dircolors.enableFishIntegration = true;

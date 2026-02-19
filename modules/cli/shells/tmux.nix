@@ -1,7 +1,6 @@
 {
   flake.modules.homeManager.base = {
-    # TODO: theming
-    # catppuccin.tmux.enable = true;
+    catppuccin.tmux.enable = true;
 
     programs.tmux = {
       enable = true;
