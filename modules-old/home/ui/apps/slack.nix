@@ -14,6 +14,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [ slack ];
+    home.packages = with pkgs; [
+      slack
+      wf-recorder
+    ];
   };
 }

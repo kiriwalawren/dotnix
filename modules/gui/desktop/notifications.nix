@@ -1,19 +1,6 @@
+{ config, ... }:
 {
-  config,
-  lib,
-  ...
-}:
-with lib;
-with builtins;
-let
-  cfg = config.ui.nixos.mako;
-in
-{
-  options.ui.nixos.mako = {
-    enable = mkEnableOption "mako";
-  };
-
-  config = mkIf cfg.enable {
+  flake.modules.homeManager.gui = {
     catppuccin.mako.enable = true;
 
     services.mako = {
