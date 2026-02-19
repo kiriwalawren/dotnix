@@ -13,7 +13,6 @@
     in
     {
       options.server.adguardhome = {
-        enable = mkEnableOption "AdGuard Home";
         serverIP = mkOption {
           type = types.str;
           default = "100.99.237.58";
@@ -21,7 +20,7 @@
         };
       };
 
-      config = mkIf cfg.enable {
+      config = {
         # I have to override the user so that I can configure
         # Mullvan VPN Bypass
         users.users.adguardhome = {
