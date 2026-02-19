@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.base =
+  flake.modules.nixos.gui =
     { pkgs, ... }:
     {
       catppuccin.plymouth.enable = true;
