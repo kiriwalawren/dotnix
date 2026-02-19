@@ -1,8 +1,0 @@
-**/flake.lock
-**/*.nix
-**/*.jpeg
-**/*.jpg
-**/*.png
-**/*.sh
-**/.*
-**/LICENSE

@@ -27,190 +27,104 @@
   </a>
 </h1>
 
-## Hosts
-
-### Prequisites
+## Prequisites
 
 - [Flakes](https://nixos-and-flakes.thiscute.world/nixos-with-flakes/nixos-with-flakes-enabled) enabled
 
-### [NixOS WSL](https://github.com/nix-community/NixOS-WSL)
+## Developing
 
-#### Installing
+Enter the development shell with `nix develop`. Run `nix fmt` to format the repo.
 
-1. Run the following command:
-   ```sh
-   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#nixos-wsl
+## Origin of the dendritic pattern
+
+This repository follows [the dendritic pattern](https://github.com/mightyiam/dendritic).
+
+## Automatic import
+
+Nix files (they're all flake-parts modules) are automatically imported.
+Nix files prefixed with an underscore are ignored.
+No literal path imports are used.
+This means files can be moved around and nested in directories freely.
+
+## Installation
+
+The `bootstrap-nixos` application performs a one-shot NixOS install on a remote machine using [nixos-anywhere](https://github.com/nix-community/nixos-anywhere).
+
+### Usage
+
+In `nix develop`:
+
+```bash
+bootstrap-nixos -n <hostname> -d <ip-or-domain> -k <ssh_key> [OPTIONS]
+```
+
+### Required arguments
+
+| Flag | Description |
+|------|-------------|
+| `-n <hostname>` | Hostname as defined in the flake (e.g. `home-server`) |
+| `-d <destination>` | IP or DNS of the target machine |
+| `-k <ssh_key>` | Path to the private SSH key used for install |
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `-u <user>` | SSH user with sudo (default: current user) |
+| `--port <port>` | SSH port (default: `22`) |
+| `--secureboot` | Enable Secure Boot + TPM2 auto-unlock setup |
+| `--debug` | Enable bash xtrace for troubleshooting |
+| `-h`, `--help` | Show help |
+
+### What it does
+
+1. Generates a target SSH host key and derives an age recipient so secrets are ready day-0
+1. Optionally captures `hardware-configuration.nix` from the target before install
+1. Extracts disk encryption keys from sops secrets (if configured)
+1. Runs `nixos-anywhere` to install the flake on the target (builds locally)
+1. Syncs the dotnix and secrets repositories to the target
+1. With `--secureboot`: generates Secure Boot keys, rebuilds with lanzaboote, enrolls keys in firmware, and configures TPM2 auto-unlock
+1. Optionally stages, commits, and pushes all changes to git
+
+### Secure Boot configuration
+
+Using `--secureboot` requires three pieces of configuration in the flake:
+
+1. **Include the `encryption` module** in the host's module list (e.g. `modules/hosts/<hostname>/modules.nix`):
+
+   ```nix
+   configurations.nixos.<hostname>.modules = {
+     inherit (config.flake.modules.nixos)
+       base
+       encryption  # provides lanzaboote, TPM2 initrd support, and sbctl/tpm2-tools
+       # ...
+       ;
+   };
    ```
 
-### [NixOS Desktop](https://nixos.org/download)
+1. **Mark disk groups as encrypted** in the host's configuration (e.g. `modules/hosts/<hostname>/configuration.nix`):
 
-#### Installing
-
-1. Run the following command:
-   ```sh
-   sudo nixos-rebuild switch --flake github:kiriwalawren/dotnix/main#desktop
+   ```nix
+   system.disks."/" = {
+     devices = [ "/dev/nvme0n1" ];
+     encryptDrives = true;  # wraps partitions in LUKS via disko
+   };
    ```
 
-## Rebuilding
+   The `encryptionPasswordFile` option defaults to `/tmp/disk-secret.key`, which is where the bootstrap script places the key during install.
 
-If you have the repo cloned locally at `~/gitrepos/dotnix`, you can rebuild with the following:
+1. **Add an encryption key to the secrets repository** (`secrets.yaml`):
 
-```sh
-nh os switch
-```
+   ```yaml
+   drive-encryption-keys:
+     <hostname>: "your-encryption-password-here"
+   ```
 
-## NixOS Modules
-
-### System
-
-#### [User](./modules/nixos/system/user/default.nix)
-
-Configures a user for the NixOS system using a dynamic user name that can be configured in `nixosConfiguration`.
-
-```nix
-user.name = "kiri"; # Defaults to "walawren"
-```
-
-Each unique value used for `user.name` needs to have a corresponding SSH key added to the `private_keys` object of `secrets.yaml`.
-
-### UI
-
-#### [File Manager](./modules/nixos/ui/file-manager.nix)
-
-Configures a file explorer;
-
-#### [Gaming](./modules/nixos/ui/gaming.nix)
-
-Configures gaming for NixOS. Includes [steam](https://store.steampowered.com/about/), [protonup](https://github.com/AUNaseef/protonup), and [heroic](https://heroicgameslauncher.com/).
-
-#### [Hyprland](./modules/nixos/ui/hyprland)
-
-Bare bones installation of the [Hyprland](https://hyprland.org) dynamic tiling Wayland compositor.
-
-This is the starting point for configuring a UI for NixOS.
-
-#### [Plymouth](./modules/nixos/ui/plymouth.nix)
-
-Configures a customizable boot splash screen called [Plymouth](https://gitlab.freedesktop.org/plymouth/plymouth).
-
-#### [Sound](./modules/nixos/ui/sound.nix)
-
-Configures sound for NixOS.
-
-### [Home](./modules/nixos/home.nix)
-
-Configures Home Manager to be managed by the system for the configured user.
-
-Downside: Changes to [home modules](./modules/home) require full system rebuild.
-
-Upside: ONE COMMAND TO RULE THEM ALL (`nh os switch`).
-
-## [Home Modules](./modules/home)
-
-[Home Manager](https://github.com/nix-community/home-manager) configuration
-
-### CLI
-
-Contains toggleable modules for the following:
-
-- [btop](https://github.com/aristocratos/btop) - Resource monitor
-- [dircolors](https://www.gnu.org/software/coreutils/manual/html_node/dircolors-invocation.html#dircolors-invocation) - Folder colors for ls (and dir, etc.)
-- [direnv](https://direnv.net/) - Auto change dev environment on changing directory
-- [fish](https://fishshell.com) - Shell
-- [git](https://git-scm.com/) - Version control
-- [neovim](https://neovim.io/) - Neovim terminal text editor using [nixvim](https://github.com/nix-community/nixvim)
-- [tmux](https://github.com/tmux/tmux/wiki) - Terminal multiplexer
-
-The [cli module](./modules/home/cli/default.nix) will enable all of the above.
-
-```nix
-imports = [ ./modules/home ];
-
-cli.enable = true;
-```
-
-Each module can be individually enabled as well.
-
-```nix
-imports = [ ./modules/home ];
-
-cli.git.enable = true;
-cli.fish.enable = true;
-...
-```
-
-### UI
-
-```nix
-imports = [ ./modules/home ];
-
-ui.enable = true;
-```
-
-Enables [CLI](#cli) and [Apps](#apps) by default.
-
-#### Apps
-
-Contains UI based app installations and configurations.
-
-The following are also installed and configured:
-
-- User settings for Hyprland
-- [Firefox](https://www.mozilla.org/en-US/firefox/new) - Browser
-- [kitty](https://sw.kovidgoyal.net/kitty)- Terminal emulator
-- [Slack](https://slack.com/) - Teams communication
-- [Spotify](https://www.spotify.com/us/download/linux/) - Music streaming client
-- [Teams for Linux](https://github.com/IsmaelMartinez/teams-for-linux) - Teams communication
-- [Vesktop](https://github.com/Vencord/Vesktop) - Custom Discord client with [Vencord](https://vencord.dev/) preinstalled
-
-```nix
-imports = [ ./modules/home ];
-
-ui.apps.enable = true;
-```
-
-Each module can be individually enabled as well.
-
-```nix
-imports = [ ./modules/home ];
-
-ui.apps.firefox.enable = true;
-ui.apps.kitty.enable = true;
-...
-```
-
-#### NixOS
-
-Contains NixOS UI user configurations.
-
-Requires [Hyprland](#hyprland) configuration first.
-
-The following are also installed and configured:
-
-- [Grimblast](https://github.com/hyprwm/contrib/tree/main/grimblast) screenshot utility
-- [Hyprlock](https://github.com/hyprwm/hyprlock) lock screen
-- [Hypridle](https://github.com/hyprwm/hypridle) idle daemon
-- [Hyprpaper](https://github.com/hyprwm/hyprpaper) wallpaper utility and selector
-- [Wofi](https://github.com/SimplyCEO/wofi) app launcher
-
-```nix
-imports = [ ./modules/home ];
-
-ui.nixos.enable = true; # Defaults to true
-```
-
-Each module can be individually enabled as well.
-
-```nix
-imports = [ ./modules/home ];
-
-ui.nixos.hyprland.enable = true;
-ui.nixos.wofi.enable = true;
-...
-```
+   The bootstrap script extracts this value via `sops -d --extract '["drive-encryption-keys"]["<hostname>"]'` and passes it to `nixos-anywhere` at install time.
 
 ### Special Thanks
 
+- [mightyjam](https:/github.com/mightyjam/infra) for the Dendritic Pattern
 - [nekowinston](https://github.com/nekowinston) for the nixppuccin wallpaper
 - [redyf](https://github.com/redyf/nixdots) for the bar and some Hyprland configuration
 - [sioodmy](https://github.com/sioodmy/dotfiles) for their NixOS and Hyprland configuration and badges
