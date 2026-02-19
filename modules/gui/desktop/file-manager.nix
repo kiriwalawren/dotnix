@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.gui =
-    {
-      pkgs,
-      ...
-    }:
+    { pkgs, ... }:
     {
       environment.systemPackages = with pkgs; [ unzip ];
 

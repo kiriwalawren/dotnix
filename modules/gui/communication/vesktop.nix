@@ -1,18 +1,5 @@
 {
-  config,
-  lib,
-  ...
-}:
-with lib;
-let
-  cfg = config.ui.apps.vesktop;
-in
-{
-  options.ui.apps.vesktop = {
-    enable = mkEnableOption "vesktop";
-  };
-
-  config = mkIf cfg.enable {
+  flake.modules.homeManager.gui = {
     catppuccin.vesktop.enable = true;
 
     programs.vesktop = {

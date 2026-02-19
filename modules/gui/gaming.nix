@@ -4,10 +4,7 @@ let
 in
 {
   flake.modules.nixos.gaming =
-    {
-      pkgs,
-      ...
-    }:
+    { pkgs, ... }:
     {
       programs.steam = {
         enable = true;
