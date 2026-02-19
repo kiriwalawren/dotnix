@@ -6,6 +6,7 @@
       base
       homelab
       nixflix
+      ssh
       tailscale-server
 
       # Uncomment for temporary gaming

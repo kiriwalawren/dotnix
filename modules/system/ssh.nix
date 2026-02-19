@@ -1,6 +1,6 @@
 {
   flake.modules.nixos = {
-    base =
+    ssh =
       { lib, pkgs, ... }:
       {
         services.openssh = {
@@ -38,7 +38,7 @@
     };
   };
 
-  flake.modules.homeManager.base.programs.ssh = {
+  flake.modules.homeManager.ssh.programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
     matchBlocks."*" = {

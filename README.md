@@ -38,6 +38,80 @@ Nix files prefixed with an underscore are ignored.
 No literal path imports are used.
 This means files can be moved around and nested in directories freely.
 
+## Installation
+
+The `scripts/bootstrap-nixos.sh` script performs a one-shot NixOS install on a remote machine using [nixos-anywhere](https://github.com/nix-community/nixos-anywhere).
+
+### Usage
+
+```bash
+./scripts/bootstrap-nixos.sh -n <hostname> -d <ip-or-domain> -k <ssh_key> [OPTIONS]
+```
+
+### Required arguments
+
+| Flag | Description |
+|------|-------------|
+| `-n <hostname>` | Hostname as defined in the flake (e.g. `home-server`) |
+| `-d <destination>` | IP or DNS of the target machine |
+| `-k <ssh_key>` | Path to the private SSH key used for install |
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `-u <user>` | SSH user with sudo (default: current user) |
+| `--port <port>` | SSH port (default: `22`) |
+| `--secureboot` | Enable Secure Boot + TPM2 auto-unlock setup |
+| `--debug` | Enable bash xtrace for troubleshooting |
+| `-h`, `--help` | Show help |
+
+### What it does
+
+1. Generates a target SSH host key and derives an age recipient so secrets are ready day-0
+1. Optionally captures `hardware-configuration.nix` from the target before install
+1. Extracts disk encryption keys from sops secrets (if configured)
+1. Runs `nixos-anywhere` to install the flake on the target (builds locally)
+1. Syncs the dotnix and secrets repositories to the target
+1. With `--secureboot`: generates Secure Boot keys, rebuilds with lanzaboote, enrolls keys in firmware, and configures TPM2 auto-unlock
+1. Optionally stages, commits, and pushes all changes to git
+
+### Secure Boot configuration
+
+Using `--secureboot` requires three pieces of configuration in the flake:
+
+1. **Include the `encryption` module** in the host's module list (e.g. `modules/hosts/<hostname>/modules.nix`):
+
+   ```nix
+   configurations.nixos.<hostname>.modules = {
+     inherit (config.flake.modules.nixos)
+       base
+       encryption  # provides lanzaboote, TPM2 initrd support, and sbctl/tpm2-tools
+       # ...
+       ;
+   };
+   ```
+
+1. **Mark disk groups as encrypted** in the host's configuration (e.g. `modules/hosts/<hostname>/configuration.nix`):
+
+   ```nix
+   system.disks."/" = {
+     devices = [ "/dev/nvme0n1" ];
+     encryptDrives = true;  # wraps partitions in LUKS via disko
+   };
+   ```
+
+   The `encryptionPasswordFile` option defaults to `/tmp/disk-secret.key`, which is where the bootstrap script places the key during install.
+
+1. **Add an encryption key to the secrets repository** (`secrets.yaml`):
+
+   ```yaml
+   drive-encryption-keys:
+     <hostname>: "your-encryption-password-here"
+   ```
+
+   The bootstrap script extracts this value via `sops -d --extract '["drive-encryption-keys"]["<hostname>"]'` and passes it to `nixos-anywhere` at install time.
+
 ### Special Thanks
 
 - [mightyjam](https:/github.com/mightyjam/infra) for the Dendritic Pattern
