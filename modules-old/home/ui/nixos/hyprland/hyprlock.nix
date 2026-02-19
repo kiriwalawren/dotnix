@@ -10,12 +10,9 @@ in
 {
   options.ui.nixos.hyprland.hyprlock = {
     enable = lib.mkEnableOption "hyprlock";
-    fingerprint.enable = lib.mkEnableOption "fingerprint";
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = lib.mkIf cfg.fingerprint.enable [ pkgs.polkit_gnome ];
-
     catppuccin.hyprlock.enable = true;
 
     programs.hyprlock = {
@@ -24,10 +21,6 @@ in
       settings = {
         general = {
           hide_cursor = false;
-        };
-
-        auth = lib.mkIf cfg.fingerprint.enable {
-          fingerprint.enabled = true;
         };
 
         background = [
@@ -42,9 +35,6 @@ in
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER,N,exec,hyprlock"
-      ];
-      exec-once = [
-        (lib.mkIf cfg.fingerprint.enable "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1")
       ];
     };
 

@@ -1,13 +1,15 @@
 {
-  lib,
   config,
+  lib,
   self,
+  inputs,
   ...
 }:
 let
+  user = config.user.name;
+
   # Calculate git revision for build tracking
   gitRev = self.rev or self.dirtyRev or "unknown";
-
   # Create short revision for display
   shortRev = lib.strings.substring 0 7 gitRev;
 in
@@ -15,8 +17,9 @@ in
   options.configurations.nixos = lib.mkOption {
     type = lib.types.lazyAttrsOf (
       lib.types.submodule {
-        options.module = lib.mkOption {
-          type = lib.types.deferredModule;
+        options.modules = lib.mkOption {
+          type = lib.types.attrsOf lib.types.deferredModule;
+          default = { };
         };
       }
     );
@@ -25,21 +28,34 @@ in
   config.flake = {
     nixosConfigurations = lib.flip lib.mapAttrs config.configurations.nixos (
       _name:
-      { module }:
+      { modules, ... }:
+      let
+        matchingHmModules = lib.filterAttrs (name: _: modules ? ${name}) config.flake.modules.homeManager;
+        hasHmModules = matchingHmModules != { };
+      in
       lib.nixosSystem {
-        modules = [
-          module
-          (
-            { config, ... }:
+        specialArgs = { inherit inputs; };
+        modules =
+          (lib.attrValues modules)
+          ++ lib.optionals hasHmModules [
+            inputs.home-manager.nixosModules.home-manager
+
             {
-              system = {
-                # Set build label to include git revision
-                nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
-                configurationRevision = gitRev;
-              };
+              home-manager.users.${user}.imports = lib.attrValues matchingHmModules;
             }
-          )
-        ];
+          ]
+          ++ [
+            (
+              { config, ... }:
+              {
+                system = {
+                  # Set build label to include git revision
+                  nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
+                  configurationRevision = gitRev;
+                };
+              }
+            )
+          ];
       }
     );
 

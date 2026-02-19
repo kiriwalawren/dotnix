@@ -52,10 +52,9 @@ in
       ];
     };
 
-    # Ensure gnome-keyring and fingerprint work with greetd
+    # Ensure gnome-keyring greetd
     security.pam.services.greetd = {
       enableGnomeKeyring = true;
-      fprintAuth = config.ui.fingerprint.enable;
     };
   };
 }

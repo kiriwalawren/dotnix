@@ -1,10 +1,9 @@
-{ config, inputs, ... }:
+{ config, ... }:
+let
+  user = config.user.name;
+in
 {
   flake.modules.nixos.base = {
-    imports = [
-      inputs.home-manager.nixosModules.home-manager
-    ];
-
     programs.dconf.enable = true; # Configuration System & Setting Management - required for Home Manager
 
     home-manager = {
@@ -19,22 +18,15 @@
               home.stateVersion = osConfig.system.stateVersion;
             }
           )
-          config.flake.modules.homeManager.base
         ];
       };
     };
   };
 
-  flake.modules.nixos.gui = {
-    home-manager.users.${config.flake.meta.owner.username}.imports = [
-      config.flake.modules.homeManager.gui
-    ];
-  };
-
   flake.modules.homeManger.base = {
     home = {
-      username = config.user.name;
-      homeDirectory = "/home/${config.user.name}";
+      username = user;
+      homeDirectory = "/home/${user}";
     };
     programs.home-manager.enable = true;
   };

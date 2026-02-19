@@ -1,14 +1,7 @@
-{ config, lib, ... }:
 {
-  configurations.nixos.wsl.module = {
-    imports = with config.flake.modules.nixos; [
-      base
-      wsl
-      docker
-    ];
-
+  configurations.nixos.wsl.modules.coniguration = {
     networking.hostName = "wsl";
     system.stateVersion = "23.11";
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    nixpkgs.hostPlatform = "x86_64-linux";
   };
 }

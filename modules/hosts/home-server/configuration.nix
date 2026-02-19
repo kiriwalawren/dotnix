@@ -1,12 +1,6 @@
-{ config, ... }:
 {
-  configurations.nixos.home-server.module = {
-    imports = with config.flake.modules.nixos; [
-      base
-      tailscale-server
-      auto-deploy
-      homelab
-      nixflix
+  configurations.nixos.home-server.modules.configuration = {
+    imports = [
       ./_hardware-configuration.nix
     ];
 
