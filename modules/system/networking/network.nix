@@ -9,7 +9,7 @@
         };
 
         wireless.iwd.enable = true;
-        networking.firewall.enable = true;
+        firewall.enable = true;
         enableIPv6 = true;
       };
     };
