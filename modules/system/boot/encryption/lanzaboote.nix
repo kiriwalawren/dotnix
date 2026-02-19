@@ -1,11 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.encryption =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     {
       imports = [
         inputs.lanzaboote.nixosModules.lanzaboote

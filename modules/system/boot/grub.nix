@@ -1,10 +1,6 @@
 {
   flake.modules.nixos.base =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     let
       rootDiskGroup = config.system.disks."/" or null;
       hasRaidRoot = rootDiskGroup != null && rootDiskGroup.raidLevel != null;

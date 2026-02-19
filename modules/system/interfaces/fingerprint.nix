@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.fingerprint =
-    {
-      lib,
-      ...
-    }:
+    { lib, ... }:
     {
       services.fprintd.enable = true;
 

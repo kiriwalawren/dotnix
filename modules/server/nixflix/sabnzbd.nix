@@ -2,10 +2,7 @@
   nixpkgs.config.allowUnfreePackages = [ "unrar" ];
 
   flake.modules.nixos.nixflix =
-    {
-      config,
-      ...
-    }:
+    { config, ... }:
     {
       sops.secrets = {
         "sabnzbd/username" = { };

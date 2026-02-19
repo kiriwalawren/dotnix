@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.nixflix =
-    {
-      config,
-      ...
-    }:
+    { config, ... }:
     {
       sops.secrets = {
         "sonarr/api_key" = { };

@@ -1,11 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.base =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     let
       cfg = config.system.disks;
       helpers = import ./_lib.nix { inherit lib; };

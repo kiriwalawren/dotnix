@@ -1,8 +1,4 @@
-{
-  config,
-  lib,
-  ...
-}:
+{ config, lib, ... }:
 let
   keys = config.flake.users.sshKeys;
   username = config.user.name;

@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.nixflix =
-    {
-      config,
-      ...
-    }:
+    { config, ... }:
     {
       sops.secrets.mullvad-account-number = { };
       nixflix.mullvad = {

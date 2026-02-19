@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.nixflix =
-    {
-      config,
-      ...
-    }:
+    { config, ... }:
     {
       sops.secrets = {
         "radarr/api_key" = { };

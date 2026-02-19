@@ -1,10 +1,6 @@
 {
   flake.modules.nixos.gui =
-    {
-      config,
-      pkgs,
-      ...
-    }:
+    { config, pkgs, ... }:
     {
       services.greetd = {
         enable = true;

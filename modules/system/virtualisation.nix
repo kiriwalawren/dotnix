@@ -4,10 +4,7 @@ let
 in
 {
   flake.modules.nixos.virtualisation =
-    {
-      pkgs,
-      ...
-    }:
+    { pkgs, ... }:
     {
       virtualisation = {
         libvirtd = {

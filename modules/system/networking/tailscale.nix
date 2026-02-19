@@ -1,10 +1,6 @@
 {
   flake.modules.nixos.base =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     with lib;
     let
       cfg = config.system.tailscale;

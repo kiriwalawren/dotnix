@@ -1,9 +1,6 @@
 {
   flake.modules.nixos.encryption =
-    {
-      pkgs,
-      ...
-    }:
+    { pkgs, ... }:
     {
       initrd = {
         # Enable systemd in initrd for TPM2 auto-unlock support

@@ -5,11 +5,7 @@ let
 in
 {
   flake.modules.homeManager.gui =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     {
       programs.waybar = lib.mkIf (wm == "hyprland") {
         enable = true;

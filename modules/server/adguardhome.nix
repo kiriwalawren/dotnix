@@ -1,10 +1,6 @@
 {
   flake.modules.nixos.homelab =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     with lib;
     let
       cfg = config.server.adguardhome;
