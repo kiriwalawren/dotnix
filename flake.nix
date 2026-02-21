@@ -88,7 +88,7 @@
 
     # Server Dependencies
     nixflix = {
-      url = "github:kiriwalawren/nixflix/qbittorrent";
+      url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
