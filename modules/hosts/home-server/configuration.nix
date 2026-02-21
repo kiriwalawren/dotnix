@@ -4,7 +4,7 @@
       ./_hardware-configuration.nix
     ];
 
-    networking.hostName = "home-sever";
+    networking.hostName = "home-server";
 
     system = {
       stateVersion = "25.11";
