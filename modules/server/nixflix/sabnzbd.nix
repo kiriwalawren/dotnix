@@ -15,7 +15,7 @@
         "usenet/newsgroupdirect/password" = { };
       };
 
-      nixflix.sabnzbd = {
+      nixflix.usenetClients.sabnzbd = {
         enable = true;
         subdomain = "nzb";
 

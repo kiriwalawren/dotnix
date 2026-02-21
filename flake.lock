@@ -330,11 +330,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1771529458,
-        "narHash": "sha256-6EMY6bUNOqq5Whvs+oiaBFIiNL6i3mzkimU/eoZI/EM=",
+        "lastModified": 1771638178,
+        "narHash": "sha256-bzMMPNisNMf1QeP2Kz0vRAg9hKkzHrpoM1RIz+jC34Q=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "bf5626cfba5d3e6bb8d870b11815ba57b7256f47",
+        "rev": "2d8eef6bca98f99aceb4c081758b4748af5e8cff",
         "type": "github"
       },
       "original": {
@@ -563,10 +563,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1771183577,
-        "narHash": "sha256-ct3dv2h1Vh/K/jn7vWMoO2QlVuao6Il0qA/62mQZgkc=",
+        "lastModified": 1771634148,
+        "narHash": "sha256-Qvc68GUc9OcmPdSLwnNnqEKdpFikbJyyHm6lEU9aLxU=",
         "ref": "main",
-        "rev": "11673afcb986e554684ed02407d0a9728eea57c4",
+        "rev": "629defca24cd41a3cf0e12a43c226306a44a2622",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"

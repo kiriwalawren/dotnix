@@ -20,7 +20,7 @@
 
     # Hardware specific media server settings
     nixflix = {
-      sabnzbd.settings.misc.cache_limit = "8G";
+      usenetClients.sabnzbd.settings.misc.cache_limit = "8G";
       jellyfin = {
         encoding = {
           allowHevcEncoding = true;

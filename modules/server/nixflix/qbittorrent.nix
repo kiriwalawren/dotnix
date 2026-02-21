@@ -2,9 +2,16 @@
   flake.modules.nixos.nixflix =
     { config, ... }:
     {
-      nixflix.qbittorrent = {
+      sops.secrets = {
+        "qbittorrent/password" = { };
+      };
+
+      nixflix.torrentClients.qbittorrent = {
         enable = true;
         subdomain = "torrent";
+        password = {
+          _secret = config.sops.secrets."qbittorrent/password".path;
+        };
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
@@ -19,8 +26,8 @@
           };
           Preferences = {
             WebUI = {
-              Username = "admin";
-              Password_PBKDF2 = "@ByteArray(jWBXj7ktN13zUMGMmvYkOQ==:GRq7UIBZ5Otb55uD3G3JD7KzraxcU4vVWLqvsQ6mZiIEy2JVLkllbh53pPQqlHPyD0+2ga+kvyGjIddO5NNo1w==)";
+              Username = "flashback";
+              Password_PBKDF2 = "@ByteArray(Mm6dLsEmFAkQ4/VA9S+aKw==:9afs9p8by8P6MJtLzj4kWO/OnK6Kd4Hnw76kqrcOMwDaa+Y24lTOUGM0U2TEkP1Q6kBOCacr5cO0cSPtsSHLXQ==)";
             };
             General.Locale = "en";
           };
