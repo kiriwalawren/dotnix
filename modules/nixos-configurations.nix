@@ -44,7 +44,6 @@ in
             }
           ]
           ++ [
-            inputs.determinate.nixosModules.default
             (
               { config, ... }:
               {

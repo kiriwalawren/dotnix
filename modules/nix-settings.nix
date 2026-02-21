@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  inputs,
+  ...
+}:
 {
   options.nix.settings = {
     keep-outputs = lib.mkOption { type = lib.types.bool; };
@@ -19,15 +24,22 @@
         "flakes"
       ];
     };
-    flake.modules = {
-      nixos.base.nix = {
+
+    flake.modules.nixos.base = {
+      imports = [ inputs.determinate.nixosModules.default ];
+
+      nix = {
         inherit (config.nix) settings;
         optimise.automatic = true;
       };
 
-      homeManager.base.nix = {
-        inherit (config.nix) settings;
-      };
+      environment.etc."nix/nix.custom.conf".text = ''
+        eval-cores = 0
+      '';
+    };
+
+    flake.modules.homeManager.base.nix = {
+      inherit (config.nix) settings;
     };
   };
 }
