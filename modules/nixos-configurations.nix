@@ -39,12 +39,12 @@ in
           (lib.attrValues modules)
           ++ lib.optionals hasHmModules [
             inputs.home-manager.nixosModules.home-manager
-
             {
               home-manager.users.${user}.imports = lib.attrValues matchingHmModules;
             }
           ]
           ++ [
+            inputs.determinate.nixosModules.default
             (
               { config, ... }:
               {
