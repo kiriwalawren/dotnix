@@ -7,6 +7,11 @@
     in
     {
       options.system.tailscale = {
+        enable = mkOption {
+          type = lib.types.bool;
+          default = true;
+        };
+
         mode = mkOption {
           type = types.enum [
             "client"
@@ -31,7 +36,7 @@
         };
       };
 
-      config = {
+      config = mkIf cfg.enable {
         sops.secrets.tailscale-auth-key = { };
         networking.firewall.trustedInterfaces = [ "tailscale0" ];
 

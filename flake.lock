@@ -536,7 +536,8 @@
         "secrets": "secrets",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
-        "treefmt-nix": "treefmt-nix_3"
+        "treefmt-nix": "treefmt-nix_3",
+        "ziti-edge-tunnel": "ziti-edge-tunnel"
       }
     },
     "rust-overlay": {
@@ -562,10 +563,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1771634148,
-        "narHash": "sha256-Qvc68GUc9OcmPdSLwnNnqEKdpFikbJyyHm6lEU9aLxU=",
+        "lastModified": 1771865596,
+        "narHash": "sha256-/qcFYK4sQZp2INuZFzNN755rWUv5M+FpKWoj2IwFCH8=",
         "ref": "main",
-        "rev": "629defca24cd41a3cf0e12a43c226306a44a2622",
+        "rev": "15012dc04365e2192f4f11bb5a5c23fea72b8f14",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -708,6 +709,27 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "ziti-edge-tunnel": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771866870,
+        "narHash": "sha256-qTCtghP/jt4cXxmDxRMRxCiUvGuw81V9+M3FzKPPIW0=",
+        "owner": "kiriwalawren",
+        "repo": "ziti-tunnel-sdk-c",
+        "rev": "4b5fdef89e0276d8e1cfa83903d1b852c68b13b3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kiriwalawren",
+        "ref": "add-flake",
+        "repo": "ziti-tunnel-sdk-c",
         "type": "github"
       }
     }
