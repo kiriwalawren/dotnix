@@ -719,11 +719,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771866870,
-        "narHash": "sha256-qTCtghP/jt4cXxmDxRMRxCiUvGuw81V9+M3FzKPPIW0=",
+        "lastModified": 1771879217,
+        "narHash": "sha256-XlXU05ICJ8EAB1hmpV+AxZx/7VA3seGhNvfLls9oAK4=",
         "owner": "kiriwalawren",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "4b5fdef89e0276d8e1cfa83903d1b852c68b13b3",
+        "rev": "85cc5cb2cf8af338f25f9842d70315b8ce7b5764",
         "type": "github"
       },
       "original": {
