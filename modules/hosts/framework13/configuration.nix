@@ -25,10 +25,5 @@
       # The world is not ready for this yet
       # tailscale.vpn.enable = true
     };
-
-    # sops.secrets."ziti-identities/framework13/freewave-dev-staging" = { };
-    # programs.ziti-edge-tunnel.enrollment.identities = [
-    #
-    # ];
   };
 }
