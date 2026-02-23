@@ -51,6 +51,11 @@
 
     secrets.url = "git+ssh://git@github.com/kiriwalawren/secrets.git?ref=main&shallow=1";
 
+    ziti-edge-tunnel = {
+      url = "github:kiriwalawren/ziti-tunnel-sdk-c/add-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # User configuration dependencies
     home-manager = {
       url = "github:nix-community/home-manager";

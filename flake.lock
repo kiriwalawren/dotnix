@@ -536,7 +536,8 @@
         "secrets": "secrets",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
-        "treefmt-nix": "treefmt-nix_3"
+        "treefmt-nix": "treefmt-nix_3",
+        "ziti-edge-tunnel": "ziti-edge-tunnel"
       }
     },
     "rust-overlay": {
@@ -708,6 +709,27 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "ziti-edge-tunnel": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771859349,
+        "narHash": "sha256-gAqdWiqwBHpWqE0ncpobPUSD1qGXqgWLd4RvL3S8K3s=",
+        "owner": "kiriwalawren",
+        "repo": "ziti-tunnel-sdk-c",
+        "rev": "4a773a77b5d329ee684cbe325a533a823bad1fc5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kiriwalawren",
+        "ref": "add-flake",
+        "repo": "ziti-tunnel-sdk-c",
         "type": "github"
       }
     }

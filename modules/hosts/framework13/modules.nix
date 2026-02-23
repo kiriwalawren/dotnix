@@ -10,6 +10,7 @@
       laptop
       sound
       virtualisation
+      ziti-edge-tunnel
       ;
   };
 }
