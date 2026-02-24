@@ -29,7 +29,8 @@ in
 
         recyclarr = {
           enable = true;
-          cleanupUnmanagedProfiles = true;
+          radarrQuality = "4K";
+          cleanupUnmanagedProfiles.enable = true;
         };
       };
     };
