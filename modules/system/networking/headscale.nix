@@ -1,14 +1,13 @@
-{ config, ... }:
-let
-  nixosModules = config.flake.modules.nixos;
-in
 {
   flake.modules.nixos.headscale =
     { config, ... }:
     {
-      imports = [ nixosModules.ddns ];
-
       system.ddns.subdomains = [ "headscale" ];
+
+      # sops.secrets.headscale-oidc-client-secret = {
+      #   owner = "headscale";
+      #   group = "headscale";
+      # };
 
       services.headscale = {
         enable = true;
@@ -22,6 +21,16 @@ in
             # # TODO: fill this with adguard instance tailscale ips (homelab and vps)
             # nameservers.global = [ ];
           };
+          # oidc = {
+          #   issuer = config.system.auth.issuer;
+          #   client_id = "headscale";
+          #   client_secret_path = config.sops.secrets.headscale-oidc-client-secret.path;
+          #   scope = [
+          #     "openid"
+          #     "profile"
+          #     "email"
+          #   ];
+          # };
         };
       };
 
