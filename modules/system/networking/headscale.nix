@@ -14,6 +14,7 @@ in
         enable = true;
         settings = {
           server_url = "https://headscale.${config.system.ddns.domain}:443";
+          metrics_listen_addr = "127.0.0.1:9090";
           dns = {
             base_domain = "walawren.hs.net";
             # TODO: set to true after filling nameservers.global
