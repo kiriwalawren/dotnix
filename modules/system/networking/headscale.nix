@@ -11,11 +11,11 @@
 
       services.headscale = {
         enable = true;
+        address = "127.0.0.1";
+        port = 9090;
         settings = {
           # log.level = "debug";
           server_url = "https://headscale.${config.system.ddns.domain}";
-          listen_addr = "127.0.0.1:8080";
-          metrics_listen_addr = "127.0.0.1:9090";
           dns = {
             base_domain = "walawren.hs.net";
             # TODO: set to true after filling nameservers.global

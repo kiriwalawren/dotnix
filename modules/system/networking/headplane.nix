@@ -15,6 +15,10 @@
         owner = "headscale";
         group = "headscale";
       };
+      sops.secrets."headplane/headscale-api-key" = {
+        owner = "headscale";
+        group = "headscale";
+      };
 
       system.ddns.subdomains = [ "headplane" ];
 
@@ -47,6 +51,7 @@
             client_id = "62a2d93a-4442-4e94-8d4d-2de1c61ade61";
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
             redirect_uri = "https://headplane.${config.system.ddns.domain}/admin/oidc/callback";
+            headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
         };
       };
