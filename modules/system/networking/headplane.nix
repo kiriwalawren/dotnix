@@ -35,10 +35,8 @@
 
           headscale = {
             config_path = config.services.headscale.configFile;
-            url = "${
-              if config.services.headscale.settings.tls_key_path == null then "http" else "https"
-            }://${config.services.headscale.settings.listen_addr}";
-            public_url = "https://headscale.${config.system.ddns.domain}";
+            url = "https://headscale.${config.system.ddns.domain}";
+            dns_records_path = config.services.headscale.settings.dns.extra_records_path;
           };
 
           integration.agent = {
@@ -47,8 +45,8 @@
           };
 
           oidc = {
-            issuer = config.system.auth.issuer;
-            client_id = "62a2d93a-4442-4e94-8d4d-2de1c61ade61";
+            inherit (config.system.auth) issuer;
+            client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
             redirect_uri = "https://headplane.${config.system.ddns.domain}/admin/oidc/callback";
             headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;

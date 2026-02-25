@@ -11,6 +11,12 @@
           default = "https://${domain}";
           readOnly = true;
         };
+
+        headscaleClientId = lib.mkOption {
+          type = lib.types.str;
+          default = "62a2d93a-4442-4e94-8d4d-2de1c61ade61";
+          readOnly = true;
+        };
       };
 
       config = {
