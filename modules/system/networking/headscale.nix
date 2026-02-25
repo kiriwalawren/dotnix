@@ -4,10 +4,10 @@
     {
       system.ddns.subdomains = [ "headscale" ];
 
-      # sops.secrets.headscale-oidc-client-secret = {
-      #   owner = "headscale";
-      #   group = "headscale";
-      # };
+      sops.secrets."pocket-id/headscale-client-secret" = {
+        owner = "headscale";
+        group = "headscale";
+      };
 
       services.headscale = {
         enable = true;
@@ -21,16 +21,16 @@
             # # TODO: fill this with adguard instance tailscale ips (homelab and vps)
             # nameservers.global = [ ];
           };
-          # oidc = {
-          #   issuer = config.system.auth.issuer;
-          #   client_id = "headscale";
-          #   client_secret_path = config.sops.secrets.headscale-oidc-client-secret.path;
-          #   scope = [
-          #     "openid"
-          #     "profile"
-          #     "email"
-          #   ];
-          # };
+          oidc = {
+            issuer = config.system.auth.issuer;
+            client_id = "62a2d93a-4442-4e94-8d4d-2de1c61ade61";
+            client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
+            scope = [
+              "openid"
+              "profile"
+              "email"
+            ];
+          };
         };
       };
 
