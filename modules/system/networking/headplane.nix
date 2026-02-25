@@ -53,7 +53,7 @@
 
       services.nginx.virtualHosts."headscale.${config.system.ddns.domain}" = {
         locations."/admin" = {
-          proxyPass = "http://127.0.0.1:8080";
+          proxyPass = "http://127.0.0.1:${config.services.headscale.settings.server.port}";
           recommendedProxySettings = true;
           extraConfig = ''
             proxy_buffering off;
