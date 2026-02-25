@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.base =
+  flake.modules.homeManager.cli =
     { pkgs, ... }:
     {
       home.packages = [ pkgs.wl-clipboard ];

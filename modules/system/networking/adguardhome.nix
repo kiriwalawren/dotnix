@@ -1,7 +1,6 @@
 {
-  flake.modules.nixos.homelab =
+  flake.modules.nixos.adguardhome =
     { config, lib, ... }:
-    with lib;
     let
       cfg = config.server.adguardhome;
 
@@ -9,10 +8,18 @@
     in
     {
       options.server.adguardhome = {
-        serverIP = mkOption {
-          type = types.str;
+        serverIP = lib.mkOption {
+          type = lib.types.str;
           default = "100.99.237.58";
           description = "IP Address of the server that is running AdGuard Home";
+        };
+
+        domain = lib.mkOption {
+          type = lib.types.str;
+          default = config.networking.hostName;
+          defaultText = lib.literalExpression "config.networking.hostName";
+          example = "example.com";
+          description = "Domain name for accessing this adguard instance";
         };
       };
 
@@ -29,8 +36,9 @@
         systemd.tmpfiles.rules = [
           "Z /var/lib/AdGuardHome 0750 adguardhome adguardhome -"
         ];
+
         systemd.services.adguardhome.serviceConfig = {
-          DynamicUser = mkForce false;
+          DynamicUser = lib.mkForce false;
           User = "adguardhome";
           Group = "adguardhome";
         };
@@ -135,7 +143,7 @@
           };
         };
 
-        services.nginx.virtualHosts."dns.homelab" = {
+        services.nginx.virtualHosts."dns.${config.server.adguardhome.domain}" = {
           locations."/" = {
             proxyPass = "http://127.0.0.1:${builtins.toString webUIPort}";
             recommendedProxySettings = true;

@@ -3,6 +3,7 @@
   configurations.nixos.framework13.modules = {
     inherit (config.flake.modules.nixos)
       base
+      cli
       bluetooth
       docker
       fingerprint
