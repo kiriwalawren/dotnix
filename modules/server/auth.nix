@@ -37,6 +37,7 @@
             APP_URL = config.system.auth.issuer;
             TRUST_PROXY = true;
             PORT = 1411;
+            UI_CONFIG_DISABLED = true;
             ACCENT_COLOR = "#009c84";
             ALLOW_USER_SIGNUPS = "withToken";
             DISABLE_ANIMATIONS = true;
