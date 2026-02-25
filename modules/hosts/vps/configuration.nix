@@ -30,5 +30,6 @@
       # server.adguardhome.serverIP = "tailscale server goes here";
 
       services.nginx.enable = true;
+      networking.firewall.allowedTCPPorts = [ 443 ];
     };
 }

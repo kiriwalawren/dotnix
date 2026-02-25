@@ -29,8 +29,6 @@ in
 
         users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ user ];
 
-        networking.firewall.allowedUDPPorts = [ 443 ];
-
         services.cloudflare-ddns = {
           inherit (cfg) domains;
 
