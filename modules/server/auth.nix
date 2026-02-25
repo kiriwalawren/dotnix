@@ -63,7 +63,7 @@
           useACMEHost = config.system.ddns.domain;
           forceSSL = true;
           locations."/" = {
-            proxyPass = "http://127.0.0.1:${config.services.pocket-id.settings.PORT}";
+            proxyPass = "http://127.0.0.1:${toString config.services.pocket-id.settings.PORT}";
             recommendedProxySettings = true;
           };
         };

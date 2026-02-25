@@ -45,7 +45,7 @@
         useACMEHost = config.system.ddns.domain;
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://127.0.0.1:${config.services.headscale.port}";
+          proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
           recommendedProxySettings = true;
           proxyWebsockets = true;
           extraConfig = ''
