@@ -13,7 +13,7 @@
         enable = true;
         settings = {
           log.level = "debug";
-          server_url = "https://headscale.${config.system.ddns.domain}:443";
+          server_url = "https://headscale.${config.system.ddns.domain}";
           metrics_listen_addr = "127.0.0.1:9090";
           dns = {
             base_domain = "walawren.hs.net";
