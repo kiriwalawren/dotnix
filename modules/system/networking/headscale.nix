@@ -6,9 +6,9 @@
         server_url = "https://headscale.walawren.com:443";
         dns = {
           base_domain = "tailnet.walawren.com";
-          #   override_local_dns = true;
-          #   # TODO: fill this with adguard instance tailscale ips (homelab and vps)
-          #   nameservers.global = [ ];
+          override_local_dns = false;
+          # # TODO: fill this with adguard instance tailscale ips (homelab and vps)
+          # nameservers.global = [ ];
         };
       };
     };
