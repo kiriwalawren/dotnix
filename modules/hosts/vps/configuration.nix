@@ -18,7 +18,7 @@
           devices = [ "/dev/sda" ];
         };
 
-        ddns.domains = [ "headscale.walawren.com" ];
+        ddns.domain = "walawren.com";
 
         # For now, you need create the headscale server first then register
         # the node with the server

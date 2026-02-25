@@ -13,10 +13,15 @@ in
       cfg = config.system.ddns;
     in
     {
-      options.system.ddns = with lib.types; {
-        domains = lib.mkOption {
+      options.system.ddns = {
+        domain = lib.mkOption {
+          default = null;
+          type = lib.types.str;
+        };
+
+        subdomains = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
           default = [ ];
-          type = listOf str;
         };
       };
 
@@ -30,7 +35,7 @@ in
         users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ user ];
 
         services.cloudflare-ddns = {
-          inherit (cfg) domains;
+          domains = map (sd: "${sd}.${cfg.domain}") cfg.subdomains;
 
           enable = true;
           credentialsFile = config.sops.secrets.cloudflare-api-token.path;
@@ -41,10 +46,10 @@ in
           defaults = {
             dnsProvider = "cloudflare";
             credentialsFile = config.sops.secrets.cloudflare-api-token.path;
-            email = "vps@walawren.com";
+            email = "${config.networking.hostName}@${cfg.domain}";
           };
-          certs."walawren.com" = {
-            domain = "*.walawren.com";
+          certs.${cfg.domain} = {
+            domain = "*.${cfg.domain}";
             group = "nginx";
           };
         };
