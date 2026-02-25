@@ -36,7 +36,6 @@
           headscale = {
             config_path = config.services.headscale.configFile;
             url = "https://headscale.${config.system.ddns.domain}";
-            dns_records_path = config.services.headscale.settings.dns.extra_records_path;
           };
 
           integration.agent = {
