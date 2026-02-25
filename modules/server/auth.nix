@@ -16,8 +16,16 @@
       config = {
         system.ddns.subdomains = [ "auth" ];
 
+        sops.secrets."pocket-id/encryption-key" = {
+          owner = "pocket-id";
+          group = "pocket-id";
+        };
+
         services.pocket-id = {
           enable = true;
+          credentials = {
+            ENCRYPTION_KEY = config.sops.secrets."pocket-id/encryption-key".path;
+          };
           settings = {
             APP_URL = config.system.auth.issuer;
             TRUST_PROXY = true;
