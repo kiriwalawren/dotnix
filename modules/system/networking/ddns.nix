@@ -36,9 +36,17 @@ in
           credentialsFile = config.sops.secrets.cloudflare-api-token.path;
         };
 
-        security.acme.defaults = {
-          dnsProvider = "cloudflare";
-          credentialsFile = config.sops.secrets.cloudflare-api-token.path;
+        security.acme = {
+          acceptTerms = true;
+          defaults = {
+            dnsProvider = "cloudflare";
+            credentialsFile = config.sops.secrets.cloudflare-api-token.path;
+            email = "vps@walawren.com";
+          };
+          certs."walawren.com" = {
+            domain = "*.walawren.com";
+            group = "nginx";
+          };
         };
       };
     };
