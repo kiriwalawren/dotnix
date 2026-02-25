@@ -96,6 +96,11 @@
       url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    headplane = {
+      url = "github:tale/headplane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

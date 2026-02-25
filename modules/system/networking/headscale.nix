@@ -2,18 +2,19 @@
   flake.modules.nixos.headscale =
     { config, ... }:
     {
-      system.ddns.subdomains = [ "headscale" ];
-
       sops.secrets."pocket-id/headscale-client-secret" = {
         owner = "headscale";
         group = "headscale";
       };
 
+      system.ddns.subdomains = [ "headscale" ];
+
       services.headscale = {
         enable = true;
         settings = {
-          log.level = "debug";
+          # log.level = "debug";
           server_url = "https://headscale.${config.system.ddns.domain}";
+          listen_addr = "127.0.0.1:8080";
           metrics_listen_addr = "127.0.0.1:9090";
           dns = {
             base_domain = "walawren.hs.net";
