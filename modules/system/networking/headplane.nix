@@ -20,8 +20,6 @@
         group = "headscale";
       };
 
-      system.ddns.subdomains = [ "headplane" ];
-
       services.headplane = {
         enable = true;
         debug = true;
@@ -47,18 +45,20 @@
             inherit (config.system.auth) issuer;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            redirect_uri = "https://headplane.${config.system.ddns.domain}/admin/oidc/callback";
+            redirect_uri = "https://headscale.${config.system.ddns.domain}/admin/oidc/callback";
             headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
         };
       };
 
-      services.nginx.virtualHosts."headplane.${config.system.ddns.domain}" = {
-        useACMEHost = config.system.ddns.domain;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = with config.services.headplane.settings.server; "http://${host}:${toString port}";
+      services.nginx.virtualHosts."headscale.${config.system.ddns.domain}" = {
+        locations."/admin" = {
+          proxyPass = "http://127.0.0.1:8080";
           recommendedProxySettings = true;
+          extraConfig = ''
+            proxy_buffering off;
+            add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+          '';
         };
       };
     };
