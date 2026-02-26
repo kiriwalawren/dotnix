@@ -8,7 +8,7 @@
       auth
       # For now, you need create the headscale server first then register
       # the node with the server
-      # dns-blackhole # offsite backup incase homelab goes down
+      # adguardhome # offsite backup incase homelab goes down
       ssh
       expose-ssh
       ;

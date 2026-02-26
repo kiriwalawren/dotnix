@@ -4,11 +4,11 @@
     inherit (config.flake.modules.nixos)
       auto-deploy
       base
-      dns-blackhole
+      adguardhome
       homelab
       nixflix
       ssh
-      tailscale-server
+      tailscale-server-mode
 
       # Uncomment for temporary gaming
       # bluetooth

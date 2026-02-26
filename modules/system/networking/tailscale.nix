@@ -109,5 +109,5 @@
       };
     };
 
-  flake.modules.nixos.tailscale-server.system.tailscale.mode = "server";
+  flake.modules.nixos.tailscale-server-mode.system.tailscale.mode = "server";
 }
