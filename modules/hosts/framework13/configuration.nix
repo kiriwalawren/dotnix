@@ -24,6 +24,9 @@
 
       # The world is not ready for this yet
       # tailscale.vpn.enable = true
+
+      # TODO: remove when ready to switch to headscale
+      tailscale.login-server = null;
     };
   };
 }

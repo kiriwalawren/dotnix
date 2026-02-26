@@ -4,6 +4,11 @@
     with lib;
     let
       cfg = config.system.tailscale;
+      authKeySecret =
+        if cfg.login-server == null then
+          (if cfg.ephemeral then "tailscale-ephemeral-auth-key" else "tailscale-auth-key")
+        else
+          (if cfg.ephemeral then "headscale-ephemeral-auth-key" else "headscale-auth-key");
     in
     {
       options.system.tailscale = {
@@ -31,6 +36,12 @@
           '';
         };
 
+        ephemeral = mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Whether this is an ephemeral node (adds --force-reauth)";
+        };
+
         vpn = {
           enable = mkEnableOption "use Tailscale exit node for VPN";
 
@@ -44,7 +55,7 @@
       };
 
       config = mkIf cfg.enable {
-        sops.secrets.tailscale-auth-key = { };
+        sops.secrets.${authKeySecret} = { };
         networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
         services = {
@@ -52,7 +63,7 @@
           resolved.enable = true;
           tailscale = {
             enable = true;
-            authKeyFile = config.sops.secrets.tailscale-auth-key.path;
+            authKeyFile = config.sops.secrets.${authKeySecret}.path;
             openFirewall = true;
             useRoutingFeatures = if cfg.mode == "server" then "both" else "client";
             extraUpFlags = [
@@ -60,7 +71,8 @@
               "--exit-node=${if cfg.vpn.enable then cfg.vpn.exitNode else ""}"
             ]
             ++ optional (cfg.mode == "server") "--advertise-exit-node"
-            ++ optional (cfg.login-server != null) "--login-server=${cfg.login-server}";
+            ++ optional (cfg.login-server != null) "--login-server=${cfg.login-server}"
+            ++ optional cfg.ephemeral "--force-reauth";
 
           };
         };

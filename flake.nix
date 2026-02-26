@@ -98,7 +98,12 @@
     };
 
     headplane = {
-      url = "github:PriceChild/headplane/patch-1";
+      url = "github:tale/headplane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    microvm = {
+      url = "github:astro/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -270,16 +270,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1771888123,
-        "narHash": "sha256-cyFott3/F8weO2y4GozYa9DSgos4hYO2S2eSDhTrKkw=",
-        "owner": "PriceChild",
+        "lastModified": 1772147006,
+        "narHash": "sha256-NVvWjVZb09OcVAtGUNEGmlI3FZQWqPJmlkcGvJrLTKs=",
+        "owner": "tale",
         "repo": "headplane",
-        "rev": "c60a47b968bf01e699c591e84edbe87b33e2b0a7",
+        "rev": "3c5a653942eb47cad7d5a376dce6a0ec23c29130",
         "type": "github"
       },
       "original": {
-        "owner": "PriceChild",
-        "ref": "patch-1",
+        "owner": "tale",
         "repo": "headplane",
         "type": "github"
       }
@@ -364,6 +363,27 @@
         "owner": "nix-community",
         "ref": "v0.4.3",
         "repo": "lanzaboote",
+        "type": "github"
+      }
+    },
+    "microvm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "spectrum": "spectrum"
+      },
+      "locked": {
+        "lastModified": 1772055583,
+        "narHash": "sha256-iPIm1orqkhsxqju6EVODOrV1BmyA5HNTZ8a1o812bFM=",
+        "owner": "astro",
+        "repo": "microvm.nix",
+        "rev": "f6dcfb7c16cc3775536c825dc0698d4ede13d063",
+        "type": "github"
+      },
+      "original": {
+        "owner": "astro",
+        "repo": "microvm.nix",
         "type": "github"
       }
     },
@@ -591,6 +611,7 @@
         "hyprland-contrib": "hyprland-contrib",
         "import-tree": "import-tree",
         "lanzaboote": "lanzaboote",
+        "microvm": "microvm",
         "nixflix": "nixflix",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
@@ -626,10 +647,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1772068982,
-        "narHash": "sha256-oexpGCDHxKp3Q5JgxTUlsSWrrkZeE+lPeH/C/tuP9c0=",
+        "lastModified": 1772138790,
+        "narHash": "sha256-SY2jNcKfUlV9mB+fFhunUxuVwmhKrYDui4c6JQ3IocM=",
         "ref": "main",
-        "rev": "c853c35c4bc60f1dcee38ce201991343423c8e57",
+        "rev": "38af77988422012a2c5a30a6ba6c14b2c217fa77",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -659,6 +680,22 @@
         "owner": "mic92",
         "repo": "sops-nix",
         "type": "github"
+      }
+    },
+    "spectrum": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1759482047,
+        "narHash": "sha256-H1wiXRQHxxPyMMlP39ce3ROKCwI5/tUn36P8x6dFiiQ=",
+        "ref": "refs/heads/main",
+        "rev": "c5d5786d3dc938af0b279c542d1e43bce381b4b9",
+        "revCount": 996,
+        "type": "git",
+        "url": "https://spectrum-os.org/git/spectrum"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://spectrum-os.org/git/spectrum"
       }
     },
     "spicetify-nix": {
