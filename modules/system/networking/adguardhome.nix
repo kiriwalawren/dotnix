@@ -11,7 +11,13 @@
         serverIP = lib.mkOption {
           type = lib.types.str;
           default = "100.99.237.58";
-          description = "IP Address of the server that is running AdGuard Home";
+          description = "IP Address of the server that is running AdGuard Home.";
+        };
+
+        rewriteIP = lib.mkOption {
+          type = lib.types.str;
+          default = "100.99.237.58";
+          description = "IP Address of the server that rewrites should resolve to.";
         };
 
         domain = lib.mkOption {
@@ -89,12 +95,12 @@
                 {
                   enabled = true;
                   domain = "*.homelab";
-                  answer = cfg.serverIP;
+                  answer = cfg.rewriteIP;
                 }
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = cfg.serverIP;
+                  answer = cfg.rewriteIP;
                 }
               ];
               blocked_services = {
