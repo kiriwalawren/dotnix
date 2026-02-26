@@ -270,16 +270,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1771888123,
-        "narHash": "sha256-cyFott3/F8weO2y4GozYa9DSgos4hYO2S2eSDhTrKkw=",
-        "owner": "PriceChild",
+        "lastModified": 1772147006,
+        "narHash": "sha256-NVvWjVZb09OcVAtGUNEGmlI3FZQWqPJmlkcGvJrLTKs=",
+        "owner": "tale",
         "repo": "headplane",
-        "rev": "c60a47b968bf01e699c591e84edbe87b33e2b0a7",
+        "rev": "3c5a653942eb47cad7d5a376dce6a0ec23c29130",
         "type": "github"
       },
       "original": {
-        "owner": "PriceChild",
-        "ref": "patch-1",
+        "owner": "tale",
         "repo": "headplane",
         "type": "github"
       }
