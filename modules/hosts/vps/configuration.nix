@@ -21,9 +21,7 @@
         ddns.domain = "walawren.com";
       };
 
-      # TODO: For now, you need create the headscale server first then register
-      # the node with the server
-      # server.adguardhome.serverIP = "tailscale server ip goes here";
+      server.adguardhome.serverIP = "100.64.0.4";
 
       services.nginx.enable = true;
       networking.firewall.allowedTCPPorts = [ 443 ];

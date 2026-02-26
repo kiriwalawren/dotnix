@@ -37,10 +37,8 @@
 
           dns = {
             base_domain = "walawren.hs.net";
-            # TODO: set to true after filling nameservers.global
-            override_local_dns = false;
-            # # TODO: fill this with adguard instance tailscale ips (homelab and vps)
-            # nameservers.global = [ ];
+            override_local_dns = true;
+            nameservers.global = [ "100.64.0.4" ];
           };
 
           oidc = {
