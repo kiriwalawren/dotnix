@@ -26,6 +26,12 @@ in
         };
       };
 
+      # Allow forwarding traffic from/to the MicroVM
+      networking.firewall.extraForwardRules = ''
+        iifname "vm-ssh" accept
+        oifname "vm-ssh" ct state established,related accept
+      '';
+
       networking.nftables = {
         enable = true;
         tables."microvm-nat" = {
