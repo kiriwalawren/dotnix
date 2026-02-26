@@ -16,6 +16,9 @@
         ];
         raidLevel = 0;
       };
+
+      # TODO: remove when ready to switch to headscale
+      tailscale.login-server = null;
     };
 
     # TODO: For now, you need create the headscale server first then register
