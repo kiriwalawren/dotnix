@@ -77,14 +77,8 @@ in
         networking = {
           hostName = "ssh-microvm";
           useDHCP = false;
-          firewall = {
-            trustedInterfaces = [ "tailscale0" ];
-            allowedTCPPorts = [ 22 ];
-          };
+          firewall.trustedInterfaces = [ "tailscale0" ];
         };
-
-        # resolved is needed for systemd-networkd DNS to work
-        services.resolved.enable = true;
 
         systemd.network = {
           enable = true;
