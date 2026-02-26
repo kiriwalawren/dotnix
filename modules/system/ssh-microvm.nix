@@ -17,6 +17,11 @@ in
 
       systemd.network = {
         enable = true;
+        # Prevent systemd-networkd from removing routes it didn't create (e.g. Mullvad VPN)
+        config.networkConfig = {
+          ManageForeignRoutes = false;
+          ManageForeignRoutingPolicyRules = false;
+        };
         networks."10-microvm-ssh" = {
           matchConfig.Name = "vm-ssh";
           networkConfig = {
