@@ -18,6 +18,10 @@
       };
     };
 
+    # TODO: For now, you need create the headscale server first then register
+    # the node with the server
+    # server.adguardhome.serverIP = "tailscale server ip goes here";
+
     # Hardware specific media server settings
     nixflix = {
       usenetClients.sabnzbd.settings.misc.cache_limit = "8G";
