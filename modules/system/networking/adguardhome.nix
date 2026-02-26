@@ -10,13 +10,13 @@
       options.server.adguardhome = {
         serverIP = lib.mkOption {
           type = lib.types.str;
-          default = "100.99.237.58";
+          default = null;
           description = "IP Address of the server that is running AdGuard Home.";
         };
 
         rewriteIP = lib.mkOption {
           type = lib.types.str;
-          default = null;
+          default = "100.99.237.58";
           description = "IP Address of the server that rewrites should resolve to.";
         };
 
