@@ -71,6 +71,12 @@ in
               mountPoint = "/run/host-secrets";
               proto = "virtiofs";
             }
+            {
+              tag = "user-secrets";
+              source = "/run/secrets-for-users";
+              mountPoint = "/run/host-user-secrets";
+              proto = "virtiofs";
+            }
           ];
         };
 
@@ -109,6 +115,16 @@ in
           group = "users";
           openssh.authorizedKeys.keys = sshKeys;
         };
+
+        # Copy host user's SSH private key into the guest for outbound SSH to host
+        system.activationScripts.linkSshKey.text = ''
+          mkdir -p /home/${user}/.ssh
+          cp /run/host-user-secrets/${user}_ssh_key /home/${user}/.ssh/id_ed25519
+          chown ${user}:users /home/${user}/.ssh/id_ed25519
+          chmod 0400 /home/${user}/.ssh/id_ed25519
+          chown ${user}:users /home/${user}/.ssh
+          chmod 0700 /home/${user}/.ssh
+        '';
 
         system.stateVersion = "25.11";
       };
