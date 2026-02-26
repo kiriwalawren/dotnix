@@ -5,7 +5,6 @@
       auto-deploy
       base
       adguardhome
-      homelab
       nixflix
       ssh
       tailscale-server-mode

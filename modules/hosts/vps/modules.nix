@@ -2,6 +2,7 @@
 {
   configurations.nixos.vps.modules = {
     inherit (config.flake.modules.nixos)
+      auto-deploy
       base
       ddns
       headscale
