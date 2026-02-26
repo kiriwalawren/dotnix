@@ -4,7 +4,6 @@
     inherit (config.flake.modules.nixos)
       auto-deploy
       base
-      cli
       dns-blackhole
       homelab
       nixflix

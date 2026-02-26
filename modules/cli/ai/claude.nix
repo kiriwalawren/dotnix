@@ -1,7 +1,7 @@
 {
   nixpkgs.config.allowUnfreePackages = [ "claude-code" ];
 
-  flake.modules.homeManager.cli =
+  flake.modules.homeManager.base =
     { pkgs, ... }:
     {
       home.packages = [ pkgs.claude-code ];

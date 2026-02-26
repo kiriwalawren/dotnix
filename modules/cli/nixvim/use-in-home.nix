@@ -5,7 +5,7 @@
   ...
 }:
 {
-  flake.modules.homeManager.cli =
+  flake.modules.homeManager.base =
     hmArgs@{ pkgs, ... }:
     let
       # Ideally:
