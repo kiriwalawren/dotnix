@@ -98,7 +98,7 @@
     };
 
     headplane = {
-      url = "github:tale/headplane";
+      url = "github:PriceChild/headplane/patch-1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
