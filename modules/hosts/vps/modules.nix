@@ -9,6 +9,7 @@
       adguardhome # offsite backup incase homelab goes down
       ssh
       expose-ssh
+      tailscale-server-mode
       ;
   };
 }
