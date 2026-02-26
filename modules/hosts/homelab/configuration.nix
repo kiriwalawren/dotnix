@@ -20,7 +20,7 @@
 
     # TODO: For now, you need create the headscale server first then register
     # the node with the server
-    # server.adguardhome.serverIP = "tailscale server ip goes here";
+    server.adguardhome.serverIP = "100.99.237.58";
 
     # Hardware specific media server settings
     nixflix = {
