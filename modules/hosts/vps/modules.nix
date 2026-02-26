@@ -6,7 +6,7 @@
       ddns
       headscale
       auth
-      # For now, you need create the headscale server first then register
+      # TODO: For now, you need create the headscale server first then register
       # the node with the server
       # adguardhome # offsite backup incase homelab goes down
       ssh

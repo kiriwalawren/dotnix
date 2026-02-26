@@ -19,13 +19,9 @@
         };
 
         ddns.domain = "walawren.com";
-
-        # For now, you need create the headscale server first then register
-        # the node with the server
-        tailscale.enable = false;
       };
 
-      # For now, you need create the headscale server first then register
+      # TODO: For now, you need create the headscale server first then register
       # the node with the server
       # server.adguardhome.serverIP = "tailscale server goes here";
 
