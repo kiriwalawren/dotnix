@@ -19,7 +19,7 @@
     {
       packages.cachix-deploy-spec = cachix-deploy-lib.spec {
         agents = {
-          home-server = self.nixosConfigurations.home-server.config.system.build.toplevel;
+          homelab = self.nixosConfigurations.homelab.config.system.build.toplevel;
           vps = self.nixosConfigurations.vps.config.system.build.toplevel;
         };
       };

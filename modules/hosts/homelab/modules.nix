@@ -1,6 +1,6 @@
 { config, ... }:
 {
-  configurations.nixos.home-server.modules = {
+  configurations.nixos.homelab.modules = {
     inherit (config.flake.modules.nixos)
       auto-deploy
       base

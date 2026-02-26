@@ -36,7 +36,8 @@
 
           exitNode = mkOption {
             type = types.str;
-            default = "home-server.ruffe-locrian.ts.net.";
+            # TODO update the fully qualified domain to match headscale
+            default = "homelab.ruffe-locrian.ts.net.";
             description = "The Tailscale exit node to use (fully qualified domain name)";
           };
         };

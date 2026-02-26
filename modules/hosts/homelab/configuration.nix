@@ -1,10 +1,10 @@
 {
-  configurations.nixos.home-server.modules.configuration = {
+  configurations.nixos.homelab.modules.configuration = {
     imports = [
       ./_hardware-configuration.nix
     ];
 
-    networking.hostName = "home-server";
+    networking.hostName = "homelab";
 
     system = {
       stateVersion = "25.11";
