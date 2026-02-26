@@ -5,7 +5,7 @@
       base
       ddns
       headscale
-      auth
+      pocket-id
       adguardhome # offsite backup incase homelab goes down
       ssh
       expose-ssh
