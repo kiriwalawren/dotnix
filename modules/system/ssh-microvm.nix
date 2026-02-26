@@ -1,15 +1,12 @@
 { config, inputs, ... }:
 let
-  sshKeys = config.flake.users.sshKeys;
+  inherit (config.flake.users) sshKeys;
   sshModule = config.flake.modules.nixos.ssh;
   user = config.user.name;
 in
 {
   flake.modules.nixos.ssh-microvm =
     {
-      config,
-      lib,
-      pkgs,
       ...
     }:
     {
