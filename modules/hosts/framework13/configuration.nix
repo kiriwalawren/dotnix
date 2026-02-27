@@ -23,10 +23,8 @@
       };
 
       # The world is not ready for this yet
+      # enable when NYC upload speeds are faster
       # tailscale.vpn.enable = true
-
-      # TODO: remove when ready to switch to headscale
-      tailscale.login-server = null;
     };
   };
 }
