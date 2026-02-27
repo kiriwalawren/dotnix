@@ -35,7 +35,7 @@
           server_url = "https://headscale.${config.system.ddns.domain}";
 
           policy = {
-            mode = "path";
+            mode = "file";
             path = builtins.toFile "acl-policy.json" (
               builtins.toJSON {
                 tagOwners = {
