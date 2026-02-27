@@ -16,14 +16,9 @@
         ];
         raidLevel = 0;
       };
-
-      # TODO: remove when ready to switch to headscale
-      tailscale.login-server = null;
     };
 
-    # TODO: For now, you need create the headscale server first then register
-    # the node with the server
-    server.adguardhome.serverIP = "100.99.237.58";
+    server.adguardhome.serverIP = "100.64.0.6";
 
     # Hardware specific media server settings
     nixflix = {

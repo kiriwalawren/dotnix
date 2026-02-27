@@ -38,7 +38,10 @@
           dns = {
             base_domain = "walawren.hs.net";
             override_local_dns = true;
-            nameservers.global = [ "100.64.0.4" ];
+            nameservers.global = [
+              "100.64.0.6"
+              "100.64.0.4"
+            ];
           };
 
           oidc = {

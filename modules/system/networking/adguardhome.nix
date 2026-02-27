@@ -16,7 +16,7 @@
 
         rewriteIP = lib.mkOption {
           type = lib.types.str;
-          default = "100.99.237.58";
+          default = "100.64.0.6";
           description = "IP Address of the server that rewrites should resolve to.";
         };
 
