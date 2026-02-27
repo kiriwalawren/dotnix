@@ -47,5 +47,5 @@ jobs:
           CACHIX_ACTIVATE_TOKEN: "${{ secrets.CACHIX_ACTIVATE_TOKEN }}"
         run: |
           nix build --print-build-logs .#cachix-deploy-spec
-          cachix push kiriwalawren ./result
+          nix path-info --recursive ./result | xargs cachix push kiriwalawren
           cachix deploy activate ./result
