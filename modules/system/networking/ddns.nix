@@ -35,9 +35,9 @@ in
         users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ user ];
 
         services.cloudflare-ddns = {
-          domains = map (sd: "${sd}.${cfg.domain}") cfg.subdomains;
-
           enable = true;
+
+          domains = map (sd: "${sd}.${cfg.domain}") cfg.subdomains;
           credentialsFile = config.sops.secrets.cloudflare-api-token.path;
         };
 
