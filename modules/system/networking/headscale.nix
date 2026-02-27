@@ -26,6 +26,11 @@
 
       system.ddns.subdomains = [ "headscale" ];
 
+      systemd.services.headscale = {
+        after = [ "pocket-id.service" ];
+        requires = [ "pocket-id.service" ];
+      };
+
       services.headscale = {
         enable = true;
         address = "127.0.0.1";
