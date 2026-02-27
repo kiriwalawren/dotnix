@@ -38,7 +38,51 @@
         settings = {
           # log.level = "debug";
           server_url = "https://headscale.${config.system.ddns.domain}";
-          policy.mode = "database";
+
+          policy = {
+            mode = "file";
+            path = builtins.toFile "acl-policy.json" (
+              builtins.toJSON {
+                tagOwners = {
+                  "tag:nixflix" = [ "kiriwalawren@" ];
+                  "tag:dns" = [ "kiriwalawren@" ];
+                };
+
+                acls = [
+                  # kiri can SSH into her tagged machines
+                  {
+                    action = "accept";
+                    src = [ "kiriwalawren@" ];
+                    dst = [
+                      "tag:nixflix:22"
+                      "tag:dns:22"
+                    ];
+                  }
+
+                  # all users can reach nixflix on 80 and 443
+                  {
+                    action = "accept";
+                    src = [ "autogroup:member" ];
+                    dst = [ "tag:nixflix:80,443" ];
+                  }
+
+                  # all users can reach DNS on dns-tagged machines
+                  {
+                    action = "accept";
+                    src = [ "autogroup:member" ];
+                    dst = [ "tag:dns:53" ];
+                  }
+
+                  # all users can route through exit nodes
+                  {
+                    action = "accept";
+                    src = [ "autogroup:member" ];
+                    dst = [ "autogroup:internet:*" ];
+                  }
+                ];
+              }
+            );
+          };
 
           dns = {
             base_domain = "walawren.hs.net";
