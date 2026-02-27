@@ -8,7 +8,6 @@
       nixflix
       ssh
       tailscale-server-mode
-      microvm-backdoor
 
       # Uncomment for temporary gaming
       # bluetooth
