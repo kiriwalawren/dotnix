@@ -94,6 +94,11 @@
               rewrites = [
                 {
                   enabled = true;
+                  domain = "*.vps";
+                  answer = "100.64.0.4";
+                }
+                {
+                  enabled = true;
                   domain = "*.homelab";
                   answer = cfg.rewriteIP;
                 }
