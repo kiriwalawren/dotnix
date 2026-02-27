@@ -1,13 +1,13 @@
 { config, ... }:
 {
-  configurations.nixos.home-server.modules = {
+  configurations.nixos.homelab.modules = {
     inherit (config.flake.modules.nixos)
       auto-deploy
       base
-      homelab
+      adguardhome
       nixflix
       ssh
-      tailscale-server
+      tailscale-server-mode
 
       # Uncomment for temporary gaming
       # bluetooth

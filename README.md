@@ -62,7 +62,7 @@ bootstrap-nixos -n <hostname> -d <ip-or-domain> -k <ssh_key> [OPTIONS]
 
 | Flag | Description |
 |------|-------------|
-| `-n <hostname>` | Hostname as defined in the flake (e.g. `home-server`) |
+| `-n <hostname>` | Hostname as defined in the flake (e.g. `homelab`) |
 | `-d <destination>` | IP or DNS of the target machine |
 | `-k <ssh_key>` | Path to the private SSH key used for install |
 

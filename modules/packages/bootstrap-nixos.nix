@@ -4,6 +4,7 @@
     {
       packages.bootstrap-nixos = pkgs.writeShellApplication {
         name = "bootstrap-nixos";
+
         runtimeInputs = with pkgs; [
           coreutils
           gawk
@@ -16,6 +17,7 @@
           ssh-to-age
           yq-go
         ];
+
         text = ''
           ###############################################################################
           # UX helpers (inlined from helpers.sh)                                        #
@@ -96,6 +98,7 @@
           ssh_port=''${BOOTSTRAP_SSH_PORT-22}
           ssh_key=''${BOOTSTRAP_SSH_KEY-}
           enable_secureboot=false
+          skip_install=false
 
           nix_src_path="gitrepos" # destination dir on target for rsync
 
@@ -137,6 +140,7 @@
             -u <user>         SSH user with sudo (default: $target_user).
             --port <port>     SSH port (default: $ssh_port).
             --secureboot      Enable Secure Boot + TPM2 setup (automated phases 2-3).
+            --skip-install    Skip steps 0-3 (keygen, install); resume from sync.
             --debug           Bash xtrace for troubleshooting.
             -h|--help         Show this help.
           EOF
@@ -172,6 +176,9 @@
             --secureboot)
               enable_secureboot=true
               ;;
+            --skip-install)
+              skip_install=true
+              ;;
             --debug) set -x ;;
             -h | --help) help_and_exit ;;
             *)
@@ -196,6 +203,8 @@
           ssh_cmd=("''${ssh_base[@]}" -t "$target_user@$target_destination")
           ssh_root_cmd=("''${ssh_base[@]}" -t "root@$target_destination")
           scp_cmd=(scp -oControlPath=none -oStrictHostKeyChecking=no -oPort="$ssh_port" -i "$ssh_key")
+
+          if [[ $skip_install == "false" ]]; then
 
           #############################################
           # 0. Generate host SSH key & age recipient  #
@@ -233,6 +242,7 @@
               "''${scp_cmd[@]}" root@"$target_destination":/mnt/etc/nixos/hardware-configuration.nix "$git_root/modules/hosts/$target_hostname/_hardware-configuration.nix" 2>/dev/null ||
                 "''${scp_cmd[@]}" root@"$target_destination":/etc/nixos/hardware-configuration.nix "$git_root/modules/hosts/$target_hostname/_hardware-configuration.nix" 2>/dev/null ||
                 yellow "Unable to fetch hardware-configuration.nix; continuing"
+              git -C "$git_root" add "$git_root/modules/hosts/$target_hostname/_hardware-configuration.nix" 2>/dev/null || true
             else
               yellow "nixos-generate-config not available on target; skipping capture"
             fi
@@ -243,7 +253,7 @@
           ###############################################
 
           disk_encryption_key_file=""
-          if sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "drive-encryption-keys:"; then
+          if [[ $enable_secureboot == "true" ]] && sops -d "$nix_secrets_yaml" 2>/dev/null | grep -q "drive-encryption-keys:"; then
             blue "Extracting disk encryption key from secrets"
             install -d -m755 "$temp/tmp"
             sops -d --extract '["drive-encryption-keys"]["'"$target_hostname"'"]' "$nix_secrets_yaml" >"$temp/tmp/disk-secret.key"
@@ -252,9 +262,9 @@
             green "Disk encryption key ready for installation"
           fi
 
-          #################################################
+          ###################################################
           # 2. Run nixos-anywhere install (build locally) #
-          #################################################
+          ###################################################
 
           blue "Running nixos-anywhere (build locally)"
 
@@ -294,6 +304,7 @@
 
           # Build nixos-anywhere command
           nixos_anywhere_args=(
+            --option require-sigs false
             --ssh-port "$ssh_port"
             --post-kexec-ssh-port "$ssh_port"
             --extra-files "$temp"
@@ -331,13 +342,16 @@
             read -r
           fi
 
+          fi
+
           #################################################
           # 4. Sync repo to target                        #
           #################################################
 
           blue "Syncing dotnix repository to $target_hostname"
 
-          green "Adding $target_destination to local known_hosts"
+          green "Updating $target_destination in local known_hosts"
+          sed -i "/$target_destination/d" ~/.ssh/known_hosts || true
           ssh-keyscan -p "$ssh_port" "$target_destination" 2>/dev/null | grep -v '^#' >>~/.ssh/known_hosts || true
 
           # Wait for system to be accessible

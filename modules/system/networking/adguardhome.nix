@@ -1,7 +1,6 @@
 {
-  flake.modules.nixos.homelab =
+  flake.modules.nixos.adguardhome =
     { config, lib, ... }:
-    with lib;
     let
       cfg = config.server.adguardhome;
 
@@ -9,10 +8,24 @@
     in
     {
       options.server.adguardhome = {
-        serverIP = mkOption {
-          type = types.str;
-          default = "100.99.237.58";
-          description = "IP Address of the server that is running AdGuard Home";
+        serverIP = lib.mkOption {
+          type = lib.types.str;
+          default = null;
+          description = "IP Address of the server that is running AdGuard Home.";
+        };
+
+        rewriteIP = lib.mkOption {
+          type = lib.types.str;
+          default = "100.64.0.6";
+          description = "IP Address of the server that rewrites should resolve to.";
+        };
+
+        domain = lib.mkOption {
+          type = lib.types.str;
+          default = config.networking.hostName;
+          defaultText = lib.literalExpression "config.networking.hostName";
+          example = "example.com";
+          description = "Domain name for accessing this adguard instance";
         };
       };
 
@@ -29,8 +42,9 @@
         systemd.tmpfiles.rules = [
           "Z /var/lib/AdGuardHome 0750 adguardhome adguardhome -"
         ];
+
         systemd.services.adguardhome.serviceConfig = {
-          DynamicUser = mkForce false;
+          DynamicUser = lib.mkForce false;
           User = "adguardhome";
           Group = "adguardhome";
         };
@@ -80,13 +94,18 @@
               rewrites = [
                 {
                   enabled = true;
+                  domain = "*.vps";
+                  answer = "100.64.0.4";
+                }
+                {
+                  enabled = true;
                   domain = "*.homelab";
-                  answer = cfg.serverIP;
+                  answer = cfg.rewriteIP;
                 }
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = cfg.serverIP;
+                  answer = cfg.rewriteIP;
                 }
               ];
               blocked_services = {
@@ -135,7 +154,7 @@
           };
         };
 
-        services.nginx.virtualHosts."dns.homelab" = {
+        services.nginx.virtualHosts."dns.${config.server.adguardhome.domain}" = {
           locations."/" = {
             proxyPass = "http://127.0.0.1:${builtins.toString webUIPort}";
             recommendedProxySettings = true;

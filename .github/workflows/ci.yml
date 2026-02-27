@@ -34,7 +34,7 @@ jobs:
     name: Find NixOS Configurations 🔍
     runs-on: ubuntu-latest
     outputs:
-      configurations: ${{ steps.configurations.outputs.configurations }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,8 +52,18 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Find NixOS Configurations 🔍
-        id: configurations
-        run: nix-instantiate --json --eval --strict -E 'with builtins; attrNames (getFlake (toString ./.)).nixosConfigurations' | perl -pe 's|(.*)|configurations=\1|' >>$GITHUB_OUTPUT
+        id: matrix
+        run: |
+          nix eval --json .#nixosConfigurations --apply '
+            configs:
+            builtins.map (name: {
+              configuration = name;
+              runner = {
+                "x86_64-linux" = "ubuntu-latest";
+                "aarch64-linux" = "ubuntu-24.04-arm";
+              }.${configs.${name}.config.nixpkgs.hostPlatform.system};
+            }) (builtins.attrNames configs)
+          ' | perl -pe 's|(.*)|matrix=\1|' >>$GITHUB_OUTPUT
 
   builds:
     name: Build NixOS Configuration ❄️
@@ -61,8 +71,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        configuration: ${{ fromJSON(needs.prepare.outputs.configurations) }}
-    runs-on: ubuntu-latest
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Aggressive cleanup
         run: |
