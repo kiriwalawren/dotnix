@@ -6,7 +6,16 @@
         ./_hardware-configuration.nix
       ];
 
-      networking.hostName = "vps";
+      networking = {
+        hostName = "vps";
+        firewall.allowedTCPPorts = [ 443 ];
+
+        defaultGateway6 = {
+          address = "fe80::1";
+          interface = "enp1s0";
+        };
+      };
+
       documentation.man.enable = false;
 
       environment.systemPackages = [ pkgs.vim ];
@@ -24,13 +33,5 @@
       server.adguardhome.serverIP = "100.64.0.4";
 
       services.nginx.enable = true;
-
-      networking = {
-        firewall.allowedTCPPorts = [ 443 ];
-        defaultGateway6 = {
-          address = "fe80::1";
-          interface = "enp1s0";
-        };
-      };
     };
 }
