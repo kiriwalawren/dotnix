@@ -1,6 +1,15 @@
+{ config, ... }:
+let
+  user = config.user.name;
+in
 {
   flake.modules.nixos.base =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     with lib;
     let
       cfg = config.system.tailscale;
@@ -72,7 +81,18 @@
             ++ optional (cfg.mode == "server") "--advertise-exit-node"
             ++ optional (cfg.login-server != null) "--login-server=${cfg.login-server}"
             ++ optional cfg.ephemeral "--force-reauth";
+          };
+        };
 
+        systemd.services.tailscale-operator = {
+          description = "Set Tailscale operator";
+          after = [ "tailscaled.service" ];
+          wants = [ "tailscaled.service" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${lib.getExe pkgs.tailscale} set --operator=${user}";
+            RemainAfterExit = true;
           };
         };
 

@@ -10,6 +10,7 @@
       laptop
       sound
       virtualisation
+      niri
       # ziti-edge-tunnel # disables tailscale
       ;
   };

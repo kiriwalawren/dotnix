@@ -1,10 +1,9 @@
 { config, lib, ... }:
 let
   inherit (config) theme;
-  wm = config.desktop.windowManager;
 in
 {
-  flake.modules.homeManager.gui = lib.mkIf (wm == "hyprland") (
+  flake.modules.homeManager.hyprland =
     { pkgs, ... }:
     let
 
@@ -80,6 +79,5 @@ in
       wayland.windowManager.hyprland.settings."exec-once" = [
         "${wallpaperRandomizer}/bin/wallpaperRandomizer"
       ];
-    }
-  );
+    };
 }

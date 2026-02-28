@@ -1,10 +1,9 @@
-{ config, lib, ... }:
+{ config, ... }:
 let
-  wm = config.desktop.windowManager;
   inherit (config) theme;
 in
 {
-  flake.modules.homeManager.gui = lib.mkIf (wm == "hyprland") (
+  flake.modules.homeManager.hyprland =
     { pkgs, ... }:
     {
       catppuccin.hyprlock.enable = true;
@@ -56,6 +55,5 @@ in
           Restart = "always";
         };
       };
-    }
-  );
+    };
 }

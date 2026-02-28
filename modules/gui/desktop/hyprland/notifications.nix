@@ -1,6 +1,6 @@
 { config, ... }:
 {
-  flake.modules.homeManager.gui = {
+  flake.modules.homeManager.hyprland = {
     catppuccin.mako.enable = true;
 
     services.mako = {

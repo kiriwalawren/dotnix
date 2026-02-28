@@ -1,9 +1,5 @@
-{ config, lib, ... }:
-let
-  wm = config.desktop.windowManager;
-in
 {
-  flake.modules.homeManager.gui = lib.mkIf (wm == "hyprland") {
+  flake.modules.homeManager.hyprland = {
     services.hypridle = {
       enable = true;
 
