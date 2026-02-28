@@ -75,6 +75,7 @@ in
           };
 
           input = {
+            focus-follows-mouse.enable = true;
             mouse = {
               accel-profile = "adaptive";
               accel-speed = .4;
