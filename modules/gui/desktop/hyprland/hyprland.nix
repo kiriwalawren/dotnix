@@ -4,7 +4,7 @@ let
 in
 {
   flake.modules.nixos.hyprland =
-    { pkgs, lib, ... }:
+    { pkgs, ... }:
     {
       services.greetd.cmd = "Hyprland";
 

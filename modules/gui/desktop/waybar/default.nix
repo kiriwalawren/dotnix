@@ -4,7 +4,7 @@ let
 in
 {
   flake.modules.homeManager.gui =
-    { config, lib, ... }:
+    { config, ... }:
     {
       programs.waybar = {
         enable = true;

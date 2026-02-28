@@ -1,6 +1,6 @@
 { inputs, config, ... }:
 let
-  theme = config.theme;
+  inherit (config) theme;
 in
 {
   nixpkgs.overlays = [ inputs.niri.overlays.niri ];
@@ -10,7 +10,7 @@ in
   };
 
   flake.modules.nixos.niri =
-    { pkgs, lib, ... }:
+    { pkgs, ... }:
     {
       programs.niri = {
         enable = true;

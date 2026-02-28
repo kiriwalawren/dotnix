@@ -2,7 +2,6 @@
   flake.modules.homeManager.niri =
     {
       pkgs,
-      lib,
       config,
       ...
     }:
