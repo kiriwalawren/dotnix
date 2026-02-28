@@ -1,6 +1,6 @@
 {
   flake.modules.homeManager.gui =
-    { pkgs, ... }:
+    { pkgs, lib, ... }:
     {
       home.packages = [ pkgs.fuzzel ];
 
@@ -12,8 +12,10 @@
 
       wayland.windowManager.hyprland.settings = {
         bind = [
-          "SUPER,Space,exec,${pkgs.fuzzel}/bin/fuzzel"
+          "SUPER,Space,exec,${lib.getExe pkgs.fuzzel}"
         ];
       };
+
+      programs.niri.settings.binds."Mod+Space".action.spawn = [ (lib.getExe pkgs.fuzzel) ];
     };
 }

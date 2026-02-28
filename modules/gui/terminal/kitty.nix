@@ -14,6 +14,7 @@
         };
 
         settings = {
+          enable_audio_bell = "no";
           confirm_os_window_close = "0";
           copy_on_select = "clipboard";
           term = "xterm-256color";

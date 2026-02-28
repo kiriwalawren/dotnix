@@ -6,6 +6,8 @@ in
   flake.modules.nixos.hyprland =
     { pkgs, lib, ... }:
     {
+      services.greetd.cmd = "Hyprland";
+
       programs = {
         hyprland = {
           enable = true;
@@ -14,7 +16,6 @@ in
       };
 
       environment = {
-        systemPackages = [ pkgs.brightnessctl ]; # For controllings screen brightness
         sessionVariables = {
           # Hint electron apps to use wayland
           NIXOS_OZONE_WL = "1";
@@ -127,8 +128,8 @@ in
           };
 
           bind = [
-            ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
-            ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
+            ",XF86MonBrightnessUp,exec,${lib.getExe pkgs.brightnessctl} set +10%"
+            ",XF86MonBrightnessDown,exec,${lib.getExe pkgs.brightnessctl} set 10%-"
             "SUPER,Q,killactive"
             "SUPER,F, fullscreen"
             "SUPER,P,exec,${pkgs.hyprpicker}/bin/hyprpicker -a"
