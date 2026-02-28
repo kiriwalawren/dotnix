@@ -17,6 +17,7 @@
           # Core Noctalia Bindings
           "Mod+Space".action.spawn = noctalia "launcher toggle";
           "Mod+S".action.spawn = noctalia "controlCenter toggle";
+          "Mod+X".action.spawn = noctalia "sessionMenu toggle";
           "Mod+Comma".action.spawn = noctalia "settings toggle";
           "Mod+N".action.spawn = noctalia "lockScreen lock";
           "Mod+Shift+N".action.spawn = noctalia "sessionMenu lockAndSuspend";

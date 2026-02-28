@@ -7,7 +7,7 @@
       monitors = [ ];
       location = "bottom_right";
       overlayLayer = true;
-      backgroundOpacity = 1;
+      backgroundOpacity = .85;
       respectExpireTimeout = true;
       lowUrgencyDuration = 3;
       normalUrgencyDuration = 8;

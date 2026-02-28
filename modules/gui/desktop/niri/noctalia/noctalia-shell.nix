@@ -130,7 +130,7 @@
           location = "top_right";
           autoHideMs = 2000;
           overlayLayer = true;
-          backgroundOpacity = 1;
+          backgroundOpacity = .85;
           enabledTypes = [
             0
             1
@@ -191,8 +191,8 @@
         idle = {
           enabled = true;
           screenOffTimeout = 300;
-          lockTimeout = 330;
-          suspendTimeout = 1800;
+          lockTimeout = 600;
+          suspendTimeout = 900;
           fadeDuration = 5;
           customCommands = "[]";
         };

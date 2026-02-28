@@ -99,6 +99,7 @@ in
                 bottom-right = theme.radius;
               };
               clip-to-geometry = true;
+              opacity = .85;
             }
           ];
 

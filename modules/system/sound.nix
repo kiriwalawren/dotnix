@@ -29,26 +29,26 @@ in
   };
 
   flake.modules.homeManager.sound =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     let
-      pamixer = "${pkgs.pamixer}/bin/pamixer";
-      playerctl = "${pkgs.playerctl}/bin/playerctl";
+      pamixer = "${lib.getExe pkgs.pamixer}";
+      playerctl = "${lib.getExe pkgs.playerctl}";
 
       unmutemic = pkgs.writeShellScriptBin "unmutemic" ''
-        ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pkgs.pamixer}/bin/pamixer -u --source "$source"
+        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+          ${pamixer} -u --source "$source"
         done
       '';
 
       mutemic = pkgs.writeShellScriptBin "mutemic" ''
-        ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pkgs.pamixer}/bin/pamixer -m --source "$source"
+        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+          ${pamixer} -m --source "$source"
         done
       '';
 
       togglemic = pkgs.writeShellScriptBin "togglemic" ''
-        ${pkgs.pamixer}/bin/pamixer --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pkgs.pamixer}/bin/pamixer -t --source "$source"
+        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
+          ${pamixer} -t --source "$source"
         done
       '';
     in
@@ -62,7 +62,17 @@ in
 
       # Waybar integration - override the pulseaudio on-click
       programs.waybar.settings.mainBar.pulseaudio.on-click =
-        "pkill wiremix || ${pkgs.kitty}/bin/kitty --class=wiremix ${pkgs.wiremix}/bin/wiremix";
+        "pkill wiremix || ${lib.getExe pkgs.kitty} --class=wiremix ${lib.getExe pkgs.wiremix}";
+
+      programs.niri.settings.window-rules = [
+        {
+          matches = [ { app-id = "wiremix"; } ];
+          open-floating = true;
+          default-column-width.fixed = 750;
+          default-window-height.fixed = 700;
+          opacity = 1.0;
+        }
+      ];
 
       wayland.windowManager.hyprland.settings = {
         windowrule = [

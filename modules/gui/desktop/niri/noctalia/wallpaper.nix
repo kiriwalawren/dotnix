@@ -1,9 +1,10 @@
+{ config, ... }:
 {
   flake.modules.homeManager.niri = {
     programs.noctalia-shell.settings.wallpaper = {
       enabled = true;
       overviewEnabled = false;
-      directory = "/home/walawren/Pictures/Wallpapers";
+      directory = toString config.theme.wallpapers;
       monitorDirectories = [ ];
       enableMultiMonitorDirectories = false;
       showHiddenFiles = false;
@@ -13,9 +14,9 @@
       fillColor = "#000000";
       useSolidColor = false;
       solidColor = "#1a1a2e";
-      automationEnabled = false;
+      automationEnabled = true;
       wallpaperChangeMode = "random";
-      randomIntervalSec = 300;
+      randomIntervalSec = 3600;
       transitionDuration = 1500;
       transitionType = "random";
       skipStartupTransition = false;
