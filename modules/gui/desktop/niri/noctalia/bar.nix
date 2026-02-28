@@ -30,28 +30,44 @@
         widgets = {
           left = [
             {
-              colorizeSystemIcon = "tertiary";
-              customIconPath = "";
-              enableColorization = true;
-              icon = "rocket";
-              iconColor = "none";
-              id = "Launcher";
-              useDistroLogo = true;
+              id = "Workspace";
+              characterCount = 2;
+              colorizeIcons = false;
+              emptyColor = "secondary";
+              enableScrollWheel = true;
+              focusedColor = "primary";
+              followFocusedScreen = false;
+              groupedBorderOpacity = 1;
+              hideUnoccupied = false;
+              iconScale = 0.8;
+              labelMode = "none";
+              occupiedColor = "secondary";
+              pillSize = 0.6;
+              showApplications = false;
+              showBadge = true;
+              showLabelsOnlyWhenOccupied = true;
+              unfocusedIconsOpacity = 1;
             }
             {
+              id = "plugin:tailscale";
+            }
+            {
+              id = "plugin:timer";
+            }
+            {
+              id = "Clock";
               clockColor = "secondary";
               customFont = "";
               formatHorizontal = "HH:mm ddd, MMM dd";
               formatVertical = "HH mm - dd MM";
-              id = "Clock";
               tooltipFormat = "HH:mm ddd, MMM dd";
               useCustomFont = false;
             }
             {
-              compactMode = false;
-              diskPath = "/";
-              iconColor = "tertiary";
               id = "SystemMonitor";
+              compactMode = true;
+              diskPath = "/";
+              iconColor = "primary";
               showCpuFreq = false;
               showCpuTemp = true;
               showCpuUsage = true;
@@ -64,17 +80,19 @@
               showMemoryUsage = true;
               showNetworkStats = false;
               showSwapUsage = false;
-              textColor = "tertiary";
+              textColor = "primary";
               useMonospaceFont = true;
               usePadding = false;
             }
+          ];
+          center = [
             {
+              id = "MediaMini";
               compactMode = true;
               compactShowAlbumArt = true;
               compactShowVisualizer = false;
               hideMode = "hidden";
               hideWhenIdle = false;
-              id = "MediaMini";
               maxWidth = 145;
               panelShowAlbumArt = true;
               panelShowVisualizer = true;
@@ -83,72 +101,47 @@
               showArtistFirst = true;
               showProgressRing = true;
               showVisualizer = false;
-              textColor = "error";
+              textColor = "tertiary";
               useFixedWidth = false;
               visualizerType = "linear";
             }
-          ];
-          center = [
             {
-              characterCount = 2;
-              colorizeIcons = false;
-              emptyColor = "secondary";
-              enableScrollWheel = true;
-              focusedColor = "primary";
-              followFocusedScreen = false;
-              groupedBorderOpacity = 1;
-              hideUnoccupied = false;
-              iconScale = 0.8;
-              id = "Workspace";
-              labelMode = "none";
-              occupiedColor = "secondary";
-              pillSize = 0.6;
-              showApplications = false;
-              showBadge = true;
-              showLabelsOnlyWhenOccupied = true;
-              unfocusedIconsOpacity = 1;
+              id = "AudioVisualizer";
+              colorName = "tertiary";
+              hideWhenIdle = true;
+              width = 150;
             }
           ];
           right = [
             {
+              id = "Tray";
               blacklist = [ ];
               chevronColor = "none";
               colorizeIcons = false;
               drawerEnabled = true;
-              hidePassive = false;
-              id = "Tray";
+              hidePassive = true;
               pinned = [
                 "Microsoft Teams"
                 "You have 1 notification"
+                "Slack"
               ];
             }
             {
-              hideWhenZero = false;
-              hideWhenZeroUnread = false;
-              iconColor = "error";
-              id = "NotificationHistory";
-              showUnreadBadge = false;
-              unreadBadgeColor = "primary";
+              id = "Network";
+              displayMode = "alwaysHide";
+              iconColor = "tertiary";
+              textColor = "tertiary";
             }
             {
-              id = "plugin:tailscale";
+              id = "Bluetooth";
+              displayMode = "alwaysHide";
+              iconColor = "primary";
+              textColor = "primary";
             }
             {
-              id = "plugin:timer";
-            }
-            {
-              deviceNativePath = "__default__";
-              displayMode = "graphic";
-              hideIfIdle = false;
-              hideIfNotDetected = true;
-              id = "Battery";
-              showNoctaliaPerformance = true;
-              showPowerProfiles = true;
-            }
-            {
+              id = "Volume";
               displayMode = "alwaysShow";
               iconColor = "secondary";
-              id = "Volume";
               middleClickCommand = "pkill wiremix || ${lib.getExe pkgs.kitty} --class=wiremix ${lib.getExe pkgs.wiremix}";
               textColor = "secondary";
             }
@@ -160,20 +153,37 @@
               textColor = "none";
             }
             {
+              id = "Brightness";
               applyToAllMonitors = false;
               displayMode = "alwaysShow";
               iconColor = "primary";
-              id = "Brightness";
               textColor = "primary";
             }
             {
-              colorizeDistroLogo = false;
-              colorizeSystemIcon = "none";
-              customIconPath = "";
-              enableColorization = false;
-              icon = "noctalia";
+              deviceNativePath = "__default__";
+              displayMode = "graphic";
+              hideIfIdle = false;
+              hideIfNotDetected = true;
+              id = "Battery";
+              showNoctaliaPerformance = true;
+              showPowerProfiles = true;
+            }
+            {
+              id = "NotificationHistory";
+              hideWhenZero = false;
+              hideWhenZeroUnread = false;
+              iconColor = "error";
+              showUnreadBadge = false;
+              unreadBadgeColor = "primary";
+            }
+            {
               id = "ControlCenter";
-              useDistroLogo = false;
+              colorizeDistroLogo = true;
+              colorizeSystemIcon = "tertiary";
+              customIconPath = "";
+              enableColorization = true;
+              icon = "noctalia";
+              useDistroLogo = true;
             }
           ];
         };
