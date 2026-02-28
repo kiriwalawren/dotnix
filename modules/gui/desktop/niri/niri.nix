@@ -142,6 +142,16 @@ in
 
             "Mod+Shift+U".action.move-column-to-workspace-up = { };
             "Mod+Shift+D".action.move-column-to-workspace-down = { };
+
+            # Resize
+            "Mod+Equal".action.set-column-width = "+10%";
+            "Mod+Minus".action.set-column-width = "-10%";
+
+            # Color picker
+            "Mod+P".action.spawn = [
+              "${pkgs.hyprpicker}/bin/hyprpicker"
+              "-a"
+            ];
           };
         };
       };
