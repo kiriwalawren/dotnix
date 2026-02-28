@@ -1,13 +1,12 @@
 { config, ... }:
 let
   inherit (config) theme;
-  wm = config.desktop.windowManager;
 in
 {
   flake.modules.homeManager.gui =
     { config, lib, ... }:
     {
-      programs.waybar = lib.mkIf (wm == "hyprland") {
+      programs.waybar = {
         enable = true;
 
         systemd = {

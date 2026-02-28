@@ -1,7 +1,8 @@
 { config, ... }:
 {
-  flake.modules.homeManager.gui = {
-    config = {
+  flake.modules.homeManager.gui =
+    { lib, pkgs, ... }:
+    {
       catppuccin.kitty.enable = true;
 
       programs.kitty = {
@@ -21,11 +22,8 @@
         };
       };
 
-      wayland.windowManager.hyprland.settings = {
-        bind = [
-          "SUPER,Return,exec,kitty"
-        ];
-      };
+      wayland.windowManager.hyprland.settings.bind = [ "SUPER,Return,exec,${lib.getExe pkgs.kitty}" ];
+
+      programs.niri.settings.binds."Mod+Return".action.spawn = [ (lib.getExe pkgs.kitty) ];
     };
-  };
 }

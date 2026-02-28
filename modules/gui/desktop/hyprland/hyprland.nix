@@ -1,83 +1,48 @@
 { config, ... }:
 let
   inherit (config) theme;
-  wm = config.desktop.windowManager;
 in
 {
-  flake.modules.nixos.gui =
+  flake.modules.nixos.hyprland =
     { pkgs, lib, ... }:
     {
-      config = lib.mkIf (wm == "hyprland") {
-        programs = {
-          hyprland = {
-            enable = true;
-            xwayland.enable = true;
+      programs = {
+        hyprland = {
+          enable = true;
+          xwayland.enable = true;
+        };
+      };
+
+      environment = {
+        systemPackages = [ pkgs.brightnessctl ]; # For controllings screen brightness
+        sessionVariables = {
+          # Hint electron apps to use wayland
+          NIXOS_OZONE_WL = "1";
+        };
+      };
+
+      xdg.portal.extraPortals = [
+        pkgs.xdg-desktop-portal-wlr # Screensharing
+      ];
+
+      hardware.graphics.enable = true;
+
+      services = {
+        xserver = {
+          enable = true;
+
+          # Configure keymap in X11
+          xkb = {
+            layout = "us";
+            variant = "";
           };
         };
 
-        environment = {
-          systemPackages = [ pkgs.brightnessctl ]; # For controllings screen brightness
-          sessionVariables = {
-            # Hint electron apps to use wayland
-            NIXOS_OZONE_WL = "1";
-          };
-        };
-
-        hardware.graphics.enable = true;
-
-        xdg = {
-          autostart.enable = true;
-          portal = {
-            enable = true;
-            extraPortals = with pkgs; [
-              xdg-desktop-portal-wlr # Screensharing
-              xdg-desktop-portal-gtk
-              xdg-desktop-portal-hyprland
-            ];
-          };
-        };
-
-        services = {
-          xserver = {
-            enable = true;
-
-            # Configure keymap in X11
-            xkb = {
-              layout = "us";
-              variant = "";
-            };
-          };
-
-          gnome.gnome-keyring.enable = true;
-
-          dbus.enable = true;
-        };
-
-        security.pam = {
-          services = {
-            hyprlock.text = " auth include login ";
-            login.enableGnomeKeyring = true;
-          };
-
-          loginLimits = [
-            {
-              domain = "@wheel";
-              item = "nofile";
-              type = "soft";
-              value = "524288";
-            }
-            {
-              domain = "@wheel";
-              item = "nofile";
-              type = "hard";
-              value = "1048576";
-            }
-          ];
-        };
+        dbus.enable = true;
       };
     };
 
-  flake.modules.homeManager.gui =
+  flake.modules.homeManager.hyprland =
     {
       pkgs,
       lib,
@@ -106,7 +71,7 @@ in
       );
     in
     {
-      wayland.windowManager.hyprland = lib.mkIf (wm == "hyprland") {
+      wayland.windowManager.hyprland = {
         enable = true;
         systemd.enable = true;
 
