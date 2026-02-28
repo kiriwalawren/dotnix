@@ -52,6 +52,7 @@ in
       programs.niri = {
         settings = {
           prefer-no-csd = true; # No title bars
+          hotkey-overlay.skip-at-startup = true;
 
           spawn-at-startup = [
             {
@@ -67,7 +68,9 @@ in
 
           xwayland-satellite = {
             enable = true;
-            path = lib.getExe inputs.niri.packages."${pkgs.system}".xwayland-satellite-unstable;
+            path =
+              lib.getExe
+                inputs.niri.packages."${pkgs.stdenv.hostPlatform.system}".xwayland-satellite-unstable;
           };
 
           animations = {
@@ -75,7 +78,6 @@ in
           };
 
           input = {
-            focus-follows-mouse.enable = true;
             mouse = {
               accel-profile = "adaptive";
               accel-speed = .4;
@@ -114,16 +116,6 @@ in
           };
 
           binds = {
-            "XF86MonBrightnessUp".action.spawn = [
-              (lib.getExe pkgs.brightnessctl)
-              "set"
-              "+10%"
-            ];
-            "XF86MonBrightnessDown".action.spawn = [
-              (lib.getExe pkgs.brightnessctl)
-              "set"
-              "10%-"
-            ];
             "Mod+Q".action.close-window = { };
             "Mod+F".action.maximize-column = { };
 
@@ -149,6 +141,7 @@ in
             "Mod+Minus".action.set-column-width = "-10%";
 
             # Color picker
+            # TODO: replace with `niri msg pick-color
             "Mod+P".action.spawn = [
               "${pkgs.hyprpicker}/bin/hyprpicker"
               "-a"
