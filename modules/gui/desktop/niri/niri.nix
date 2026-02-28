@@ -47,9 +47,23 @@ in
       crust = rgba config.catppuccin.colors.crust;
     in
     {
+      home.sessionVariables.XDG_CURRENT_DESKTOP = "niri";
+
       programs.niri = {
         settings = {
           prefer-no-csd = true; # No title bars
+
+          spawn-at-startup = [
+            {
+              command = [
+                "systemctl"
+                "--user"
+                "import-environment"
+                "WAYLAND_DISPLAY"
+                "XDG_SESSION_TYPE"
+              ];
+            }
+          ];
 
           xwayland-satellite = {
             enable = true;

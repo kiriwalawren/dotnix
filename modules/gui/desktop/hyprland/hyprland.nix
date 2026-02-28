@@ -24,6 +24,7 @@ in
 
       xdg.portal.extraPortals = [
         pkgs.xdg-desktop-portal-wlr # Screensharing
+        pkgs.xdg-desktop-portal-hyprland
       ];
 
       hardware.graphics.enable = true;
