@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # VM Configuration
-VM_NAME="vm-test"
+VM_NAME="homelab"
 ISO_PATH="/home/walawren/Downloads/nixos-minimal-25.11.20251015.544961d-x86_64-linux.iso"
 IMAGE_DIR="/var/lib/libvirt/images"
 OS_DISK="$IMAGE_DIR/homelab.qcow2"
