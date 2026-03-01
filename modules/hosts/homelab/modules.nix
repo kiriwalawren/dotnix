@@ -13,6 +13,7 @@
       # bluetooth
       # gaming
       # gui
+      # hyprland
       # sound
       ;
   };
