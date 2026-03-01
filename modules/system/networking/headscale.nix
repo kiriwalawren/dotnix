@@ -49,13 +49,13 @@
                 };
 
                 acls = [
-                  # kiri can SSH into her tagged machines
+                  # kiri can SSH into her tagged machines, or use HTTP(S)
                   {
                     action = "accept";
                     src = [ "kiriwalawren@" ];
                     dst = [
-                      "tag:nixflix:22"
-                      "tag:dns:22"
+                      "tag:nixflix:22,80,443"
+                      "tag:dns:22,80,443"
                     ];
                   }
 
