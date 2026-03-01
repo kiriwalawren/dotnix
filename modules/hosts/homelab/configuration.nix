@@ -20,8 +20,10 @@
 
     server.adguardhome.serverIP = "100.64.0.6";
 
-    # Hardware specific media server settings
+    # Hardware & host specific media server settings
     nixflix = {
+      dns = [ "127.0.0.1" ]; # Because AdGuard Home is installed locally
+
       usenetClients.sabnzbd.settings.misc.cache_limit = "8G";
       jellyfin = {
         encoding = {

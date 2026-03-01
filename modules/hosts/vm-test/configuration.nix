@@ -27,6 +27,5 @@
       };
 
       nixflix.nginx.domain = lib.mkForce "vm";
-      nixflix.mullvad.dns = lib.mkForce [ ];
     };
 }
