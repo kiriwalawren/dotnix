@@ -84,9 +84,11 @@ in
               natural-scroll = false;
             };
             touchpad = {
+              click-method = "clickfinger";
               accel-profile = "adaptive";
               accel-speed = .4;
               natural-scroll = true;
+              dwt = true; # Palm rejection while typing
             };
           };
 
