@@ -19,6 +19,7 @@
             age
             cachix
             self'.packages.bootstrap-nixos
+            self'.packages.create-vm
             sops
             ssh-to-age
             yq-go
