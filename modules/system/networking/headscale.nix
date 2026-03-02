@@ -66,10 +66,13 @@
                     dst = [ "tag:nixflix:80,443" ];
                   }
 
-                  # all users can reach DNS on dns-tagged machines
+                  # all users and devices can reach DNS on dns-tagged machines
                   {
                     action = "accept";
-                    src = [ "autogroup:member" ];
+                    src = [
+                      "autogroup:member"
+                      "autogroup:tagged"
+                    ];
                     dst = [ "tag:dns:53" ];
                   }
 

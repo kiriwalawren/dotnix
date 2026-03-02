@@ -50,7 +50,7 @@
               description = "Swap size in GB";
             };
 
-            encryptDrives = lib.mkOption {
+            encrypt = lib.mkOption {
               type = lib.types.bool;
               default = false;
               description = "Enable LUKS encryption for this disk group";
@@ -102,7 +102,7 @@
               !(
                 mountPoint == "/"
                 && group.raidLevel != null
-                && group.encryptDrives
+                && group.encrypt
                 && config.system.encryption.tpm2.enable
               );
             message = "system.disks.\"/\": encryption with TPM2/lanzaboote cannot be enabled when RAID is configured on the root drive because lanzaboote doesn't support mirrored ESPs. Use standard GRUB instead.";
@@ -118,7 +118,7 @@
             raidLevel
             withSwap
             swapSize
-            encryptDrives
+            encrypt
             encryptionPasswordFile
             ;
           diskType = group.type;
@@ -146,13 +146,13 @@
             {
               "/" = {
                 devices = ["/dev/nvme0n1"];
-                encryptDrives = true;
+                encrypt = true;
               };
               "/data" = {
                 devices = ["/dev/sdb" "/dev/sdc"];
                 type = "data";
                 raidLevel = 1;
-                encryptDrives = true;
+                encrypt = true;
               };
             }
           '';

@@ -11,10 +11,10 @@ DATA_DISK_2="$IMAGE_DIR/homelab-data-2.qcow2"
 
 # Disk sizes
 OS_SIZE="50G"
-DATA_SIZE="700G"
+DATA_SIZE="350G"
 
 # VM Resources
-MEMORY="24576" # 32GB in MiB (virt-install default unit)
+MEMORY="24576" # 24GB in MiB (virt-install default unit)
 VCPUS="18"
 
 # Parse arguments

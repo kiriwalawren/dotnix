@@ -92,7 +92,7 @@
       mountPoint,
       withSwap,
       swapSize,
-      encryptDrives,
+      encrypt,
       encryptionPasswordFile,
     }:
     let
@@ -124,7 +124,7 @@
 
       wrapEncryption =
         content:
-        if encryptDrives then
+        if encrypt then
           helpers.mkLuksWrapper {
             name = "crypt${name}";
             passwordFile = encryptionPasswordFile;

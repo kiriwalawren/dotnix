@@ -14,9 +14,6 @@
           "us"
           "nyc"
         ];
-        dns = [
-          config.server.adguardhome.serverIP
-        ];
         killSwitch = {
           enable = true;
           allowLan = true;
