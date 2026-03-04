@@ -17,7 +17,7 @@ in
         package = pkgs.niri-unstable;
       };
 
-      services.greetd.cmd = "niri";
+      services.greetd.cmd = "niri-session";
 
       environment = {
         sessionVariables = {
