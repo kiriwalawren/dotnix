@@ -25,10 +25,6 @@ in
         };
       };
 
-      xdg.portal.extraPortals = [
-        pkgs.xdg-desktop-portal-gnome # Niri uses this for screensharing
-      ];
-
       hardware.graphics.enable = true;
       services.dbus.enable = true;
     };
