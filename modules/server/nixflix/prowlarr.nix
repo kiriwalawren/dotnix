@@ -42,6 +42,7 @@
               };
             }
             {
+              enable = false;
               name = "NZBgeek";
               apiKey = {
                 _secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
