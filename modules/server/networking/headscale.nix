@@ -1,6 +1,21 @@
 { inputs, ... }:
 {
-  nixpkgs.overlays = [ inputs.headplane.overlays.default ];
+  nixpkgs.overlays = [
+    (final: prev:
+      let
+        headplaneOverlay = inputs.headplane.overlays.default final prev;
+      in
+      {
+        headplane = headplaneOverlay.headplane.overrideAttrs (old: {
+          pnpmDeps = final.pnpm_10.fetchDeps {
+            inherit (old) pname version src;
+            hash = "sha256-zhwCEz9KQbw3Uism+YUYXJpHIPlvDwWm8x3v/Z5yt2A=";
+            fetcherVersion = 3;
+          };
+        });
+      }
+    )
+  ];
 
   flake.modules.nixos.headscale =
     { config, ... }:
