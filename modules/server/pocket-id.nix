@@ -53,7 +53,7 @@
             SMTP_PASSWORD_FILE = config.sops.secrets."pocket-id/smtp-secret".path;
             SMTP_TLS = "starttls";
             SMTP_FROM = "kiri@walawren.com";
-            EMAIL_LOGIN_NOTIFICATION_ENABLED = true;
+            EMAIL_LOGIN_NOTIFICATION_ENABLED = false;
             EMAIL_ONE_TIME_ACCESS_AS_ADMIN_ENABLED = true;
             EMAIL_VERIFICATION_ENABLED = true;
           };
