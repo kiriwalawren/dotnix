@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Setup SSH for private repository
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SECRETS_REPO_SSH_KEY }}
       - name: Install Nix
@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup SSH for private repository
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SECRETS_REPO_SSH_KEY }}
       - name: Install Nix
@@ -106,7 +106,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup SSH for private repository
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.SECRETS_REPO_SSH_KEY }}
       - name: Install Nix
