@@ -12,6 +12,10 @@ in
         config.networking.hostName == "framework13"
       ) { };
 
+      sops.secrets."ziti-identities-jwts/framework13/freewave-qt9" = lib.mkIf (
+        config.networking.hostName == "framework13"
+      ) { };
+
       system.tailscale.enable = lib.mkForce false;
 
       services.ziti-edge-tunnel = {
@@ -24,6 +28,9 @@ in
               {
                 jwtFile = config.sops.secrets."ziti-identities-jwts/framework13/freewave-dev-staging".path;
               };
+          kcarlson-personal-lt-framework13-qt9 = lib.mkIf (config.networking.hostName == "framework13") {
+            jwtFile = config.sops.secrets."ziti-identities-jwts/framework13/freewave-qt9".path;
+          };
         };
       };
     };
