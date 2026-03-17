@@ -1,4 +1,9 @@
-{ config, inputs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 let
   user = config.user.name;
 in
@@ -13,6 +18,9 @@ in
       nixflix = {
         enable = true;
         mediaUsers = [ user ];
+        serviceDependencies = lib.optionals config.system.tailscale.enable [
+          "tailscaled-autoconnect.service"
+        ];
 
         theme = {
           enable = true;

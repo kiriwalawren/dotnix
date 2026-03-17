@@ -13,7 +13,7 @@
       # bluetooth
       # gaming
       # gui
-      # hyprland
+      # niri
       # sound
       ;
   };
