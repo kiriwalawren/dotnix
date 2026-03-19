@@ -85,8 +85,8 @@ in
         };
 
         systemd.services.tailscaled = {
-          after = [ "adguardhome.service" ];
-          requires = [ "adguardhome.service" ];
+          after = optional config.services.adguardhome.enable "adguardhome.service";
+          requires = optional config.services.adguardhome.enable "adguardhome.service";
         };
 
         systemd.services.tailscale-operator = {
