@@ -39,6 +39,9 @@
         # Allow pre-binding
         boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
 
+        networking.nameservers = [ "127.0.0.1" ];
+        services.resolved.domains = [ "~." ];
+
         # I have to override the user so that I can configure
         # Mullvan VPN Bypass
         users.users.adguardhome = {
