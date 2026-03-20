@@ -1,4 +1,8 @@
-{ config, inputs, ... }:
+{
+  config,
+  inputs,
+  ...
+}:
 let
   user = config.user.name;
 in

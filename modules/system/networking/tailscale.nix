@@ -84,6 +84,11 @@ in
           };
         };
 
+        systemd.services.tailscaled = {
+          after = optional config.services.adguardhome.enable "adguardhome.service";
+          requires = optional config.services.adguardhome.enable "adguardhome.service";
+        };
+
         systemd.services.tailscale-operator = {
           description = "Set Tailscale operator";
           after = [ "tailscaled.service" ];

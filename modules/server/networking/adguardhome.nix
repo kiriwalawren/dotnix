@@ -14,10 +14,16 @@
           description = "IP Address of the server that is running AdGuard Home.";
         };
 
-        rewriteIP = lib.mkOption {
+        homelabIP = lib.mkOption {
           type = lib.types.str;
           default = "100.64.0.6";
-          description = "IP Address of the server that rewrites should resolve to.";
+          description = "IP Address of homelab.";
+        };
+
+        vpsIP = lib.mkOption {
+          type = lib.types.str;
+          default = "100.64.0.4";
+          description = "IP Address of vps.";
         };
 
         domain = lib.mkOption {
@@ -30,6 +36,12 @@
       };
 
       config = {
+        # Allow pre-binding
+        boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
+
+        networking.nameservers = [ "127.0.0.1" ];
+        services.resolved.domains = [ "~." ];
+
         # I have to override the user so that I can configure
         # Mullvan VPN Bypass
         users.users.adguardhome = {
@@ -43,10 +55,12 @@
           "Z /var/lib/AdGuardHome 0750 adguardhome adguardhome -"
         ];
 
-        systemd.services.adguardhome.serviceConfig = {
-          DynamicUser = lib.mkForce false;
-          User = "adguardhome";
-          Group = "adguardhome";
+        systemd.services.adguardhome = {
+          serviceConfig = {
+            DynamicUser = lib.mkForce false;
+            User = "adguardhome";
+            Group = "adguardhome";
+          };
         };
 
         networking.nftables.tables."mullvad-adguard" =
@@ -77,7 +91,10 @@
               }
             ];
             dns = {
-              bind_hosts = [ cfg.serverIP ];
+              bind_hosts = [
+                "127.0.0.1"
+                cfg.serverIP
+              ];
               port = 53;
               bootstrap_dns = [
                 "9.9.9.10"
@@ -95,17 +112,17 @@
                 {
                   enabled = true;
                   domain = "*.vps";
-                  answer = "100.64.0.4";
+                  answer = cfg.vpsIP;
                 }
                 {
                   enabled = true;
                   domain = "*.homelab";
-                  answer = cfg.rewriteIP;
+                  answer = cfg.homelabIP;
                 }
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = cfg.rewriteIP;
+                  answer = cfg.homelabIP;
                 }
               ];
               blocked_services = {

@@ -7,7 +7,7 @@
       nixflix.jellyfin = {
         enable = true;
         subdomain = "watch";
-        network.enableRemoteAccess = false;
+        network.enableRemoteAccess = true;
         users = {
           Kiri = {
             mutable = false;

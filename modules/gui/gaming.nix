@@ -3,6 +3,11 @@ let
   user = config.user.name;
 in
 {
+  nixpkgs.config.allowUnfreePackages = [
+    "steam"
+    "steam-unwrapped"
+  ];
+
   flake.modules.nixos.gaming =
     { pkgs, ... }:
     {

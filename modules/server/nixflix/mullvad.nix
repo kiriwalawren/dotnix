@@ -4,7 +4,6 @@
     {
       sops.secrets.mullvad-account-number = { };
       nixflix.mullvad = {
-        # Disable for now, the timing is off and this fails during the initial install
         enable = true;
         enableIPv6 = true;
         accountNumber = {
