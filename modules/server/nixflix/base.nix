@@ -18,9 +18,6 @@ in
       nixflix = {
         enable = true;
         mediaUsers = [ user ];
-        serviceDependencies = lib.optionals config.system.tailscale.enable [
-          "tailscaled-autoconnect.service"
-        ];
 
         theme = {
           enable = true;
