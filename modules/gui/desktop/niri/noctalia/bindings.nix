@@ -27,7 +27,11 @@
           "XF86AudioRaiseVolume".action.spawn = noctalia "volume increase";
           "XF86AudioLowerVolume".action.spawn = noctalia "volume decrease";
           "XF86AudioMute".action.spawn = noctalia "volume muteOutput";
-          "CTRL+Space".action.spawn = noctalia "volume muteInput";
+          "CTRL+Space".action.spawn = [
+            "sh"
+            "-c"
+            "noctalia-shell ipc call volume muteInput; ${pkgs.sync-input-mute}/bin/sync-input-mute"
+          ];
 
           # Media
           "XF86AudioPlay".action.spawn = noctalia "media playPause";
