@@ -46,7 +46,6 @@
                 tagOwners = {
                   "tag:nixflix" = [ "kiriwalawren@" ];
                   "tag:dns" = [ "kiriwalawren@" ];
-                  "tag:bittorrentproxy" = [ "kiriwalawren@" ];
                 };
 
                 acls = [
@@ -57,22 +56,7 @@
                     dst = [
                       "tag:nixflix:22,80,443"
                       "tag:dns:22,80,443"
-                      "tag:bittorrentproxy:22"
                     ];
-                  }
-
-                  # nixflix can reach relay on 1080 for SOCKS5
-                  {
-                    action = "accept";
-                    src = [ "tag:nixflix" ];
-                    dst = [ "tag:bittorrentproxy:1080" ];
-                  }
-
-                  # relay forwards incoming peer connections to homelab
-                  {
-                    action = "accept";
-                    src = [ "tag:bittorrentproxy" ];
-                    dst = [ "tag:nixflix:45500" ];
                   }
 
                   # all users can reach nixflix on 80 and 443

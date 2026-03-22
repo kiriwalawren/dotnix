@@ -8,12 +8,14 @@ in
       type = lib.types.str;
       default = "100.64.0.6";
       description = "IP Address of homelab.";
+      readOnly = true;
     };
 
     vps = lib.mkOption {
       type = lib.types.str;
       default = "100.64.0.4";
       description = "IP Address of vps.";
+      readOnly = true;
     };
   };
   config = {

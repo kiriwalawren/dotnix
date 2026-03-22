@@ -4,7 +4,6 @@
     inherit (config.flake.modules.nixos)
       auto-deploy
       base
-      bittorrent-proxy
       ddns
       headscale
       pocket-id
