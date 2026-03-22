@@ -1,3 +1,7 @@
+{ config, ... }:
+let
+  tailscaleIps = config.tailscale.ips;
+in
 {
   flake.modules.nixos.adguardhome =
     { config, lib, ... }:
@@ -12,18 +16,6 @@
           type = lib.types.str;
           default = null;
           description = "IP Address of the server that is running AdGuard Home.";
-        };
-
-        homelabIP = lib.mkOption {
-          type = lib.types.str;
-          default = "100.64.0.6";
-          description = "IP Address of homelab.";
-        };
-
-        vpsIP = lib.mkOption {
-          type = lib.types.str;
-          default = "100.64.0.4";
-          description = "IP Address of vps.";
         };
 
         domain = lib.mkOption {
@@ -112,17 +104,17 @@
                 {
                   enabled = true;
                   domain = "*.vps";
-                  answer = cfg.vpsIP;
+                  answer = tailscaleIps.vps;
                 }
                 {
                   enabled = true;
                   domain = "*.homelab";
-                  answer = cfg.homelabIP;
+                  answer = tailscaleIps.homelab;
                 }
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = cfg.homelabIP;
+                  answer = tailscaleIps.homelab;
                 }
               ];
               blocked_services = {
