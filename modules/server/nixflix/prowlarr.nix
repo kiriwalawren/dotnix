@@ -23,6 +23,7 @@
             _secret = config.sops.secrets."prowlarr/password".path;
           };
           indexers = [
+            # NZB Indexers
             {
               name = "DrunkenSlug";
               apiKey = {
@@ -42,11 +43,40 @@
               };
             }
             {
-              enable = false;
+              enable = true;
               name = "NZBgeek";
               apiKey = {
                 _secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
               };
+            }
+
+            # Torrent indexers
+            {
+              enable = true;
+              name = "Nyaa.si";
+              baseUrl = "https://nyaa.si/";
+              radarr_compatibility = true;
+              sonarr_compatibility = true;
+            }
+            {
+              enable = true;
+              name = "YTS";
+              baseUrl = "https://yts.bz/";
+            }
+            {
+              enable = true;
+              name = "The Pirate Bay";
+              baseUrl = "https://thepiratebay.org/";
+            }
+            {
+              enable = true;
+              name = "LimeTorrents";
+              baseUrl = "https://www.limetorrents.fun/";
+            }
+            {
+              enable = true;
+              name = "TorrentDownload";
+              baseUrl = "https://www.torrentdownload.info/";
             }
           ];
         };
