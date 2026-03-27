@@ -17,6 +17,10 @@
           enable = true;
           allowLan = true;
         };
+        tailscale = {
+          enable = config.services.tailscale.enable;
+          exitNode = true;
+        };
       };
     };
 }

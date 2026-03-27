@@ -449,11 +449,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1774222328,
-        "narHash": "sha256-8jza8rDrL9meEaUeEK15LwGgG2YdEWDcopDrrJuBo70=",
+        "lastModified": 1774624346,
+        "narHash": "sha256-ShrLm/SAAN89pnh5m1R7XTe8A0u3hSnpbyiUQJSuibE=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "894bb4731feebe2798db7a7b854f9437b96d708f",
+        "rev": "d3f3e754b92725282fde6e711a086c5899e04368",
         "type": "github"
       },
       "original": {
