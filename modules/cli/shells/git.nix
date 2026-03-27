@@ -1,7 +1,7 @@
 { config, ... }:
 let
   user = config.user.name;
-  email = config.user.email;
+  inherit (config.user) email;
   key = config.flake.users.${user}.publicSshKey;
 in
 {
@@ -26,7 +26,7 @@ in
         settings = {
           user = {
             name = "Kiri Carlson";
-            email = email;
+            inherit email;
           };
 
           gpg = {
