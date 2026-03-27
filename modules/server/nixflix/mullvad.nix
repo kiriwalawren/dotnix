@@ -18,7 +18,7 @@
           allowLan = true;
         };
         tailscale = {
-          enable = config.services.tailscale.enable;
+          inherit (config.services.tailscale) enable;
           exitNode = true;
         };
       };
