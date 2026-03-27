@@ -1,13 +1,21 @@
 { config, lib, ... }:
 let
-  keys = config.flake.users.sshKeys;
+  keys = config.flake.publicSshKeys;
   username = config.user.name;
 in
 {
-  options.user.name = lib.mkOption {
-    type = lib.types.str;
-    default = "walawren";
-    description = "The name to use for the user account";
+  options.user = {
+    name = lib.mkOption {
+      type = lib.types.str;
+      default = "walawren";
+      description = "The name to use for the user account";
+    };
+
+    email = lib.mkOption {
+      type = lib.types.str;
+      default = "kiri@walawren.com";
+      description = "The user's email";
+    };
   };
 
   config.flake.modules.nixos.base =

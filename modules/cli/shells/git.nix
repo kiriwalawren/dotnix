@@ -1,32 +1,53 @@
+{ config, ... }:
+let
+  user = config.user.name;
+  email = config.user.email;
+  key = config.flake.users.${user}.publicSshKey;
+in
 {
-  flake.modules.homeManager.base.programs.git = {
-    enable = true;
+  flake.modules.homeManager.base =
+    { config, ... }:
+    {
+      home.file.".ssh/allowed_signers".text = ''
+        ${email} ${key}
+      '';
 
-    ignores = [
-      "Session.vim"
-      "secrets.sh"
-      "secrets.tfvars"
-      "local.tfvars"
-      ".claude/"
-    ];
+      programs.git = {
+        enable = true;
 
-    settings = {
-      user = {
-        name = "Kiri Carlson";
-        email = "kiri@walawren.com";
-      };
+        ignores = [
+          "Session.vim"
+          "secrets.sh"
+          "secrets.tfvars"
+          "local.tfvars"
+          ".claude/"
+        ];
 
-      core = {
-        autocrlf = "input";
-      };
+        settings = {
+          user = {
+            name = "Kiri Carlson";
+            email = email;
+          };
 
-      init = {
-        defaultBranch = "main";
-      };
+          gpg = {
+            format = "ssh";
+            ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
+          };
+          user.signingKey = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
+          commit.gpgSign = true;
 
-      pull = {
-        rebase = false;
+          core = {
+            autocrlf = "input";
+          };
+
+          init = {
+            defaultBranch = "main";
+          };
+
+          pull = {
+            rebase = false;
+          };
+        };
       };
     };
-  };
 }
