@@ -8,9 +8,14 @@ in
   flake.modules.homeManager.base =
     { config, ... }:
     {
-      home.file.".ssh/allowed_signers".text = ''
-        ${email} ${key}
-      '';
+      home = {
+        file.".ssh/allowed_signers".text = ''
+          ${email} ${key}
+        '';
+        file.".ssh/id_ed25519.pub".text = ''
+          ${key}
+        '';
+      };
 
       programs.git = {
         enable = true;
