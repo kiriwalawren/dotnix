@@ -2,13 +2,13 @@
   flake.modules.nixos.nixflix =
     { config, ... }:
     {
-      sops.secrets."jellyseerr/api_key" = { };
+      sops.secrets."seerr/api_key" = { };
 
-      nixflix.jellyseerr = {
+      nixflix.seerr = {
         enable = true;
         subdomain = "request";
         apiKey = {
-          _secret = config.sops.secrets."jellyseerr/api_key".path;
+          _secret = config.sops.secrets."seerr/api_key".path;
         };
       };
     };
