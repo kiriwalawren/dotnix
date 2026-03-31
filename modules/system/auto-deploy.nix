@@ -3,11 +3,14 @@
   flake.modules.nixos.auto-deploy =
     { config, ... }:
     {
-      sops.secrets.cachix-agent-token = { };
+      sops.secrets."cachix/agent-token" = { };
+      sops.templates."cachix-agent.env".content = ''
+        CACHIX_AGENT_TOKEN="${config.sops.placeholder."cachix/agent-token"}"
+      '';
 
       services.cachix-agent = {
         enable = true;
-        credentialsFile = config.sops.secrets.cachix-agent-token.path;
+        credentialsFile = config.sops.templates."cachix-agent.env".path;
       };
     };
 

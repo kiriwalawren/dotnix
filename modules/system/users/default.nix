@@ -1,7 +1,7 @@
 { config, lib, ... }:
 let
   keys = config.flake.publicSshKeys;
-  username = config.user.name;
+  user = config.user.name;
 in
 {
   options.user = {
@@ -23,14 +23,14 @@ in
     {
       users.mutableUsers = config.wsl.enable;
 
-      users.users.${username} = {
-        name = username;
-        home = "/home/${username}";
+      users.users.${user} = {
+        name = user;
+        home = "/home/${user}";
         isNormalUser = true;
         group = "users";
 
         hashedPasswordFile =
-          if !config.wsl.enable then config.sops.secrets."passwords/${username}".path else null;
+          if !config.wsl.enable then config.sops.secrets."passwords/${user}".path else null;
 
         openssh.authorizedKeys.keys = keys;
 
@@ -46,8 +46,8 @@ in
 
   config.flake.modules.homeManager.base = {
     home = {
-      inherit username;
-      homeDirectory = "/home/${username}";
+      username = user;
+      homeDirectory = "/home/${user}";
     };
     programs.home-manager.enable = true;
   };
