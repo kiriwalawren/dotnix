@@ -11,10 +11,6 @@
         owner = "headscale";
         group = "headscale";
       };
-      sops.secrets."headplane/headscale-pre-authkey" = {
-        owner = "headscale";
-        group = "headscale";
-      };
       sops.secrets."headplane/headscale-api-key" = {
         owner = "headscale";
         group = "headscale";
@@ -129,18 +125,17 @@
           headscale = {
             config_path = config.services.headscale.configFile;
             url = "https://headscale.${config.system.ddns.domain}";
+            api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
 
           integration.agent = {
             enabled = true;
-            pre_authkey_path = config.sops.secrets."headplane/headscale-pre-authkey".path;
           };
 
           oidc = {
             inherit (config.system.auth) issuer;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
             use_pkce = true;
           };
         };
