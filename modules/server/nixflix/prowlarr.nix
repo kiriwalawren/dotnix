@@ -25,18 +25,21 @@
           indexers = [
             # NZB Indexers
             {
+              enable = true;
               name = "DrunkenSlug";
               apiKey = {
                 _secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
               };
             }
             {
+              enable = true;
               name = "NZBFinder";
               apiKey = {
                 _secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
               };
             }
             {
+              enable = true;
               name = "NzbPlanet";
               apiKey = {
                 _secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
