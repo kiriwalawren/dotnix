@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.pocket-id =
+  flake.modules.nixos.vps =
     { config, lib, ... }:
     let
       domain = "auth.${config.system.ddns.domain}";

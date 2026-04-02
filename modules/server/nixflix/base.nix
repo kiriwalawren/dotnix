@@ -7,7 +7,7 @@ let
   user = config.user.name;
 in
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       imports = [

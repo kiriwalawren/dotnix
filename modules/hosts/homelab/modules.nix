@@ -6,7 +6,6 @@
       auto-deploy
       base
       homelab
-      nixflix
       ssh
       tailscale-server-mode
 

@@ -7,10 +7,11 @@
       docker
       fingerprint
       gui
+      immich-upload
       laptop
+      niri
       sound
       virtualisation
-      niri
       # ziti-edge-tunnel # disables tailscale
       ;
   };

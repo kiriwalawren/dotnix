@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
