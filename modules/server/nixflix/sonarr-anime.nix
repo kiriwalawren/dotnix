@@ -12,12 +12,8 @@
         subdomain = "anime";
 
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."sonarr-anime/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."sonarr-anime/password".path;
-          };
+          apiKey._secret = config.sops.secrets."sonarr-anime/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."sonarr-anime/password".path;
           delayProfiles = [
             {
               enableUsenet = true;

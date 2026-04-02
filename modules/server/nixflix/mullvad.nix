@@ -6,9 +6,7 @@
       nixflix.mullvad = {
         enable = true;
         enableIPv6 = true;
-        accountNumber = {
-          _secret = config.sops.secrets.mullvad-account-number.path;
-        };
+        accountNumber._secret = config.sops.secrets.mullvad-account-number.path;
         location = [
           "us"
           "nyc"

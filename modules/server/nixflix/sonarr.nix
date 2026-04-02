@@ -12,12 +12,8 @@
         subdomain = "tv";
 
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."sonarr/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."sonarr/password".path;
-          };
+          apiKey._secret = config.sops.secrets."sonarr/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."sonarr/password".path;
           delayProfiles = [
             {
               enableUsenet = true;
