@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
@@ -16,41 +16,29 @@
         subdomain = "indexers";
 
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."prowlarr/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."prowlarr/password".path;
-          };
+          apiKey._secret = config.sops.secrets."prowlarr/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."prowlarr/password".path;
           indexers = [
             # NZB Indexers
             {
               enable = true;
               name = "DrunkenSlug";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
             }
             {
               enable = true;
               name = "NZBFinder";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
             }
             {
               enable = true;
               name = "NzbPlanet";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
             }
             {
               enable = true;
               name = "NZBgeek";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
             }
 
             # Torrent indexers

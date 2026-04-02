@@ -2,7 +2,7 @@
 {
   nixpkgs.overlays = [ inputs.headplane.overlays.default ];
 
-  flake.modules.nixos.headscale =
+  flake.modules.nixos.vps =
     { config, ... }:
     {
       imports = [ inputs.headplane.nixosModules.headplane ];

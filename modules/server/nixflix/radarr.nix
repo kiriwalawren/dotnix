@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
@@ -11,12 +11,8 @@
         enable = true;
         subdomain = "movies";
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."radarr/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."radarr/password".path;
-          };
+          apiKey._secret = config.sops.secrets."radarr/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."radarr/password".path;
           delayProfiles = [
             {
               enableUsenet = true;

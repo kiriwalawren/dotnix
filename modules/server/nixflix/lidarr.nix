@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
@@ -12,12 +12,8 @@
         subdomain = "music";
 
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."lidarr/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."lidarr/password".path;
-          };
+          apiKey._secret = config.sops.secrets."lidarr/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."lidarr/password".path;
           delayProfiles = [
             {
               enableUsenet = true;
