@@ -3,7 +3,7 @@
   configurations.nixos.vm-test.modules = {
     inherit (config.flake.modules.nixos)
       base
-      nixflix
+      homelab
       ssh
       encryption
       tailscale-server-mode

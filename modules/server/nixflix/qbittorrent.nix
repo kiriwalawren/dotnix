@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
@@ -9,9 +9,7 @@
       nixflix.torrentClients.qbittorrent = {
         enable = true;
         subdomain = "torrent";
-        password = {
-          _secret = config.sops.secrets."qbittorrent/password".path;
-        };
+        password._secret = config.sops.secrets."qbittorrent/password".path;
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {

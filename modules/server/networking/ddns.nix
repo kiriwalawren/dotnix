@@ -3,7 +3,7 @@ let
   user = config.user.name;
 in
 {
-  flake.modules.nixos.ddns =
+  flake.modules.nixos.vps =
     {
       config,
       lib,
