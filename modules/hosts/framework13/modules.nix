@@ -7,7 +7,6 @@
       docker
       fingerprint
       gui
-      immich-upload
       laptop
       niri
       sound

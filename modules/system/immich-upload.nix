@@ -1,6 +1,5 @@
 {
-  flake.modules.nixos.immich-upload = { };
-  flake.modules.homeManager.immich-upload =
+  flake.modules.homeManager.gui =
     {
       config,
       pkgs,
@@ -40,7 +39,7 @@
             ExecStart = pkgs.writeShellScript "immich-upload" ''
               API_KEY=$(cat ${config.sops.secrets."immich/uploads-api-key".path})
               ${pkgs.immich-cli}/bin/immich \
-                --server ${cfg.serverUrl} \
+                --url ${cfg.serverUrl} \
                 --key "$API_KEY" \
                 upload --recursive \
                 ${lib.escapeShellArgs cfg.uploadPaths}
