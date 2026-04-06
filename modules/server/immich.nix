@@ -240,7 +240,7 @@
           };
 
           server = {
-            externalDomain = "http://photos.homelab";
+            externalDomain = "https://photos.walawren.com";
             loginPageMessage = "";
             publicUsers = true;
           };
