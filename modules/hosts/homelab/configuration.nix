@@ -20,7 +20,10 @@
       ddns.domain = "walawren.com";
     };
 
-    server.adguardhome.serverIP = "100.64.0.6";
+    server.adguardhome = {
+      serverIP = "100.64.0.6";
+      subdomain = "dns2";
+    };
 
     # Hardware & host specific media server settings
     nixflix = {

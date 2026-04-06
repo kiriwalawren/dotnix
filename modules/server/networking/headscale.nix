@@ -143,6 +143,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "music.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "indexers.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
@@ -170,12 +175,12 @@
               {
                 name = "dns.${config.system.ddns.domain}";
                 type = "A";
-                value = config.tailscale.ips.homelab;
+                value = config.tailscale.ips.vps;
               }
               {
                 name = "dns2.${config.system.ddns.domain}";
                 type = "A";
-                value = config.tailscale.ips.vps;
+                value = config.tailscale.ips.homelab;
               }
             ];
           };

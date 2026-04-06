@@ -274,7 +274,10 @@
         };
       };
 
-      services.nginx.virtualHosts."photos.homelab" = {
+      services.nginx.virtualHosts."photos.${config.system.ddns.domain}" = {
+        forceSSL = true;
+        useACMEHost = config.system.ddns.domain;
+
         locations."/" = {
           proxyPass = "http://127.0.0.1:${builtins.toString config.services.immich.port}";
           proxyWebsockets = true;

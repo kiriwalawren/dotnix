@@ -8,12 +8,13 @@
     in
     {
       services.vaultwarden = {
+        inherit domain;
         enable = true;
-        domain = "https://${domain}";
         dbBackend = "postgresql";
         config = {
+          ENABLE_WEBSOCKET = true;
           ROCKET_ADDRESS = "127.0.0.1";
-          ROCKET_PORT = 8200;
+          ROCKET_PORT = 8222;
         };
         configurePostgres = true;
       };

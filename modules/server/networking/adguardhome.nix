@@ -14,12 +14,11 @@
           description = "IP Address of the server that is running AdGuard Home.";
         };
 
-        domain = lib.mkOption {
+        subdomain = lib.mkOption {
           type = lib.types.str;
-          default = config.networking.hostName;
-          defaultText = lib.literalExpression "config.networking.hostName";
-          example = "example.com";
-          description = "Domain name for accessing this adguard instance";
+          default = "dns";
+          example = "dns2";
+          description = "Subomain for accessing this adguard instance on `system.ddns.domain`";
         };
       };
 
@@ -96,24 +95,6 @@
               ];
             };
             filtering = {
-              rewrites = [
-                # TODO: remove after completing TLS in headscale
-                {
-                  enabled = true;
-                  domain = "*.vps";
-                  answer = config.tailscale.ips.vps;
-                }
-                {
-                  enabled = true;
-                  domain = "*.homelab";
-                  answer = config.tailscale.ips.homelab;
-                }
-                {
-                  enabled = true;
-                  domain = "*.nixflix";
-                  answer = config.tailscale.ips.homelab;
-                }
-              ];
               blocked_services = {
                 schedule =
                   let
@@ -160,7 +141,10 @@
           };
         };
 
-        services.nginx.virtualHosts."dns.${config.server.adguardhome.domain}" = {
+        services.nginx.virtualHosts."${cfg.subdomain}.${config.system.ddns.domain}" = {
+          forceSSL = true;
+          useACMEHost = config.system.ddns.domain;
+
           locations."/" = {
             proxyPass = "http://127.0.0.1:${builtins.toString webUIPort}";
             recommendedProxySettings = true;
