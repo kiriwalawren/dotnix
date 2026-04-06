@@ -270,11 +270,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774893759,
-        "narHash": "sha256-ZJgKA9aYG/8+pJECK+lGCYGEoeYXe74pHrrbngo0JMo=",
+        "lastModified": 1775249859,
+        "narHash": "sha256-kePJLK6JtkSbomx8zWwojW1NtgILHDy8zfF+zKr6a18=",
         "owner": "tale",
         "repo": "headplane",
-        "rev": "73b5d5514e16bf2f1b763b53c28f7e719da23440",
+        "rev": "4b47b1bbedcaa075c79296b67d5915d772734e50",
         "type": "github"
       },
       "original": {
@@ -745,10 +745,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1775122208,
-        "narHash": "sha256-vFMc9QMtXAq4okFVkgPSMzeZf9sQquBq49BiJErrX3Y=",
+        "lastModified": 1775457062,
+        "narHash": "sha256-2r6CMiDInUKU79AFpV+2uK1/6aG9ghofQhZcAvAau04=",
         "ref": "main",
-        "rev": "b0aae770d6fd9ed99c7367029e7c42f6fe07a798",
+        "rev": "32f9da2c07919d5959d55f5d3c20e5ae90faae63",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
