@@ -26,7 +26,9 @@ in
         nginx = {
           enable = true;
           addHostsEntries = false;
-          domain = "nixflix";
+          inherit (config.system.ddns) domain;
+          forceSSL = true;
+          enableACME = true;
         };
 
         postgres.enable = true;

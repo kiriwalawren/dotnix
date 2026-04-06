@@ -166,7 +166,7 @@
               minRecognitionScore = 0.8;
               modelName = "PP-OCRv5_mobile";
             };
-            urls = [ "http://immich-machine-learning:3003" ];
+            urls = [ "http://127.0.0.1:3003" ];
           };
 
           map = {
@@ -240,7 +240,7 @@
           };
 
           server = {
-            externalDomain = "http://photos.homelab";
+            externalDomain = "https://photos.walawren.com";
             loginPageMessage = "";
             publicUsers = true;
           };
@@ -274,7 +274,10 @@
         };
       };
 
-      services.nginx.virtualHosts."photos.homelab" = {
+      services.nginx.virtualHosts."photos.${config.system.ddns.domain}" = {
+        forceSSL = true;
+        useACMEHost = config.system.ddns.domain;
+
         locations."/" = {
           proxyPass = "http://127.0.0.1:${builtins.toString config.services.immich.port}";
           proxyWebsockets = true;

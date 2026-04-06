@@ -60,8 +60,9 @@
         };
 
         services.nginx.virtualHosts.${domain} = {
-          useACMEHost = config.system.ddns.domain;
           forceSSL = true;
+          useACMEHost = config.system.ddns.domain;
+
           locations."/" = {
             proxyPass = "http://127.0.0.1:${toString config.services.pocket-id.settings.PORT}";
             recommendedProxySettings = true;

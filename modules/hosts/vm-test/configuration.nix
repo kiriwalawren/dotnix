@@ -11,6 +11,8 @@
       system = {
         stateVersion = "25.11";
 
+        ddns.domain = "vm";
+
         disks."/" = {
           devices = [ "/dev/vda" ];
           encrypt = true;

@@ -13,7 +13,7 @@
       options.services.immich-upload = {
         serverUrl = lib.mkOption {
           type = lib.types.str;
-          default = "http://photos.homelab";
+          default = "https://photos.walawren.com";
           description = "Immich server URL";
         };
 
@@ -38,7 +38,7 @@
             Type = "oneshot";
             ExecStart = pkgs.writeShellScript "immich-upload" ''
               API_KEY=$(cat ${config.sops.secrets."immich/uploads-api-key".path})
-              ${pkgs.immich-cli}/bin/immich \
+              ${lib.getExe pkgs.immich-cli} \
                 --url ${cfg.serverUrl} \
                 --key "$API_KEY" \
                 upload --recursive \

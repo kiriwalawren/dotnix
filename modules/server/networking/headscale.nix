@@ -1,6 +1,32 @@
-{ inputs, ... }:
+{
+  lib,
+  inputs,
+  ...
+}:
 {
   nixpkgs.overlays = [ inputs.headplane.overlays.default ];
+
+  flake.modules.nixos.base =
+    { config, ... }:
+    {
+      options.tailscale.ips = {
+        homelab = lib.mkOption {
+          type = lib.types.str;
+          default = "100.64.0.6";
+          description = "IP Address of homelab.";
+          readOnly = true;
+        };
+
+        vps = lib.mkOption {
+          type = lib.types.str;
+          default = "100.64.0.4";
+          description = "IP Address of vps.";
+          readOnly = true;
+        };
+      };
+
+      config.services.headscale.settings.dns.base_domain = "hs.${config.system.ddns.domain}";
+    };
 
   flake.modules.nixos.vps =
     { config, ... }:
@@ -84,13 +110,79 @@
           };
 
           dns = {
-            base_domain = "walawren.hs.net";
             override_local_dns = true;
+            magic_dns = true;
             nameservers.global = [
               "100.64.0.6"
               "100.64.0.4"
             ];
-            extra_records = [ ];
+            extra_records = [
+              {
+                name = "nzb.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "torrent.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "tv.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "anime.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "movies.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "music.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "indexers.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "watch.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "request.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "photos.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "vault.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "dns.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.vps;
+              }
+              {
+                name = "dns2.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+            ];
           };
 
           oidc = {
@@ -146,22 +238,24 @@
         useACMEHost = config.system.ddns.domain;
         forceSSL = true;
 
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
-          recommendedProxySettings = true;
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_buffering off;
-            add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
-          '';
-        };
+        locations = {
+          "/" = {
+            proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
+            recommendedProxySettings = true;
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_buffering off;
+              add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+            '';
+          };
 
-        locations."/admin" = {
-          proxyPass = "http://127.0.0.1:${toString config.services.headplane.settings.server.port}";
-          recommendedProxySettings = true;
-          extraConfig = ''
-            proxy_buffering off;
-          '';
+          "/admin" = {
+            proxyPass = "http://127.0.0.1:${toString config.services.headplane.settings.server.port}";
+            recommendedProxySettings = true;
+            extraConfig = ''
+              proxy_buffering off;
+            '';
+          };
         };
       };
     };
