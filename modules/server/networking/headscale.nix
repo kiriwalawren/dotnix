@@ -1,168 +1,260 @@
-{ inputs, ... }:
 {
-  nixpkgs.overlays = [ inputs.headplane.overlays.default ];
-
-  flake.modules.nixos.vps =
-    { config, ... }:
-    {
-      imports = [ inputs.headplane.nixosModules.headplane ];
-
-      sops.secrets."headplane/cookie-secret" = {
-        owner = "headscale";
-        group = "headscale";
-      };
-      sops.secrets."headplane/headscale-api-key" = {
-        owner = "headscale";
-        group = "headscale";
-      };
-      sops.secrets."pocket-id/headscale-client-secret" = {
-        owner = "headscale";
-        group = "headscale";
+  config,
+  lib,
+  inputs,
+  ...
+}:
+let
+  tailscaleIps = config.tailscale.ips;
+in
+{
+  options.tailscale = {
+    ips = {
+      homelab = lib.mkOption {
+        type = lib.types.str;
+        default = "100.64.0.6";
+        description = "IP Address of homelab.";
+        readOnly = true;
       };
 
-      system.ddns.subdomains = [ "headscale" ];
-
-      systemd.services.headscale = {
-        after = [ "pocket-id.service" ];
-        requires = [ "pocket-id.service" ];
+      vps = lib.mkOption {
+        type = lib.types.str;
+        default = "100.64.0.4";
+        description = "IP Address of vps.";
+        readOnly = true;
       };
+    };
+  };
 
-      services.headscale = {
-        enable = true;
-        address = "127.0.0.1";
-        port = 9090;
-        settings = {
-          # log.level = "debug";
-          server_url = "https://headscale.${config.system.ddns.domain}";
+  config = {
+    nixpkgs.overlays = [ inputs.headplane.overlays.default ];
 
-          policy = {
-            mode = "file";
-            path = builtins.toFile "acl-policy.json" (
-              builtins.toJSON {
-                tagOwners = {
-                  "tag:nixflix" = [ "kiriwalawren@" ];
-                  "tag:dns" = [ "kiriwalawren@" ];
-                };
+    flake.modules.nixos.vps =
+      { config, ... }:
+      {
+        imports = [ inputs.headplane.nixosModules.headplane ];
 
-                acls = [
-                  # kiri can SSH into her tagged machines, or use HTTP(S)
-                  {
-                    action = "accept";
-                    src = [ "kiriwalawren@" ];
-                    dst = [
-                      "tag:nixflix:22,80,443"
-                      "tag:dns:22,80,443"
-                    ];
-                  }
+        sops.secrets."headplane/cookie-secret" = {
+          owner = "headscale";
+          group = "headscale";
+        };
+        sops.secrets."headplane/headscale-api-key" = {
+          owner = "headscale";
+          group = "headscale";
+        };
+        sops.secrets."pocket-id/headscale-client-secret" = {
+          owner = "headscale";
+          group = "headscale";
+        };
 
-                  # all users can reach nixflix on 80 and 443
-                  {
-                    action = "accept";
-                    src = [ "autogroup:member" ];
-                    dst = [ "tag:nixflix:80,443" ];
-                  }
+        system.ddns.subdomains = [ "headscale" ];
 
-                  # all users and devices can reach DNS on dns-tagged machines
-                  {
-                    action = "accept";
-                    src = [
-                      "autogroup:member"
-                      "autogroup:tagged"
-                    ];
-                    dst = [ "tag:dns:53" ];
-                  }
+        systemd.services.headscale = {
+          after = [ "pocket-id.service" ];
+          requires = [ "pocket-id.service" ];
+        };
 
-                  # all users can route through exit nodes
-                  {
-                    action = "accept";
-                    src = [ "autogroup:member" ];
-                    dst = [ "autogroup:internet:*" ];
-                  }
-                ];
-              }
-            );
+        services.headscale = {
+          enable = true;
+          address = "127.0.0.1";
+          port = 9090;
+          settings = {
+            # log.level = "debug";
+            server_url = "https://headscale.${config.system.ddns.domain}";
+
+            policy = {
+              mode = "file";
+              path = builtins.toFile "acl-policy.json" (
+                builtins.toJSON {
+                  tagOwners = {
+                    "tag:nixflix" = [ "kiriwalawren@" ];
+                    "tag:dns" = [ "kiriwalawren@" ];
+                  };
+
+                  acls = [
+                    # kiri can SSH into her tagged machines, or use HTTP(S)
+                    {
+                      action = "accept";
+                      src = [ "kiriwalawren@" ];
+                      dst = [
+                        "tag:nixflix:22,80,443"
+                        "tag:dns:22,80,443"
+                      ];
+                    }
+
+                    # all users can reach nixflix on 80 and 443
+                    {
+                      action = "accept";
+                      src = [ "autogroup:member" ];
+                      dst = [ "tag:nixflix:80,443" ];
+                    }
+
+                    # all users and devices can reach DNS on dns-tagged machines
+                    {
+                      action = "accept";
+                      src = [
+                        "autogroup:member"
+                        "autogroup:tagged"
+                      ];
+                      dst = [ "tag:dns:53" ];
+                    }
+
+                    # all users can route through exit nodes
+                    {
+                      action = "accept";
+                      src = [ "autogroup:member" ];
+                      dst = [ "autogroup:internet:*" ];
+                    }
+                  ];
+                }
+              );
+            };
+
+            dns = {
+              base_domain = "hs.${config.system.ddns.domain}";
+              override_local_dns = true;
+              magic_dns = true;
+              nameservers.global = [
+                "100.64.0.6"
+                "100.64.0.4"
+              ];
+              extra_records = [
+                {
+                  name = "nzb.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "torrent.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "tv.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "anime.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "movies.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "indexers.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "watch.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "request.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "photos.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "vault.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "dns.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.homelab;
+                }
+                {
+                  name = "dns2.${config.services.headscale.settings.dns.base_domain}";
+                  type = "A";
+                  value = tailscaleIps.vps;
+                }
+              ];
+            };
+
+            oidc = {
+              inherit (config.system.auth) issuer;
+              client_id = config.system.auth.headscaleClientId;
+              client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
+              scope = [
+                "openid"
+                "profile"
+                "email"
+                "groups"
+              ];
+              pkce = {
+                enabled = true;
+                method = "S256";
+              };
+            };
           };
+        };
 
-          dns = {
-            base_domain = "walawren.hs.net";
-            override_local_dns = true;
-            nameservers.global = [
-              "100.64.0.6"
-              "100.64.0.4"
-            ];
-            extra_records = [ ];
-          };
+        services.headplane = {
+          enable = true;
+          # debug = true;
+          settings = {
+            server = {
+              host = "127.0.0.1";
+              port = 4040;
+              base_url = "https://headscale.${config.system.ddns.domain}/admin";
+              cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
+              cookie_secure = true;
+            };
 
-          oidc = {
-            inherit (config.system.auth) issuer;
-            client_id = config.system.auth.headscaleClientId;
-            client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            scope = [
-              "openid"
-              "profile"
-              "email"
-              "groups"
-            ];
-            pkce = {
+            headscale = {
+              config_path = config.services.headscale.configFile;
+              url = "https://headscale.${config.system.ddns.domain}";
+              api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
+            };
+
+            integration.agent = {
               enabled = true;
-              method = "S256";
+            };
+
+            oidc = {
+              inherit (config.system.auth) issuer;
+              client_id = config.system.auth.headscaleClientId;
+              client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
+              use_pkce = true;
+            };
+          };
+        };
+
+        services.nginx.virtualHosts."headscale.${config.system.ddns.domain}" = {
+          useACMEHost = config.system.ddns.domain;
+          forceSSL = true;
+
+          locations = {
+            "/" = {
+              proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
+              recommendedProxySettings = true;
+              proxyWebsockets = true;
+              extraConfig = ''
+                proxy_buffering off;
+                add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+              '';
+            };
+
+            "/admin" = {
+              proxyPass = "http://127.0.0.1:${toString config.services.headplane.settings.server.port}";
+              recommendedProxySettings = true;
+              extraConfig = ''
+                proxy_buffering off;
+              '';
             };
           };
         };
       };
-
-      services.headplane = {
-        enable = true;
-        # debug = true;
-        settings = {
-          server = {
-            host = "127.0.0.1";
-            port = 4040;
-            base_url = "https://headscale.${config.system.ddns.domain}/admin";
-            cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
-            cookie_secure = true;
-          };
-
-          headscale = {
-            config_path = config.services.headscale.configFile;
-            url = "https://headscale.${config.system.ddns.domain}";
-            api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
-          };
-
-          integration.agent = {
-            enabled = true;
-          };
-
-          oidc = {
-            inherit (config.system.auth) issuer;
-            client_id = config.system.auth.headscaleClientId;
-            client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            use_pkce = true;
-          };
-        };
-      };
-
-      services.nginx.virtualHosts."headscale.${config.system.ddns.domain}" = {
-        useACMEHost = config.system.ddns.domain;
-        forceSSL = true;
-
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
-          recommendedProxySettings = true;
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_buffering off;
-            add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
-          '';
-        };
-
-        locations."/admin" = {
-          proxyPass = "http://127.0.0.1:${toString config.services.headplane.settings.server.port}";
-          recommendedProxySettings = true;
-          extraConfig = ''
-            proxy_buffering off;
-          '';
-        };
-      };
-    };
+  };
 }

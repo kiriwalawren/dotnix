@@ -7,7 +7,6 @@ in
     { config, lib, ... }:
     let
       cfg = config.server.adguardhome;
-      ddns = config.system.ddns;
 
       webUIPort = 3000;
     in
@@ -102,6 +101,7 @@ in
             };
             filtering = {
               rewrites = [
+                # TODO: remove after completing TLS in headscale
                 {
                   enabled = true;
                   domain = "*.vps";
@@ -115,21 +115,6 @@ in
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = tailscaleIps.homelab;
-                }
-                {
-                  enabled = true;
-                  domain = "auth.${ddns.domain}";
-                  answer = tailscaleIps.vps;
-                }
-                {
-                  enabled = true;
-                  domain = "headscale.${ddns.domain}";
-                  answer = tailscaleIps.vps;
-                }
-                {
-                  enabled = true;
-                  domain = "*.${ddns.domain}";
                   answer = tailscaleIps.homelab;
                 }
               ];

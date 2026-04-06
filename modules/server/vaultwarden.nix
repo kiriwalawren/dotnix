@@ -30,24 +30,21 @@
       };
 
       services.nginx = {
-        upstreams.vaultwarden.servers."127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}" =
-          { };
-
         virtualHosts.${domain} = {
           forceSSL = true;
           useACMEHost = ddns.domain;
 
           locations = {
             "/" = {
-              proxyPass = "http://vaultwarden";
+              proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
               recommendedProxySettings = true;
             };
             "= /notifications/anonymous-hub" = {
-              proxyPass = "http://vaultwarden";
+              proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
               proxyWebsockets = true;
             };
             "= /notifications/hub" = {
-              proxyPass = "http://vaultwarden";
+              proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
               proxyWebsockets = true;
             };
           };
