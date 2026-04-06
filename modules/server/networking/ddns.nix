@@ -39,22 +39,24 @@ in
         };
 
         sops.secrets."cloudflare/api-token" = {
-          owner = config.services.cloudflare-ddns.user;
-          inherit (config.services.cloudflare-ddns) group;
+          owner = config.services.cloudflare-ddns.user or "root";
+          group = "acme";
           mode = "0440";
         };
         sops.secrets."cloudflare/dns-api-token" = {
-          owner = config.services.cloudflare-ddns.user;
-          inherit (config.services.cloudflare-ddns) group;
+          owner = config.services.cloudflare-ddns.user or "root";
+          group = "acme";
           mode = "0440";
         };
         sops.templates."cloudflare-ddns.env" = {
-          owner = config.services.cloudflare-ddns.user;
-          inherit (config.services.cloudflare-ddns) group;
+          owner = config.services.cloudflare-ddns.user or "root";
+          group = "acme";
           mode = "0440";
           content = ''
             CLOUDFLARE_API_TOKEN=${config.sops.placeholder."cloudflare/api-token"}
             CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dns-api-token"}
+            CF_API_TOKEN=${config.sops.placeholder."cloudflare/api-token"}
+            CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dns-api-token"}
           '';
         };
 
@@ -73,10 +75,12 @@ in
             dnsProvider = "cloudflare";
             credentialsFile = config.sops.templates."cloudflare-ddns.env".path;
             email = "${config.networking.hostName}@${cfg.domain}";
+            dnsResolver = "100.64.0.6:53";
           };
           certs.${cfg.domain} = {
             domain = "*.${cfg.domain}";
             group = "nginx";
+            extraLegoFlags = [ "--dns.propagation-wait=60s" ];
           };
         };
       };
