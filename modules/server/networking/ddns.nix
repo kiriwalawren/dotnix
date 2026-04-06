@@ -30,6 +30,14 @@ in
       };
 
       config = lib.mkIf (cfg.domain != "" || cfg.subdomains != [ ]) {
+        # Explicitly create the cloudflare-ddns user/group so sops can set ownership
+        # even when cloudflare-ddns service is not enabled (e.g. ACME-only, no subdomains).
+        users.groups.${config.services.cloudflare-ddns.group} = { };
+        users.users.${config.services.cloudflare-ddns.user} = {
+          isSystemUser = true;
+          group = config.services.cloudflare-ddns.group;
+        };
+
         sops.secrets."cloudflare/api-token" = {
           owner = config.services.cloudflare-ddns.user;
           inherit (config.services.cloudflare-ddns) group;

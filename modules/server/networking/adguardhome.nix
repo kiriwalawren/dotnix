@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  tailscaleIps = config.tailscale.ips;
-in
 {
   flake.modules.nixos.adguardhome =
     { config, lib, ... }:
@@ -105,17 +101,17 @@ in
                 {
                   enabled = true;
                   domain = "*.vps";
-                  answer = tailscaleIps.vps;
+                  answer = config.tailscale.ips.vps;
                 }
                 {
                   enabled = true;
                   domain = "*.homelab";
-                  answer = tailscaleIps.homelab;
+                  answer = config.tailscale.ips.homelab;
                 }
                 {
                   enabled = true;
                   domain = "*.nixflix";
-                  answer = tailscaleIps.homelab;
+                  answer = config.tailscale.ips.homelab;
                 }
               ];
               blocked_services = {
