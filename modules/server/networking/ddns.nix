@@ -35,7 +35,7 @@ in
         users.groups.${config.services.cloudflare-ddns.group} = { };
         users.users.${config.services.cloudflare-ddns.user} = {
           isSystemUser = true;
-          group = config.services.cloudflare-ddns.group;
+          inherit (config.services.cloudflare-ddns) group;
         };
 
         sops.secrets."cloudflare/api-token" = {

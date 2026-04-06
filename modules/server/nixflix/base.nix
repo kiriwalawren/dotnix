@@ -26,7 +26,7 @@ in
         nginx = {
           enable = true;
           addHostsEntries = false;
-          domain = config.system.ddns.domain;
+          inherit (config.system.ddns) domain;
           forceSSL = true;
           enableACME = true;
         };

@@ -2,7 +2,7 @@
   flake.modules.nixos.homelab =
     { config, ... }:
     let
-      ddns = config.system.ddns;
+      inherit (config.system) ddns;
       subdomain = "vault";
       domain = "${subdomain}.${ddns.domain}";
     in
