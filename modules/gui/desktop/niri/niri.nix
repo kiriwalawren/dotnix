@@ -99,7 +99,12 @@ in
               clip-to-geometry = true;
             }
             {
-              excludes = [ { app-id = "firefox"; } ];
+              excludes = [
+                { app-id = "firefox"; }
+                { app-id = "rapidraw"; }
+                { app-id = "darktable"; }
+                { app-id = ".gimp-2.10-wrapped_"; }
+              ];
               opacity = .85;
             }
           ];

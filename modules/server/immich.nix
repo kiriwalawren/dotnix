@@ -166,7 +166,7 @@
               minRecognitionScore = 0.8;
               modelName = "PP-OCRv5_mobile";
             };
-            urls = [ "http://immich-machine-learning:3003" ];
+            urls = [ "http://127.0.0.1:3003" ];
           };
 
           map = {
