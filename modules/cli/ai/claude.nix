@@ -6,6 +6,26 @@
     {
       home.packages = [ pkgs.claude-code ];
 
+      home.file.".claude/settings.json".text = ''
+        {
+          "includeCoAuthoredBy": false,
+          "extraKnownMarketplaces": {
+            "omc": {
+              "source": {
+                "source": "git",
+                "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git"
+              }
+            }
+          },
+          "enabledPlugins": {
+            "oh-my-claudecode@omc": true
+          },
+          "statusLine": {
+            "type": "command",
+            "command": "nix shell nixpkgs#nodejs --command node $${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hud/omc-hud.mjs"
+          }
+        }
+      '';
       home.file.".claude/CLAUDE.md".text = ''
         Never make a suggestion without first researching it, explaining your
         reasoning in depth (not just "it is because of this", but "it is because

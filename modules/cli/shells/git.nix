@@ -26,6 +26,7 @@ in
           "secrets.tfvars"
           "local.tfvars"
           ".claude/"
+          ".omc/"
         ];
 
         settings = {
