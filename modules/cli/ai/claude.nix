@@ -21,6 +21,9 @@
           type = "command";
           command = "nix shell nixpkgs#nodejs --command node \${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hud/omc-hud.mjs";
         };
+        env = {
+          CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1";
+        };
         mcpServers = {
           context7 = {
             command = "nix";
