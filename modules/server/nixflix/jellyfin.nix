@@ -41,6 +41,7 @@
         ];
 
         plugins."Intro Skipper" = {
+          version = "1.10.11.17";
           ExcludeSeries = "";
           AutoDetectIntros = true;
           AnalyzeSeasonZero = false;
