@@ -22,6 +22,10 @@
             mutable = false;
             policy.isAdministrator = true;
             password._secret = config.sops.secrets."jellyfin/kiri_password".path;
+            configuration = {
+              subtitleMode = "Always";
+              subtitleLanguagePreference = "spa";
+            };
           };
         };
 
@@ -41,7 +45,7 @@
         ];
 
         plugins."Intro Skipper" = {
-          version = "1.10.11.17";
+          Version = "1.10.11.17";
           ExcludeSeries = "";
           AutoDetectIntros = true;
           AnalyzeSeasonZero = false;
