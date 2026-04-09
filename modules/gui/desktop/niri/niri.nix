@@ -27,6 +27,12 @@ in
 
       hardware.graphics.enable = true;
       services.dbus.enable = true;
+
+      xdg.portal.config = {
+        niri = {
+          default = [ "gtk" ];
+        };
+      };
     };
 
   flake.modules.homeManager.niri =
