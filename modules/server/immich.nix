@@ -7,6 +7,8 @@
         inherit (config.services.immich) group;
       };
 
+      system.backup.paths = [ config.services.immich.mediaLocation ];
+
       systemd.tmpfiles.settings."10-immich".${config.services.immich.mediaLocation}.d = {
         mode = "755";
         inherit (config.services.immich) user group;
