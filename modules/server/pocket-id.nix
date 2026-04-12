@@ -34,6 +34,8 @@
           };
         };
 
+        system.backup.paths = [ config.services.pocket-id.dataDir ];
+
         services.pocket-id = {
           enable = true;
           credentials = {

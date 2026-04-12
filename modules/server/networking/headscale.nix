@@ -53,6 +53,8 @@
         requires = [ "pocket-id.service" ];
       };
 
+      system.backup.paths = [ "/var/lib/headscale/" ];
+
       services.headscale = {
         enable = true;
         address = "127.0.0.1";
