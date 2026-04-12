@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       sops.secrets = {
@@ -16,37 +16,58 @@
         subdomain = "indexers";
 
         config = {
-          apiKey = {
-            _secret = config.sops.secrets."prowlarr/api_key".path;
-          };
-          hostConfig.password = {
-            _secret = config.sops.secrets."prowlarr/password".path;
-          };
+          apiKey._secret = config.sops.secrets."prowlarr/api_key".path;
+          hostConfig.password._secret = config.sops.secrets."prowlarr/password".path;
           indexers = [
+            # NZB Indexers
             {
+              enable = true;
               name = "DrunkenSlug";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
             }
             {
+              enable = true;
               name = "NZBFinder";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
             }
             {
+              enable = true;
               name = "NzbPlanet";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NzbPlanet".path;
             }
             {
-              enable = false;
+              enable = true;
               name = "NZBgeek";
-              apiKey = {
-                _secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
-              };
+              apiKey._secret = config.sops.secrets."indexer-api-keys/NZBgeek".path;
+            }
+
+            # Torrent indexers
+            {
+              enable = true;
+              name = "Nyaa.si";
+              baseUrl = "https://nyaa.si/";
+              radarr_compatibility = true;
+              sonarr_compatibility = true;
+            }
+            {
+              enable = true;
+              name = "YTS";
+              baseUrl = "https://yts.bz/";
+            }
+            {
+              enable = true;
+              name = "The Pirate Bay";
+              baseUrl = "https://thepiratebay.org/";
+            }
+            {
+              enable = true;
+              name = "LimeTorrents";
+              baseUrl = "https://www.limetorrents.fun/";
+            }
+            {
+              enable = true;
+              name = "TorrentDownload";
+              baseUrl = "https://www.torrentdownload.info/";
             }
           ];
         };

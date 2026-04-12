@@ -1,13 +1,21 @@
 { config, lib, ... }:
 let
-  keys = config.flake.users.sshKeys;
-  username = config.user.name;
+  keys = config.flake.publicSshKeys;
+  user = config.user.name;
 in
 {
-  options.user.name = lib.mkOption {
-    type = lib.types.str;
-    default = "walawren";
-    description = "The name to use for the user account";
+  options.user = {
+    name = lib.mkOption {
+      type = lib.types.str;
+      default = "walawren";
+      description = "The name to use for the user account";
+    };
+
+    email = lib.mkOption {
+      type = lib.types.str;
+      default = "kiri@walawren.com";
+      description = "The user's email";
+    };
   };
 
   config.flake.modules.nixos.base =
@@ -15,14 +23,14 @@ in
     {
       users.mutableUsers = config.wsl.enable;
 
-      users.users.${username} = {
-        name = username;
-        home = "/home/${username}";
+      users.users.${user} = {
+        name = user;
+        home = "/home/${user}";
         isNormalUser = true;
         group = "users";
 
         hashedPasswordFile =
-          if !config.wsl.enable then config.sops.secrets."passwords/${username}".path else null;
+          if !config.wsl.enable then config.sops.secrets."passwords/${user}".path else null;
 
         openssh.authorizedKeys.keys = keys;
 
@@ -38,8 +46,8 @@ in
 
   config.flake.modules.homeManager.base = {
     home = {
-      inherit username;
-      homeDirectory = "/home/${username}";
+      username = user;
+      homeDirectory = "/home/${user}";
     };
     programs.home-manager.enable = true;
   };

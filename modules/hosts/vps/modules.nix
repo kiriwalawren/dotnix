@@ -2,15 +2,14 @@
 {
   configurations.nixos.vps.modules = {
     inherit (config.flake.modules.nixos)
-      auto-deploy
-      base
-      ddns
-      headscale
-      pocket-id
       adguardhome # offsite backup incase homelab goes down
-      ssh
+      auto-deploy
+      backup
+      base
       expose-ssh
+      ssh
       tailscale-server-mode
+      vps
       ;
   };
 }

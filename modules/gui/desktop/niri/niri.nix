@@ -27,6 +27,12 @@ in
 
       hardware.graphics.enable = true;
       services.dbus.enable = true;
+
+      xdg.portal.config = {
+        niri = {
+          default = [ "gtk" ];
+        };
+      };
     };
 
   flake.modules.homeManager.niri =
@@ -99,7 +105,12 @@ in
               clip-to-geometry = true;
             }
             {
-              excludes = [ { app-id = "firefox"; } ];
+              excludes = [
+                { app-id = "firefox"; }
+                { app-id = "rapidraw"; }
+                { app-id = "darktable"; }
+                { app-id = ".gimp-2.10-wrapped_"; }
+              ];
               opacity = .85;
             }
           ];

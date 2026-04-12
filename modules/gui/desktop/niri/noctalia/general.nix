@@ -11,13 +11,13 @@
       boxRadiusRatio = 1;
       screenRadiusRatio = 1;
       animationSpeed = 1;
-      animationDisabled = false;
+      animationDisabled = true;
       compactLockScreen = false;
       lockScreenAnimations = true;
       lockOnSuspend = true;
       showSessionButtonsOnLockScreen = true;
       showHibernateOnLockScreen = false;
-      enableShadows = true;
+      enableShadows = false;
       shadowDirection = "bottom_right";
       shadowOffsetX = 2;
       shadowOffsetY = 3;

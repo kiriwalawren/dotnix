@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.pocket-id =
+  flake.modules.nixos.vps =
     { config, lib, ... }:
     let
       domain = "auth.${config.system.ddns.domain}";
@@ -34,6 +34,8 @@
           };
         };
 
+        system.backup.paths = [ config.services.pocket-id.dataDir ];
+
         services.pocket-id = {
           enable = true;
           credentials = {
@@ -60,8 +62,9 @@
         };
 
         services.nginx.virtualHosts.${domain} = {
-          useACMEHost = config.system.ddns.domain;
           forceSSL = true;
+          useACMEHost = config.system.ddns.domain;
+
           locations."/" = {
             proxyPass = "http://127.0.0.1:${toString config.services.pocket-id.settings.PORT}";
             recommendedProxySettings = true;

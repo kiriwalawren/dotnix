@@ -2,10 +2,11 @@
 {
   configurations.nixos.homelab.modules = {
     inherit (config.flake.modules.nixos)
-      auto-deploy
-      base
       adguardhome
-      nixflix
+      auto-deploy
+      backup
+      base
+      homelab
       ssh
       tailscale-server-mode
 

@@ -2,7 +2,7 @@
   flake.modules.homeManager.base =
     { pkgs, ... }:
     {
-      home.packages = [ pkgs.scc ];
-      programs.fish.shellAliases.loc = "scc --no-cocomo";
+      home.packages = [ pkgs.tokei ];
+      programs.fish.shellAliases.loc = "tokei";
     };
 }

@@ -14,24 +14,11 @@
           description = "IP Address of the server that is running AdGuard Home.";
         };
 
-        homelabIP = lib.mkOption {
+        subdomain = lib.mkOption {
           type = lib.types.str;
-          default = "100.64.0.6";
-          description = "IP Address of homelab.";
-        };
-
-        vpsIP = lib.mkOption {
-          type = lib.types.str;
-          default = "100.64.0.4";
-          description = "IP Address of vps.";
-        };
-
-        domain = lib.mkOption {
-          type = lib.types.str;
-          default = config.networking.hostName;
-          defaultText = lib.literalExpression "config.networking.hostName";
-          example = "example.com";
-          description = "Domain name for accessing this adguard instance";
+          default = "dns";
+          example = "dns2";
+          description = "Subomain for accessing this adguard instance on `system.ddns.domain`";
         };
       };
 
@@ -108,23 +95,6 @@
               ];
             };
             filtering = {
-              rewrites = [
-                {
-                  enabled = true;
-                  domain = "*.vps";
-                  answer = cfg.vpsIP;
-                }
-                {
-                  enabled = true;
-                  domain = "*.homelab";
-                  answer = cfg.homelabIP;
-                }
-                {
-                  enabled = true;
-                  domain = "*.nixflix";
-                  answer = cfg.homelabIP;
-                }
-              ];
               blocked_services = {
                 schedule =
                   let
@@ -171,7 +141,10 @@
           };
         };
 
-        services.nginx.virtualHosts."dns.${config.server.adguardhome.domain}" = {
+        services.nginx.virtualHosts."${cfg.subdomain}.${config.system.ddns.domain}" = {
+          forceSSL = true;
+          useACMEHost = config.system.ddns.domain;
+
           locations."/" = {
             proxyPass = "http://127.0.0.1:${builtins.toString webUIPort}";
             recommendedProxySettings = true;

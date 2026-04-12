@@ -7,12 +7,14 @@ let
   user = config.user.name;
 in
 {
-  flake.modules.nixos.nixflix =
+  flake.modules.nixos.homelab =
     { config, ... }:
     {
       imports = [
         inputs.nixflix.nixosModules.default
       ];
+
+      system.backup.paths = [ config.nixflix.stateDir ];
 
       nixflix = {
         enable = true;
@@ -26,7 +28,9 @@ in
         nginx = {
           enable = true;
           addHostsEntries = false;
-          domain = "nixflix";
+          inherit (config.system.ddns) domain;
+          forceSSL = true;
+          enableACME = true;
         };
 
         postgres.enable = true;

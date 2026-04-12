@@ -14,7 +14,7 @@
 
       spawn-at-startup = [
         {
-          command = [ "noctalia-shell" ];
+          command = [ "env" "NOCTALIA_PAM_SERVICE=noctalia-shell" "noctalia-shell" ];
         }
       ];
     };

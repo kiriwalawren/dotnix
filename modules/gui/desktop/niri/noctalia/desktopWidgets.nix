@@ -1,7 +1,7 @@
 {
   flake.modules.homeManager.niri = {
     programs.noctalia-shell.settings.desktopWidgets = {
-      enabled = true;
+      enabled = false;
       overviewEnabled = true;
       gridSnap = false;
       monitorWidgets = [
