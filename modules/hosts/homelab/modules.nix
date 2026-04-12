@@ -4,6 +4,7 @@
     inherit (config.flake.modules.nixos)
       adguardhome
       auto-deploy
+      backup
       base
       homelab
       ssh
