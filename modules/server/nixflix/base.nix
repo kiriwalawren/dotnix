@@ -14,6 +14,8 @@ in
         inputs.nixflix.nixosModules.default
       ];
 
+      system.backup.paths = [ config.nixflix.stateDir ];
+
       nixflix = {
         enable = true;
         mediaUsers = [ user ];
