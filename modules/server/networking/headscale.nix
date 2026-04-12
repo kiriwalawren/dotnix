@@ -81,7 +81,7 @@
                     ];
                   }
 
-                  # all users can reach nixflix on 80 and 443
+                  # all users can reach http(s) on 80 and 443
                   {
                     action = "accept";
                     src = [ "autogroup:member" ];

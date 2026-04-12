@@ -45,6 +45,7 @@
         sops.secrets."backblaze/kiriwalawren/key-id" = { };
         sops.secrets."backblaze/kiriwalawren/application-key" = { };
         sops.secrets."restic/encryption-key" = { };
+        sops.secrets."healthchecks/ping-key" = { };
         sops.templates."restic.env".content = ''
           AWS_ACCESS_KEY_ID=${config.sops.placeholder."backblaze/kiriwalawren/key-id"}
           AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."backblaze/kiriwalawren/application-key"}
@@ -69,6 +70,26 @@
             checkOpts = [
               "--read-data-subset=10%"
             ];
+            backupCleanupCommand = ''
+              ${pkgs.curl}/bin/curl -fsS --retry 3 https://hc-ping.com/$(cat ${
+                config.sops.secrets."healthchecks/ping-key".path
+              })/${config.networking.hostName}-backup
+            '';
+          };
+        };
+
+        systemd.services."restic-backups-${config.networking.hostName}" = {
+          onSuccess = [ "restic-backup-ping-healthchecks.service" ];
+        };
+
+        systemd.services."restic-backup-ping-healthchecks" = {
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = pkgs.writeShellScript "restic-backup-ping-healthchecks" ''
+              ${pkgs.curl}/bin/curl -fsS --retry 3 https://hc-ping.com/$(cat ${
+                config.sops.secrets."healthchecks/ping-key".path
+              })/${config.networking.hostName}-backup
+            '';
           };
         };
       };
