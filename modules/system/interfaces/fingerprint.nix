@@ -20,6 +20,17 @@
         };
 
         greetd.fprintAuth = true;
+
+        "noctalia-shell" = {
+          fprintAuth = true;
+          text = lib.mkForce ''
+            auth     sufficient pam_fprintd.so
+            auth     include    login
+            account  include    login
+            password include    login
+            session  include    login
+          '';
+        };
       };
     };
 
