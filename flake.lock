@@ -449,8 +449,8 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1775674761,
-        "narHash": "sha256-rgkRUeEKvtPhdWyURLaQ7URr9o9ZQcyH3+cBNyEARHM=",
+        "lastModified": 1776104955,
+        "narHash": "sha256-pe7wcSbXIFSrpk+lOAq4Ww9FMaos3Ly4hjG56I5qYn0=",
         "path": "/home/walawren/gitrepos/nixflix",
         "type": "path"
       },
