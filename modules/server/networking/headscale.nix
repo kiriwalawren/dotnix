@@ -184,6 +184,11 @@
                 type = "A";
                 value = config.tailscale.ips.homelab;
               }
+              {
+                name = "cache.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
             ];
           };
 
