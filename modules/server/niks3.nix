@@ -2,7 +2,7 @@
   flake.modules.nixos.homelab =
     { config, inputs, ... }:
     let
-      domain = "cache.walawren.com";
+      domain = "niks3.walawren.com";
     in
     {
       imports = [ inputs.niks3.nixosModules.default ];
@@ -18,9 +18,9 @@
 
         # S3 configuration
         s3 = {
-          endpoint = "binaries.walawren.com"; # or your S3-compatible endpoint
+          endpoint = "s3.us-east-005.backblazeb2.com"; # or your S3-compatible endpoint
           bucket = "kiriwalawrencache";
-          region = "eu-central-003";
+          region = "us-east-005";
           useSSL = true;
           accessKeyFile = config.sops.secrets."backblaze/kiriwalawrencache/key-id".path;
           secretKeyFile = config.sops.secrets."backblaze/kiriwalawrencache/application-key".path;
@@ -34,7 +34,7 @@
 
         # Public cache URL (optional) - if exposed via https
         # Generates a landing page with usage instructions and public keys
-        cacheUrl = "https://${domain}";
+        cacheUrl = "https://cache.walawren.com";
       };
 
       services.nginx.virtualHosts.${domain} = {
