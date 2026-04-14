@@ -28,36 +28,8 @@ jobs:
             substituters = https://cache.nixos.org https://catppuccin.cachix.org https://cache.walawren.com
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= catppuccin.cachix.org-1:noG/4HkbhJb+lUAdKrph6LaozJvAeEEZj4N732IysmU= kiriwalawrencache:CqHekzeXjrGlnq4FKlnOQQGlNvnzDzhCbvOthomGRTU=
 
-      - name: Connect to Headscale via Tailscale
-        uses: tailscale/github-action@v4.1.2
-        with:
-          authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
-          hostname: gh-runner-${{ github.run_id }}
-          ping: homelab
-          tags: ci
-          args: "--login-server=https://headscale.walawren.com"
-
       - name: Run Checks
-        run: |
-          system=x86_64-linux
-          nix eval --json --impure ".#checks.$system" --apply builtins.attrNames \
-            | jq -r '.[]' \
-            | xargs -I{} nix build ".#checks.$system.{}" --no-link --print-out-paths >> store-paths.txt
-
-      - name: Get OIDC token
-        id: oidc
-        run: |
-          token=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://niks3.walawren.com" | jq -r '.value')
-          echo "::add-mask::$token"
-          echo "token=$token" >> "$GITHUB_OUTPUT"
-
-      - name: Push to cache
-        run: |
-          curl -fsSL "https://github.com/Mic92/niks3/releases/latest/download/niks3_$(uname -s)_$(uname -m).tar.gz" | tar -xzf -
-          xargs ./niks3 push \
-            --server-url https://niks3.walawren.com \
-            --auth-token "${{ steps.oidc.outputs.token }}" < store-paths.txt
+        run: nix flake check --show-trace
 
   prepare:
     name: Find NixOS Configurations 🔍
