@@ -54,7 +54,7 @@ jobs:
           ./niks3 push \
             --server-url https://niks3.walawren.com \
             --auth-token "${{ steps.oidc.outputs.token }}" \
-            ./result
+            $(nix path-info --json --json-format 2 .# | jq -r '.[].path // empty')
 
   prepare:
     name: Find NixOS Configurations 🔍
