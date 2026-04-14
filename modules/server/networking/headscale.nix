@@ -71,7 +71,7 @@
                   "tag:nixflix" = [ "kiriwalawren@" ];
                   "tag:dns" = [ "kiriwalawren@" ];
                   "tag:ci" = [ "kiriwalawren@" ];
-                  "tab:niks3" = [ "kiriwalawren@" ];
+                  "tag:niks3" = [ "kiriwalawren@" ];
                 };
 
                 acls = [
