@@ -16,7 +16,10 @@
         mdformat.enable = true;
 
         # YAML
-        yamlfmt.enable = true;
+        yamlfmt = {
+          enable = true;
+          settings.formatter.retain_line_breaks_single = true;
+        };
 
         # Shell
         shfmt.enable = true;

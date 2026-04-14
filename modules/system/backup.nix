@@ -70,11 +70,6 @@
             checkOpts = [
               "--read-data-subset=10%"
             ];
-            backupCleanupCommand = ''
-              ${pkgs.curl}/bin/curl -fsS --retry 3 https://hc-ping.com/$(cat ${
-                config.sops.secrets."healthchecks/ping-key".path
-              })/${config.networking.hostName}-backup
-            '';
           };
         };
 
