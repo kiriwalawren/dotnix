@@ -12,6 +12,7 @@
       xdg.enable = true;
       gtk = {
         enable = true;
+        gtk4.theme = config.gtk.theme;
         theme = {
           name = "Colloid-Teal-Dark-Compact-Catppuccin";
           package = pkgs.colloid-gtk-theme.override {
