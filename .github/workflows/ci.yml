@@ -38,7 +38,11 @@ jobs:
           args: "--login-server=https://headscale.walawren.com"
 
       - name: Run Checks
-        run: nix flake check --show-trace
+        run: |
+          system=x86_64-linux
+          nix eval --json --impure ".#checks.$system" --apply builtins.attrNames \
+            | jq -r '.[]' \
+            | xargs -I{} nix build ".#checks.$system.{}" --no-link --print-out-paths >> store-paths.txt
 
       - name: Get OIDC token
         id: oidc
@@ -51,10 +55,9 @@ jobs:
       - name: Push to cache
         run: |
           curl -fsSL "https://github.com/Mic92/niks3/releases/latest/download/niks3_$(uname -s)_$(uname -m).tar.gz" | tar -xzf -
-          nix build $(nix flake show --json | jq -r '.checks."x86_64-linux" | keys[] | ".#checks.x86_64-linux.\(.)"') --no-link --print-out-paths \
-            | xargs ./niks3 push \
-                --server-url https://niks3.walawren.com \
-                --auth-token "${{ steps.oidc.outputs.token }}"
+          xargs ./niks3 push \
+            --server-url https://niks3.walawren.com \
+            --auth-token "${{ steps.oidc.outputs.token }}" < store-paths.txt
 
   prepare:
     name: Find NixOS Configurations 🔍
