@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   nix-flake-check:
     name: Check 📋
@@ -20,15 +24,37 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            substituters = https://cache.nixos.org https://cache.walawren.com
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= kiriwalawrencache:CqHekzeXjrGlnq4FKlnOQQGlNvnzDzhCbvOthomGRTU=
 
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v17
+      - name: Connect to Headscale via Tailscale
+        uses: tailscale/github-action@v4.1.2
         with:
-          name: kiriwalawren
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
+          hostname: gh-runner-${{ github.run_id }}
+          ping: homelab
+          tags: ci
+          args: "--login-server=https://headscale.walawren.com"
 
       - name: Run Checks
         run: nix flake check --show-trace
+
+      - name: Get OIDC token
+        id: oidc
+        run: |
+          token=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://niks3.walawren.com" | jq -r '.value')
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Push to cache
+        run: |
+          curl -fsSL "https://github.com/Mic92/niks3/releases/latest/download/niks3_$(uname -s)_$(uname -m).tar.gz" | tar -xzf -
+          ./niks3 push \
+            --server-url https://niks3.walawren.com \
+            --auth-token "${{ steps.oidc.outputs.token }}" \
+            ./result
 
   prepare:
     name: Find NixOS Configurations 🔍
@@ -50,6 +76,9 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            substituters = https://cache.nixos.org https://cache.walawren.com
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= kiriwalawrencache:CqHekzeXjrGlnq4FKlnOQQGlNvnzDzhCbvOthomGRTU=
 
       - name: Find NixOS Configurations 🔍
         id: matrix
@@ -126,13 +155,37 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
-          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            substituters = https://cache.nixos.org https://cache.walawren.com
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= kiriwalawrencache:CqHekzeXjrGlnq4FKlnOQQGlNvnzDzhCbvOthomGRTU=
 
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v17
+      - name: Connect to Headscale via Tailscale
+        uses: tailscale/github-action@v4.1.2
         with:
-          name: kiriwalawren
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
+          hostname: gh-runner-${{ github.run_id }}
+          ping: homelab
+          tags: ci
+          args: "--login-server=https://headscale.walawren.com"
 
       - name: Build Configuration 📋
         run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}.config.system.build.toplevel
+
+      - name: Get OIDC token
+        id: oidc
+        run: |
+          token=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://niks3.walawren.com" | jq -r '.value')
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Push to cache
+        run: |
+          uname -s -m
+          ARCH=$(uname -m)
+          [ "$ARCH" = "aarch64" ] && ARCH="arm64"
+          curl -fsSL "https://github.com/Mic92/niks3/releases/latest/download/niks3_$(uname -s)_${ARCH}.tar.gz" | tar -xzf -
+          ./niks3 push \
+            --server-url https://niks3.walawren.com \
+            --auth-token "${{ steps.oidc.outputs.token }}" \
+            ./result

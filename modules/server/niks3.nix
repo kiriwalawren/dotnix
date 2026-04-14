@@ -35,6 +35,14 @@
         # Public cache URL (optional) - if exposed via https
         # Generates a landing page with usage instructions and public keys
         cacheUrl = "https://cache.walawren.com";
+
+        oidc.providers.github = {
+          issuer = "https://token.actions.githubusercontent.com";
+          audience = "https://niks3.walawren.com";
+          boundClaims = {
+            repository_owner = [ "kiriwalawren" ];
+          };
+        };
       };
 
       services.nginx.virtualHosts.${domain} = {
