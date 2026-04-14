@@ -71,7 +71,7 @@
                   "tag:nixflix" = [ "kiriwalawren@" ];
                   "tag:dns" = [ "kiriwalawren@" ];
                   "tag:ci" = [ "kiriwalawren@" ];
-                  "tab:cache" = [ "kiriwalawren@" ];
+                  "tab:niks3" = [ "kiriwalawren@" ];
                 };
 
                 acls = [
@@ -92,11 +92,11 @@
                     dst = [ "tag:nixflix:80,443" ];
                   }
 
-                  # ci can reach cache https(s) on 80 and 443
+                  # ci can reach niks3 https(s) on 80 and 443
                   {
                     action = "accept";
                     src = [ "tag:ci" ];
-                    dst = [ "tag:cache:80,443" ];
+                    dst = [ "tag:niks3:80,443" ];
                   }
 
                   # all users and devices can reach DNS on dns-tagged machines
