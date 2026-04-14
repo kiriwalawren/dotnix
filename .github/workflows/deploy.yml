@@ -36,7 +36,6 @@ jobs:
             substituters = https://cache.nixos.org https://cache.walawren.com
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= kiriwalawrencache:CqHekzeXjrGlnq4FKlnOQQGlNvnzDzhCbvOthomGRTU=
 
-
       - name: Setup Cachix
         uses: cachix/cachix-action@v17
         with:
