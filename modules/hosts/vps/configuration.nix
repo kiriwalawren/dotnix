@@ -1,6 +1,6 @@
 {
   configurations.nixos.vps.modules.configuration =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     {
       imports = [
         ./_hardware-configuration.nix
@@ -17,6 +17,8 @@
       };
 
       documentation.man.enable = false;
+
+      catppuccin.tty.enable = lib.mkForce false;
 
       environment.systemPackages = [ pkgs.vim ];
 
