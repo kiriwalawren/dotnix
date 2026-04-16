@@ -986,16 +986,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1775943486,
-        "narHash": "sha256-F28tX6gU7YOBWsqhx+SQAZmhlbC20bTmRPv4OmySLTo=",
-        "owner": "kiriwalawren",
+        "lastModified": 1776359411,
+        "narHash": "sha256-3w9DmNLP59mez7x/ZxhbB/WcySJWcrCVAYx7Z+9Fcpw=",
+        "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "02efb91c1bd02d874d10eac652264aee3f03791c",
+        "rev": "d231b8927ca02f03902c10a3e47f88b31f375695",
         "type": "github"
       },
       "original": {
-        "owner": "kiriwalawren",
-        "ref": "add-flake",
+        "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
         "type": "github"
       }
