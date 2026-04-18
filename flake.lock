@@ -449,14 +449,17 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1776159923,
-        "narHash": "sha256-lKcRjKvli7KQ03TJRKRD7XySkJ0K27rPUTQfueuOdU8=",
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "lastModified": 1776477543,
+        "narHash": "sha256-aAVQbRXdPWv/72CCdZPT79qkMANbLWs9MFytyIg5tY8=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "dd967ddc2bacfff3ff9b3b67a35850a6d90a3f90",
+        "type": "github"
       },
       "original": {
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "type": "github"
       }
     },
     "nixos-anywhere": {
