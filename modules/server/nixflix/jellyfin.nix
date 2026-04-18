@@ -2,7 +2,7 @@
   flake.modules.nixos.homelab =
     { config, inputs, ... }:
     let
-      fromRepo = inputs.nixflix.lib.jellyfinPlugins.fromRepo;
+      inherit (inputs.nixflix.lib.jellyfinPlugins) fromRepo;
     in
     {
       sops.secrets."jellyfin/kiri_password" = { };
