@@ -52,7 +52,7 @@
     secrets.url = "git+ssh://git@github.com/kiriwalawren/secrets.git?ref=main&shallow=1";
 
     ziti-edge-tunnel = {
-      url = "github:kiriwalawren/ziti-tunnel-sdk-c/add-flake";
+      url = "github:openziti/ziti-tunnel-sdk-c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
