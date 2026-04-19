@@ -13,6 +13,7 @@ in
       imports = [
         inputs.nixflix.nixosModules.default
       ];
+      sops.secrets."wireguard-confs/protonvpn" = { };
 
       system.backup.paths = [ config.nixflix.stateDir ];
 
@@ -23,6 +24,11 @@ in
         theme = {
           enable = true;
           name = "catppuccin-${config.catppuccin.flavor}";
+        };
+
+        vpn = {
+          enable = true;
+          wgConfFile = config.sops.secrets."wireguard-confs/protonvpn".path;
         };
 
         nginx = {

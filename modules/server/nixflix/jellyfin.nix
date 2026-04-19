@@ -34,8 +34,8 @@
 
         system.pluginRepositories = {
           "Intro Skipper" = {
-            url = "https://raw.githubusercontent.com/intro-skipper/manifest/main/10.11/manifest.json";
-            hash = "sha256-cwMV8hNUWE+i9y5KKwsBu8bTbwwjj9blKwB4UH34IIY=";
+            url = "https://raw.githubusercontent.com/intro-skipper/manifest/d56c137ae182c04a894dd700c25b04c8d2eba855/10.11/manifest.json";
+            hash = "sha256-ENwn7Ei3WU2REcxnFNwzF6NGFUcnH2kJ4E5TKbpcDII=";
           };
           "Jellyfin SSO" = {
             url = "https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/4ee785577e77b703f206c7a33f4123986d90f2c2/manifest.json";
