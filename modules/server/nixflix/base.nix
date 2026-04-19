@@ -13,7 +13,7 @@ in
       imports = [
         inputs.nixflix.nixosModules.default
       ];
-      sops.secrets."wireguard-confs/mullvad" = { };
+      sops.secrets."wireguard-confs/protonvpn" = { };
 
       system.backup.paths = [ config.nixflix.stateDir ];
 
@@ -28,7 +28,7 @@ in
 
         vpn = {
           enable = true;
-          wgConfFile = config.sops.secrets."wireguard-confs/mullvad".path;
+          wgConfFile = config.sops.secrets."wireguard-confs/protonvpn".path;
         };
 
         nginx = {
