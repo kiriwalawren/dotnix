@@ -20,6 +20,9 @@
               Port = 45500;
               QueueingSystemEnabled = true;
               SSL.Port = 32380;
+
+              # required for port forwarding from a VPN
+              ReannounceWhenAddressChanged = true;
             };
           };
           Preferences = {
