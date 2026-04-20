@@ -26,6 +26,8 @@
         disks."/" = {
           devices = [ "/dev/sda" ];
         };
+
+        ddns.enable = true;
       };
 
       server.adguardhome.serverIP = "100.64.0.4";

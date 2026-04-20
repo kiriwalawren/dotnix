@@ -56,8 +56,8 @@ in
 
           node = mkOption {
             type = types.str;
-            default = "homelab.hs.${config.system.ddns.domain}.";
-            description = "The Tailscale exit node to use (fully qualified domain name)";
+            default = config.tailscale.ips.homelab;
+            description = "The Tailscale exit node to use (IP or unique node name, as required by --exit-node)";
           };
         };
       };
@@ -76,6 +76,7 @@ in
             useRoutingFeatures = if cfg.mode == "server" then "both" else "client";
             extraUpFlags = [
               "--accept-routes=false"
+              "--operator=${user}"
               "--exit-node=${if cfg.exitNode.enable then cfg.exitNode.node else ""}"
             ]
             ++ optional (cfg.mode == "server") "--advertise-exit-node"

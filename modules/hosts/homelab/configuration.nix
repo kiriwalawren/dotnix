@@ -18,6 +18,7 @@
       };
 
       vpn.enable = true;
+      ddns.enable = true;
     };
 
     server.adguardhome = {

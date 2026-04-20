@@ -14,6 +14,11 @@ in
     in
     {
       options.system.ddns = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+        };
+
         domain = lib.mkOption {
           default = "walawren.com";
           type = lib.types.str;
@@ -29,7 +34,7 @@ in
         };
       };
 
-      config = lib.mkIf (cfg.domain != "" || cfg.subdomains != [ ]) {
+      config = lib.mkIf cfg.enable {
         # Explicitly create the cloudflare-ddns user/group so sops can set ownership
         # even when cloudflare-ddns service is not enabled (e.g. ACME-only, no subdomains).
         users.groups.${config.services.cloudflare-ddns.group} = { };
