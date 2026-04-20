@@ -7,13 +7,6 @@
       ssh
       encryption
       tailscale-server-mode
-
-      # Uncomment for temporary gaming
-      # bluetooth
-      # gaming
-      # gui
-      # hyprland
-      # sound
       ;
   };
 }

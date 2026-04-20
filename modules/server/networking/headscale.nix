@@ -115,8 +115,8 @@
             override_local_dns = true;
             magic_dns = true;
             nameservers.global = [
-              "100.64.0.6"
-              "100.64.0.4"
+              config.tailscale.ips.homelab
+              config.tailscale.ips.vps
             ];
             extra_records = [
               {
@@ -177,12 +177,12 @@
               {
                 name = "dns.${config.system.ddns.domain}";
                 type = "A";
-                value = config.tailscale.ips.vps;
+                value = config.tailscale.ips.homelab;
               }
               {
                 name = "dns2.${config.system.ddns.domain}";
                 type = "A";
-                value = config.tailscale.ips.homelab;
+                value = config.tailscale.ips.vps;
               }
             ];
           };
