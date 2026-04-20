@@ -2,6 +2,7 @@
 {
   configurations.nixos.framework13.modules = {
     inherit (config.flake.modules.nixos)
+      backup
       base
       bluetooth
       docker

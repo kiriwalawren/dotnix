@@ -9,6 +9,7 @@
       homelab
       ssh
       tailscale-server-mode
+      vpn
 
       # Uncomment for temporary gaming
       # bluetooth

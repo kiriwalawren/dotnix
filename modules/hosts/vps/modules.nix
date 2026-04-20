@@ -9,6 +9,7 @@
       expose-ssh
       ssh
       tailscale-server-mode
+      vpn
       vps
       ;
   };

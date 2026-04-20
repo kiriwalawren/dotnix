@@ -13,7 +13,7 @@ in
       imports = [
         inputs.nixflix.nixosModules.default
       ];
-      sops.secrets."wireguard-confs/protonvpn" = { };
+      sops.secrets."wireguard-confs/protonvpn-homelab-confinement" = { };
 
       system.backup.paths = [ config.nixflix.stateDir ];
 
@@ -28,7 +28,7 @@ in
 
         vpn = {
           enable = true;
-          wgConfFile = config.sops.secrets."wireguard-confs/protonvpn".path;
+          wgConfFile = config.sops.secrets."wireguard-confs/protonvpn-homelab-confinement".path;
         };
 
         nginx = {
