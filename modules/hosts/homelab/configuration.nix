@@ -17,7 +17,6 @@
         raidLevel = 0;
       };
 
-      vpn.enable = true;
       ddns.enable = true;
     };
 
