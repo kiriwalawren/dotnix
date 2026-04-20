@@ -8,6 +8,17 @@
             "10.2.0.2/32"
             "2a07:b944::2:2/128"
           ];
+          postSetup = ''
+            ip route add 193.148.18.82/32 via 192.168.1.1 dev enp5s0
+            ip -6 route add 2a0d:5600:24:ff06::10/128 via fe80::2258:43ff:fe5d:e2a2 dev enp5s0
+            ip -6 route replace default dev wg0-protonvpn metric 50
+            ip -6 route del default dev wg0-protonvpn metric 1024 || true
+          '';
+          postShutdown = ''
+            ip route del 193.148.18.82/32 via 192.168.1.1 dev enp5s0
+            ip -6 route del 2a0d:5600:24:ff06::10/128 via fe80::2258:43ff:fe5d:e2a2 dev enp5s0
+            ip -6 route del default dev wg0-protonvpn metric 50
+          '';
           peers = [
             {
               publicKey = "R8Of+lrl8DgOQmO6kcjlX7SchP4ncvbY90MB7ZUNmD8=";
@@ -25,6 +36,17 @@
             "10.2.0.2/32"
             "2a07:b944::2:2/128"
           ];
+          postSetup = ''
+            ip route add 149.88.24.180/32 via 172.31.1.1 dev enp1s0
+            ip -6 route add 2a0d:5600:24:ff06::10/128 via fe80::1 dev enp1s0
+            ip -6 route replace default dev wg0-protonvpn metric 50
+            ip -6 route del default dev wg0-protonvpn metric 1024 || true
+          '';
+          postShutdown = ''
+            ip route del 149.88.24.180/32 via 172.31.1.1 dev enp1s0
+            ip -6 route del 2a0d:5600:24:ff06::10/128 via fe80::1 dev enp1s0
+            ip -6 route del default dev wg0-protonvpn metric 50
+          '';
           peers = [
             {
               publicKey = "dZaHVURZJIpIPz1DceHUu1QA0WCz9VYEKKey0cymHXI=";
