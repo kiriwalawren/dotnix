@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.vpn =
+  flake.modules.nixos.homelab =
     { config, lib, ... }:
     let
       wireguardConfs = {
