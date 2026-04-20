@@ -30,9 +30,7 @@ in
           devices = [ "/dev/nvme0n1" ];
         };
 
-        # The world is not ready for this yet
-        # enable when NYC upload speeds are faster
-        # tailscale.vpn.enable = true
+        tailscale.exitNode.enable = true;
       };
     };
 }

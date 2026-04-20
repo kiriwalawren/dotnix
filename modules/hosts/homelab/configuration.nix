@@ -17,7 +17,7 @@
         raidLevel = 0;
       };
 
-      ddns.domain = "walawren.com";
+      vpn.enable = true;
     };
 
     server.adguardhome = {

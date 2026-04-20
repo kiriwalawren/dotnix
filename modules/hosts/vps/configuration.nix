@@ -26,8 +26,6 @@
         disks."/" = {
           devices = [ "/dev/sda" ];
         };
-
-        ddns.domain = "walawren.com";
       };
 
       server.adguardhome.serverIP = "100.64.0.4";

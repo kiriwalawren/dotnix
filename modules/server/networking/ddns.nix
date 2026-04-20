@@ -15,7 +15,7 @@ in
     {
       options.system.ddns = {
         domain = lib.mkOption {
-          default = "";
+          default = "walawren.com";
           type = lib.types.str;
           description = "Domain to create a certificate for. If emtpy, a certificate will not be created.";
         };

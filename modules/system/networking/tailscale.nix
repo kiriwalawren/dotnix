@@ -28,7 +28,7 @@ in
 
         login-server = mkOption {
           type = lib.types.nullOr lib.types.str;
-          default = "https://headscale.walawren.com";
+          default = "https://headscale.${config.system.ddns.domain}";
           description = "The URL of the control server. Leave `null` to default to Tailscale.";
         };
 
@@ -51,12 +51,12 @@ in
           description = "Whether this is an ephemeral node (adds --force-reauth)";
         };
 
-        vpn = {
+        exitNode = {
           enable = mkEnableOption "use Tailscale exit node for VPN";
 
-          exitNode = mkOption {
+          node = mkOption {
             type = types.str;
-            default = "homelab.walawren.hs.net.";
+            default = "homelab.hs.${config.system.ddns.domain}.";
             description = "The Tailscale exit node to use (fully qualified domain name)";
           };
         };
@@ -76,7 +76,7 @@ in
             useRoutingFeatures = if cfg.mode == "server" then "both" else "client";
             extraUpFlags = [
               "--accept-routes=false"
-              "--exit-node=${if cfg.vpn.enable then cfg.vpn.exitNode else ""}"
+              "--exit-node=${if cfg.exitNode.enable then cfg.exitNode.node else ""}"
             ]
             ++ optional (cfg.mode == "server") "--advertise-exit-node"
             ++ optional (cfg.login-server != null) "--login-server=${cfg.login-server}"
