@@ -131,6 +131,11 @@
                   # Allow traffic through the tunnel
                   oifname "wg0-protonvpn" accept
 
+                  # Allow traffic to VPN-Confinement namespaces (e.g. qBittorrent, SABnzbd)
+                  # via the bridge that links the host namespace to the VPN network namespace.
+                  # Without this, nginx and Starr services can't reach VPN-confined services.
+                  oifname "wg-br" accept
+
                   # Allow WireGuard endpoint traffic so tunnel can establish/re-establish
                   ip daddr ${wgConfs.${config.networking.hostName}.endpoints.ipv4} udp dport 51820 accept
                   ip6 daddr ${wgConfs.${config.networking.hostName}.endpoints.ipv6} udp dport 51820 accept
