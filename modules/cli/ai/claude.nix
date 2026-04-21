@@ -62,6 +62,8 @@
         impression. If you cannot find research to substantiate your suggestion,
         DO NOT suggest it.
 
+        Always use `jq` when parsing JSON. Do not use python to parse JSON.
+
         <!-- OMC:START -->
         <!-- OMC:VERSION:4.11.0 -->
 
