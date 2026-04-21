@@ -26,6 +26,8 @@
           raidLevel = 1;
           encrypt = true;
         };
+
+        ddns.enable = true;
       };
 
       nixflix.nginx.domain = lib.mkForce "vm";

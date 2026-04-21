@@ -220,7 +220,7 @@
             clientId = "8294b517-8463-4955-b973-0f9727e8a3d6";
             clientSecret._secret = config.sops.secrets."immich/oidc-client-secret".path;
             defaultStorageQuota = null;
-            issuerUrl = "https://auth.walawren.com";
+            issuerUrl = "https://auth.${config.system.ddns.domain}";
             mobileOverrideEnabled = false;
             mobileRedirectUri = "";
             profileSigningAlgorithm = "none";
@@ -242,7 +242,7 @@
           };
 
           server = {
-            externalDomain = "https://photos.walawren.com";
+            externalDomain = "https://photos.${config.system.ddns.domain}";
             loginPageMessage = "";
             publicUsers = true;
           };

@@ -446,14 +446,15 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "treefmt-nix": "treefmt-nix_2"
+        "treefmt-nix": "treefmt-nix_2",
+        "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1776100711,
-        "narHash": "sha256-uerMyclfpxtk0tsQNiQiQR7rFQoI2464hhMehZ/qczk=",
+        "lastModified": 1776628173,
+        "narHash": "sha256-HbLmZiSmH8EEpP6HFu4iF/mW1DRszufl1b8wDEJylpo=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "92233b53b6bfb982934da6a23f0f1180ed377016",
+        "rev": "880ec4c784e66d2247f9fb001a86ba581d5a5231",
         "type": "github"
       },
       "original": {
@@ -745,10 +746,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1775973842,
-        "narHash": "sha256-VHq5yIS4imBu7+sucoIGY8OXHZMncJboN0qmCzh3cJk=",
+        "lastModified": 1776673515,
+        "narHash": "sha256-FVxsmLjtMqwQFTYMvKBSDkrwriN2Y/9Pk+hUEGmWpGg=",
         "ref": "main",
-        "rev": "909b7764a623277916cc5cbed1eb17587f908a9f",
+        "rev": "57c2535cc6774be9f70cd558a6dd8d70a78f0884",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -946,6 +947,21 @@
         "type": "github"
       }
     },
+    "vpn-confinement": {
+      "locked": {
+        "lastModified": 1767604552,
+        "narHash": "sha256-FddhMxnc99KYOZ/S3YNqtDSoxisIhVtJ7L4s8XD2u0A=",
+        "owner": "Maroka-chan",
+        "repo": "VPN-Confinement",
+        "rev": "a6b2da727853886876fd1081d6bb2880752937f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Maroka-chan",
+        "repo": "VPN-Confinement",
+        "type": "github"
+      }
+    },
     "xwayland-satellite-stable": {
       "flake": false,
       "locked": {
@@ -986,16 +1002,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1775943486,
-        "narHash": "sha256-F28tX6gU7YOBWsqhx+SQAZmhlbC20bTmRPv4OmySLTo=",
-        "owner": "kiriwalawren",
+        "lastModified": 1776359411,
+        "narHash": "sha256-3w9DmNLP59mez7x/ZxhbB/WcySJWcrCVAYx7Z+9Fcpw=",
+        "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "02efb91c1bd02d874d10eac652264aee3f03791c",
+        "rev": "d231b8927ca02f03902c10a3e47f88b31f375695",
         "type": "github"
       },
       "original": {
-        "owner": "kiriwalawren",
-        "ref": "add-flake",
+        "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
         "type": "github"
       }
