@@ -24,7 +24,10 @@ in
       system = {
         stateVersion = "25.05";
 
-        backup.paths = [ "${config.users.users.${user}.home}/photos-staging" ];
+        backup.paths = [
+          "${config.users.users.${user}.home}/Documents"
+          "${config.users.users.${user}.home}/photos-staging"
+        ];
 
         disks."/" = {
           devices = [ "/dev/nvme0n1" ];
