@@ -47,6 +47,10 @@
         inherit (config.sops.templates."cloudflare-ddns.env") content;
       };
 
+      # The tap is the only networkd-managed interface; without anyInterface,
+      # wait-online has nothing to succeed on and times out.
+      systemd.network.wait-online.anyInterface = true;
+
       systemd.network = {
         enable = true;
         config.networkConfig = {
@@ -59,6 +63,9 @@
             Address = "10.20.0.1/24";
             ConfigureWithoutCarrier = true;
           };
+          # Tap is only active when the microvm is running, so don't gate
+          # systemd-networkd-wait-online on it.
+          linkConfig.RequiredForOnline = false;
         };
       };
 
