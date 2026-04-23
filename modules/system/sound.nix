@@ -33,30 +33,13 @@ in
     let
       pamixer = "${lib.getExe pkgs.pamixer}";
       playerctl = "${lib.getExe pkgs.playerctl}";
-
-      unmutemic = pkgs.writeShellScriptBin "unmutemic" ''
-        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pamixer} -u --source "$source"
-        done
-      '';
-
-      mutemic = pkgs.writeShellScriptBin "mutemic" ''
-        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pamixer} -m --source "$source"
-        done
-      '';
-
-      togglemic = pkgs.writeShellScriptBin "togglemic" ''
-        ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
-          ${pamixer} -t --source "$source"
-        done
-      '';
     in
     {
       home.packages = [
-        unmutemic
-        mutemic
-        togglemic
+        pkgs.unmutemic
+        pkgs.mutemic
+        pkgs.togglemic
+        pkgs.sync-input-mute
         pkgs.wiremix
       ];
 
@@ -81,14 +64,14 @@ in
 
         bind = [
           ",XF86AudioMute,exec,${pamixer} -t"
-          ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
+          ",XF86AudioMicMute,exec,${lib.getExe pkgs.togglemic}"
 
-          "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
+          "CTRL,Space,exec,${lib.getExe pkgs.unmutemic}"
         ];
 
         # Executes when key is released
         bindr = [
-          "CTRL,Space,exec,${mutemic}/bin/mutemic"
+          "CTRL,Space,exec,${lib.getExe pkgs.mutemic}"
         ];
 
         # Repeats when held
@@ -105,7 +88,7 @@ in
         ];
 
         "exec-once" = [
-          "${mutemic}/bin/mutemic"
+          "${lib.getExe pkgs.mutemic}"
         ];
       };
     };
