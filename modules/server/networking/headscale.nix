@@ -70,6 +70,8 @@
                 tagOwners = {
                   "tag:nixflix" = [ "kiriwalawren@" ];
                   "tag:dns" = [ "kiriwalawren@" ];
+                  "tag:ci" = [ "kiriwalawren@" ];
+                  "tag:niks3" = [ "kiriwalawren@" ];
                 };
 
                 acls = [
@@ -88,6 +90,13 @@
                     action = "accept";
                     src = [ "autogroup:member" ];
                     dst = [ "tag:nixflix:80,443" ];
+                  }
+
+                  # ci can reach niks3 https(s) on 80 and 443
+                  {
+                    action = "accept";
+                    src = [ "tag:ci" ];
+                    dst = [ "tag:niks3:80,443" ];
                   }
 
                   # all users and devices can reach DNS on dns-tagged machines
@@ -183,6 +192,11 @@
                 name = "dns2.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.vps;
+              }
+              {
+                name = "niks3.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
               }
             ];
           };
