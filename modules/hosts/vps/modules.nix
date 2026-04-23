@@ -6,7 +6,7 @@
       auto-deploy
       backup
       base
-      expose-ssh
+      # expose-ssh
       ssh
       tailscale-server-mode
       vps

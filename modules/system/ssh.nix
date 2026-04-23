@@ -35,6 +35,7 @@
 
     expose-ssh = {
       networking.firewall.allowedTCPPorts = [ 22 ];
+      services.fail2ban.enable = true;
     };
   };
 
