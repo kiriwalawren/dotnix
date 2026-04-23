@@ -108,6 +108,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    microvm = {
+      url = "github:astro/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Server Dependencies
     nixflix = {
       url = "github:kiriwalawren/nixflix";

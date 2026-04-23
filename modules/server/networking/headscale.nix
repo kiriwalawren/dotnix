@@ -23,6 +23,13 @@
           description = "IP Address of vps.";
           readOnly = true;
         };
+
+        niks3 = lib.mkOption {
+          type = lib.types.str;
+          default = "127.0.0.1";
+          description = "IP Address of niks3.";
+          readOnly = true;
+        };
       };
 
       config.services.headscale.settings.dns.base_domain = "hs.${config.system.ddns.domain}";
@@ -82,6 +89,7 @@
                     dst = [
                       "tag:nixflix:22,80,443"
                       "tag:dns:22,80,443"
+                      "tag:niks3:22,80,443"
                     ];
                   }
 
@@ -196,7 +204,7 @@
               {
                 name = "niks3.${config.system.ddns.domain}";
                 type = "A";
-                value = config.tailscale.ips.homelab;
+                value = config.tailscale.ips.niks3;
               }
             ];
           };
