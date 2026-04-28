@@ -33,6 +33,7 @@
           allowHevcEncoding = true;
           enableHardwareEncoding = true;
           hardwareAccelerationType = "vaapi"; # AMD Graphics Card
+          enableTonemapping = true;
         };
         system.trickplayOptions.enableHwEncoding = true;
       };
