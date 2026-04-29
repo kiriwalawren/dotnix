@@ -55,17 +55,17 @@
               baseUrl = "https://yts.bz/";
             }
             {
-              enable = true;
+              enable = false;
               name = "The Pirate Bay";
               baseUrl = "https://thepiratebay.org/";
             }
             {
-              enable = true;
+              enable = false;
               name = "LimeTorrents";
               baseUrl = "https://www.limetorrents.fun/";
             }
             {
-              enable = true;
+              enable = false;
               name = "TorrentDownload";
               baseUrl = "https://www.torrentdownload.info/";
             }
