@@ -4,7 +4,8 @@
     {
       home.packages = with pkgs; [
         darktable
-        gimp2-with-plugins
+        # This one doesn't build. Removing it for now.
+        # gimp2-with-plugins
         rapidraw
       ];
     };
