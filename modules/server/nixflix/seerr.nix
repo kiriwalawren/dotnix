@@ -4,6 +4,8 @@
     {
       sops.secrets."seerr/api_key" = { };
 
+      system.backup.paths = [ config.nixflix.seerr.dataDir ];
+
       nixflix.seerr = {
         enable = true;
         subdomain = "request";

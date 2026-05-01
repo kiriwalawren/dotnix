@@ -28,6 +28,8 @@
         };
 
         ddns.enable = true;
+
+        backup.paths = [ "/var/lib" ];
       };
 
       server.adguardhome.serverIP = "100.64.0.4";

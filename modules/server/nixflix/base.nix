@@ -15,7 +15,7 @@ in
       ];
       sops.secrets."wireguard-confs/protonvpn-homelab-confinement" = { };
 
-      system.backup.paths = [ config.nixflix.stateDir ];
+      system.backup.paths = [ config.services.postgresql.dataDir ];
 
       nixflix = {
         enable = true;
