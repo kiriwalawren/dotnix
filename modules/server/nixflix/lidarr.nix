@@ -7,6 +7,8 @@
         "lidarr/password" = { };
       };
 
+      system.backup.paths = [ config.nixflix.lidarr.dataDir ];
+
       nixflix.lidarr = {
         enable = true;
         subdomain = "music";

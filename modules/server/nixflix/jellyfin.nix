@@ -8,6 +8,8 @@
       sops.secrets."jellyfin/kiri_password" = { };
       sops.secrets."jellyfin/api_key" = { };
 
+      system.backup.paths = [ config.nixflix.jellyfin.dataDir ];
+
       nixflix.jellyfin = {
         enable = true;
         apiKey._secret = config.sops.secrets."jellyfin/api_key".path;

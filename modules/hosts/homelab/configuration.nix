@@ -18,6 +18,8 @@
       };
 
       ddns.enable = true;
+
+      backup.paths = [ "/var/lib" ];
     };
 
     server.adguardhome = {

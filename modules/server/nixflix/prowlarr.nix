@@ -11,6 +11,8 @@
         "prowlarr/password" = { };
       };
 
+      system.backup.paths = [ config.nixflix.prowlarr.dataDir ];
+
       nixflix.prowlarr = {
         enable = true;
         subdomain = "indexers";

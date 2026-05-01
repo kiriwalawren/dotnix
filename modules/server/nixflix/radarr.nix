@@ -7,6 +7,8 @@
         "radarr/password" = { };
       };
 
+      system.backup.paths = [ config.nixflix.radarr.dataDir ];
+
       nixflix.radarr = {
         enable = true;
         subdomain = "movies";
