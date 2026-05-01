@@ -145,6 +145,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "subtitles.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "music.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
