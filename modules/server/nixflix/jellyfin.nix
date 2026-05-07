@@ -10,6 +10,7 @@
       sops.secrets."jellyfin/oidc-client-id" = { };
       sops.secrets."jellyfin/oidc-client-secret" = { };
       sops.secrets."opensubtitles-com/api-token" = { };
+      sops.secrets."opensubtitles-com/password" = { };
 
       system.backup.paths = [ config.nixflix.jellyfin.dataDir ];
 
@@ -70,6 +71,17 @@
               OpenSubToken._secret = config.sops.secrets."opensubtitles-com/api-token".path;
               EnableOpenSubtitles = true;
               EnableYifySubtitles = true;
+
+              Cache.SubLifeInMinutes = "Always";
+            };
+          };
+
+          "Open Subtitles" = {
+            enable = true;
+
+            config = {
+              Username = "kiriwalawren";
+              Password._secret = config.sops.secrets."opensubtitles-com/password".path;
             };
           };
 

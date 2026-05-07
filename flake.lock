@@ -450,8 +450,8 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1778180830,
-        "narHash": "sha256-cmuW6VNL3tf5hx/PtCwFMmt4QiTbez12ED6cxnrv7HY=",
+        "lastModified": 1778196312,
+        "narHash": "sha256-0FAGfGOhluyFsD+FAueYtWr8klIxLo72LauZjNzxvvc=",
         "path": "/home/walawren/gitrepos/nixflix",
         "type": "path"
       },
@@ -743,10 +743,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1778177743,
-        "narHash": "sha256-frqIotnxoj4oam16do3xGqltq7U/gJhu459B0HJk3zg=",
+        "lastModified": 1778196126,
+        "narHash": "sha256-XG6UVSJRdMGu2j/fJNaM7tQFQ0U6HHzIiST39YVBelg=",
         "ref": "main",
-        "rev": "60e50f144af026a9c2d8a68bc83747f0c6cf6f13",
+        "rev": "ec87a6f552f57a49d70817013d59a5d21e85be16",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
