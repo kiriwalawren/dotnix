@@ -48,15 +48,6 @@
               _secret = config.sops.secrets."jellyfin/kiri_password".path;
             };
           };
-          Kiri = {
-            mutable = false;
-            policy.isAdministrator = true;
-            password._secret = config.sops.secrets."jellyfin/kiri_password".path;
-            configuration = {
-              subtitleMode = "Always";
-              subtitleLanguagePreference = "spa";
-            };
-          };
         };
 
         system.pluginRepositories = {
