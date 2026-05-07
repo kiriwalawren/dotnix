@@ -59,6 +59,10 @@
             url = "https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/4ee785577e77b703f206c7a33f4123986d90f2c2/manifest.json";
             hash = "sha256-KeMfhBGoeeC3dW329sr1K0dnUaM35rYdAhr2y/o3vp4=";
           };
+          "Subbuz" = {
+            url = "https://raw.githubusercontent.com/josdion/subbuzz/f7c7985a00fe0910f548e3574a592fe8bb7f8ce4/repo/jellyfin_10.11.json";
+            hash = "sha256-YrKTQzM1p2THdKpX4azIVAzy4HDd2JARWI4TezqzA5o=";
+          };
         };
 
         plugins = {
