@@ -450,17 +450,14 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1778138370,
-        "narHash": "sha256-+nbIN+b76vX+mhkhL+2CVeX3j/2Z8EBCY8yy/14t2n0=",
-        "owner": "kiriwalawren",
-        "repo": "nixflix",
-        "rev": "a5c998fbb05576ba827be67db4bf60e947bbf1cd",
-        "type": "github"
+        "lastModified": 1778180830,
+        "narHash": "sha256-cmuW6VNL3tf5hx/PtCwFMmt4QiTbez12ED6cxnrv7HY=",
+        "path": "/home/walawren/gitrepos/nixflix",
+        "type": "path"
       },
       "original": {
-        "owner": "kiriwalawren",
-        "repo": "nixflix",
-        "type": "github"
+        "path": "/home/walawren/gitrepos/nixflix",
+        "type": "path"
       }
     },
     "nixos-anywhere": {
@@ -746,10 +743,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1778139249,
-        "narHash": "sha256-OUAA5m550jkP/9cmJaXFt+G0mTpRNsDQsiSRapsSyek=",
+        "lastModified": 1778177743,
+        "narHash": "sha256-frqIotnxoj4oam16do3xGqltq7U/gJhu459B0HJk3zg=",
         "ref": "main",
-        "rev": "080043d23a21b980f2485419ecb788dba6878083",
+        "rev": "60e50f144af026a9c2d8a68bc83747f0c6cf6f13",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
