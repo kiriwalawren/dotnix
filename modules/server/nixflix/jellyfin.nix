@@ -85,6 +85,12 @@
             };
           };
 
+          "Subtitle Extract" = {
+            enable = true;
+
+            config.ExtractionDuringLibraryScan = true;
+          };
+
           "Intro Skipper" = {
             package = fromRepo {
               version = "1.10.11.17";
