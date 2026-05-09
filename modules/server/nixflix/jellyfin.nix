@@ -52,20 +52,20 @@
           };
         };
 
-        libraries.Shows.subtitleDownloadLanguages = [
-          "eng"
-          "spa"
-        ];
-
-        libraries.Anime.subtitleDownloadLanguages = [
-          "eng"
-          "spa"
-        ];
-
-        libraries.Movies.subtitleDownloadLanguages = [
-          "eng"
-          "spa"
-        ];
+        libraries =
+          let
+            subtitleSettings = {
+              subtitleDownloadLanguages = [
+                "eng"
+                "spa"
+              ];
+            };
+          in
+          {
+            Shows = subtitleSettings;
+            Anime = subtitleSettings;
+            Movies = subtitleSettings;
+          };
 
         system.pluginRepositories = {
           "Intro Skipper" = {
