@@ -9,6 +9,8 @@
       sops.secrets."jellyfin/api_key" = { };
       sops.secrets."jellyfin/oidc-client-id" = { };
       sops.secrets."jellyfin/oidc-client-secret" = { };
+      sops.secrets."opensubtitles-com/api-token" = { };
+      sops.secrets."opensubtitles-com/password" = { };
 
       system.backup.paths = [ config.nixflix.jellyfin.dataDir ];
 
@@ -50,6 +52,21 @@
           };
         };
 
+        libraries.Shows.subtitleDownloadLanguages = [
+          "eng"
+          "spa"
+        ];
+
+        libraries.Anime.subtitleDownloadLanguages = [
+          "eng"
+          "spa"
+        ];
+
+        libraries.Movies.subtitleDownloadLanguages = [
+          "eng"
+          "spa"
+        ];
+
         system.pluginRepositories = {
           "Intro Skipper" = {
             url = "https://raw.githubusercontent.com/intro-skipper/manifest/d56c137ae182c04a894dd700c25b04c8d2eba855/10.11/manifest.json";
@@ -62,6 +79,33 @@
         };
 
         plugins = {
+          subbuzz = {
+            enable = true;
+
+            config = {
+              OpenSubToken._secret = config.sops.secrets."opensubtitles-com/api-token".path;
+              EnableOpenSubtitles = true;
+              EnableYifySubtitles = true;
+
+              Cache.SubLifeInMinutes = "Always";
+            };
+          };
+
+          "Open Subtitles" = {
+            enable = true;
+
+            config = {
+              Username = "kiriwalawren";
+              Password._secret = config.sops.secrets."opensubtitles-com/password".path;
+            };
+          };
+
+          "Subtitle Extract" = {
+            enable = true;
+
+            config.ExtractionDuringLibraryScan = true;
+          };
+
           "Intro Skipper" = {
             package = fromRepo {
               version = "1.10.11.17";
