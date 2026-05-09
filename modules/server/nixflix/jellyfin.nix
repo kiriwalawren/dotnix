@@ -9,7 +9,7 @@
       sops.secrets."jellyfin/api_key" = { };
       sops.secrets."jellyfin/oidc-client-id" = { };
       sops.secrets."jellyfin/oidc-client-secret" = { };
-      sops.secrets."opensubtitles-com/api-token" = { };
+      sops.secrets."opensubtitles-com/api-key" = { };
       sops.secrets."opensubtitles-com/password" = { };
 
       system.backup.paths = [ config.nixflix.jellyfin.dataDir ];
@@ -59,6 +59,7 @@
                 "eng"
                 "spa"
               ];
+              requirePerfectSubtitleMatch = true;
             };
           in
           {
@@ -83,20 +84,13 @@
             enable = true;
 
             config = {
-              OpenSubToken._secret = config.sops.secrets."opensubtitles-com/api-token".path;
+              OpenSubApiKey._secret = config.sops.secrets."opensubtitles-com/api-key".path;
+              OpenSubUserName = "kiriwalawren.com";
+              OpenSubPassword._secret = config.sops.secrets."opensubtitles-com/password".path;
               EnableOpenSubtitles = true;
               EnableYifySubtitles = true;
 
               Cache.SubLifeInMinutes = "Always";
-            };
-          };
-
-          "Open Subtitles" = {
-            enable = true;
-
-            config = {
-              Username = "kiriwalawren";
-              Password._secret = config.sops.secrets."opensubtitles-com/password".path;
             };
           };
 
