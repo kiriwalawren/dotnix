@@ -40,7 +40,7 @@
         owner = "headscale";
         group = "headscale";
       };
-      sops.secrets."pocket-id/headscale-vps-pre-authkey" = {
+      sops.secrets."headscale-pre-authkey" = {
         owner = "headscale";
         group = "headscale";
       };
@@ -222,7 +222,7 @@
 
           integration.agent = {
             enabled = true;
-            pre_authkey_path = config.sops.secrets."pocket-id/headscale-vps-pre-authkey".path;
+            pre_authkey_path = config.sops.secrets."headscale-pre-authkey".path;
           };
 
           oidc = {
