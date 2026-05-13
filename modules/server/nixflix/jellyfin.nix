@@ -181,7 +181,7 @@
                   OidClientId._secret = config.sops.secrets."jellyfin/oidc-client-id".path;
                   OidSecret._secret = config.sops.secrets."jellyfin/oidc-client-secret".path;
                   RoleClaim = "groups";
-                  DefaultProvider = null;
+                  DefaultProvider = "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider";
                   DefaultUsernameClaim = "preferred_username";
                   AvatarUrlFormat = "@{picture}";
                   SchemeOverride = "https";
