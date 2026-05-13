@@ -10,6 +10,7 @@
         enable = true;
         subdomain = "request";
         apiKey._secret = config.sops.secrets."seerr/api_key".path;
+        settings.users.defaultPermissions = 160;
       };
     };
 }
