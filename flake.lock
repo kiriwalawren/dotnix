@@ -389,11 +389,11 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1778442537,
-        "narHash": "sha256-1geBmsJNbH3gHK1W/TI/zo3uSxW17JfbC9R/x60Uf08=",
+        "lastModified": 1778709966,
+        "narHash": "sha256-9PBO/pU+SjeIQc5lbMPS7dswYdZOvYr4ehDSDTx+pZ0=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "f5be9be302af6eca11f7992858ec43b619fc73d9",
+        "rev": "9c9534a0782ff6bfdfb76461ad749de9606ea916",
         "type": "github"
       },
       "original": {

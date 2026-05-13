@@ -1,6 +1,11 @@
 {
   flake.modules.nixos.homelab =
-    { config, inputs, ... }:
+    {
+      config,
+      inputs,
+      lib,
+      ...
+    }:
     let
       inherit (inputs.nixflix.lib.jellyfinPlugins) fromRepo;
     in
@@ -66,6 +71,7 @@
             Shows = subtitleSettings;
             Anime = subtitleSettings;
             Movies = subtitleSettings;
+            Music = lib.mkForce null;
           };
 
         system.pluginRepositories = {
