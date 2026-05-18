@@ -108,10 +108,11 @@ in
             }
             {
               excludes = [
-                { app-id = "firefox"; }
-                { app-id = "rapidraw"; }
-                { app-id = "darktable"; }
                 { app-id = ".gimp-2.10-wrapped_"; }
+                { app-id = "darktable"; }
+                { app-id = "firefox"; }
+                { app-id = "plezy"; }
+                { app-id = "rapidraw"; }
               ];
               opacity = .85;
             }
