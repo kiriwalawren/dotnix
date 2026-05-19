@@ -7,6 +7,7 @@
         "indexer-api-keys/NZBFinder" = { };
         "indexer-api-keys/NzbPlanet" = { };
         "indexer-api-keys/NZBgeek" = { };
+        "indexer-api-keys/C411" = { };
         "prowlarr/api_key" = { };
         "prowlarr/password" = { };
       };
@@ -55,6 +56,11 @@
               enable = true;
               name = "YTS";
               baseUrl = "https://yts.bz/";
+            }
+            {
+              enable = false;
+              name = "C411";
+              apikey._secret = config.sops.secrets."indexer-api-keys/C411".path;
             }
             {
               enable = false;
