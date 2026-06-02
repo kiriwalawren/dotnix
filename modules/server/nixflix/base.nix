@@ -43,7 +43,6 @@ in
 
         recyclarr = {
           enable = true;
-          radarrQuality = "4K";
           cleanupUnmanagedProfiles.enable = true;
         };
       };
