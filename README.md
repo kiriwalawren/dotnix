@@ -130,4 +130,4 @@ Using `--secureboot` requires three pieces of configuration in the flake:
 - [sioodmy](https://github.com/sioodmy/dotfiles) for their NixOS and Hyprland configuration and badges
 - [IogaMaster](https://github.com/IogaMaster/dotfiles) for the most beautiful catppuccin nix flake, some Hyprland config, and the badges
 - [This reddit post](https://reddit.com/r/NixOS/comments/137j18j/comment/ju6h25k) for helping me figure out the bare minimum to get Hyprland running
-  - AMD GPU minimum required config [here](./modules/nixos/ui/hyprland.nix)
+  - AMD GPU minimum required config [here](./modules/gui/desktop/hyprland/hyprland.nix#L8-L45)

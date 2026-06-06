@@ -389,14 +389,18 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1780775590,
-        "narHash": "sha256-cXFHK1wQc+vTIJPQqQVRhogti0PpD6TvgHr2NyIffRU=",
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "lastModified": 1780775588,
+        "narHash": "sha256-NkCMkg6mjNbfz0v7DXjkET9cXE/p/8Peq+wh/zV52ic=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "6a3dc8370520d8d85f31c5fa5987a14d2de9afcf",
+        "type": "github"
       },
       "original": {
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "owner": "kiriwalawren",
+        "ref": "maintainerr",
+        "repo": "nixflix",
+        "type": "github"
       }
     },
     "nixos-anywhere": {
@@ -939,11 +943,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780316349,
-        "narHash": "sha256-5lEgFOaTQUVFdYzxda3A/t9kuH/THHC1R3jMrO5Ueik=",
+        "lastModified": 1780599276,
+        "narHash": "sha256-TZtD116bE+B/XShyrQYs6UwC8lb87ywSdSUbN0X9TN4=",
         "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "b18258ac89c058474334817efa7d9f6201cea33a",
+        "rev": "b3bcf9c2af331e018ab365d1e4f8501af1373e6e",
         "type": "github"
       },
       "original": {
