@@ -1,12 +1,14 @@
 {
-  flake.modules.homeManager.niri =
+  flake.wrappers.noctalia-shell =
     { lib, pkgs, ... }:
     {
-      programs.noctalia-shell.settings.appLauncher = {
+      settings.appLauncher = {
         enableClipboardHistory = true;
         autoPasteClipboard = false;
         enableClipPreview = true;
         clipboardWrapText = true;
+        enableClipboardSmartIcons = true;
+        enableClipboardChips = true;
         clipboardWatchTextCommand = "wl-paste --type text --watch cliphist store";
         clipboardWatchImageCommand = "wl-paste --type image --watch cliphist store";
         position = "center";
