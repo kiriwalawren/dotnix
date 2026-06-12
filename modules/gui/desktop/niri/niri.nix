@@ -113,6 +113,10 @@ in
                 { app-id = "firefox"; }
                 { app-id = "plezy"; }
                 { app-id = "rapidraw"; }
+                { app-id = "Loupe"; }
+                { app-id = "qimgv"; }
+                { app-id = "imv"; }
+                { app-id = "Geeqie"; }
               ];
               opacity = .85;
             }
