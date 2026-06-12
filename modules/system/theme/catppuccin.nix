@@ -1,5 +1,10 @@
 { inputs, lib, ... }:
 let
+  accent = "teal";
+  secondaryAccent = "mauve";
+  tertiaryAccent = "pink";
+  flavor = "mocha";
+
   palettes = {
     latte = {
       rosewater = "dc8a78";
@@ -122,27 +127,27 @@ let
     flavor:
     palettes.${flavor}
     // {
-      primaryAccent = palettes.${flavor}.teal;
-      secondaryAccent = palettes.${flavor}.mauve;
-      tertiaryAccent = palettes.${flavor}.pink;
+      primaryAccent = palettes.${flavor}.${accent};
+      secondaryAccent = palettes.${flavor}.${secondaryAccent};
+      tertiaryAccent = palettes.${flavor}.${tertiaryAccent};
     };
 
-  catppuccinColorsModule =
-    { config, ... }:
-    {
-      options.catppuccin.colors = lib.mapAttrs (
-        name: default:
-        lib.mkOption {
-          inherit default;
-          type = lib.types.str;
-          description = "Hex color value for ${name} (without #)";
-        }
-      ) (paletteFor "mocha");
+  catppuccinColorsModule = _: {
+    options.catppuccin.colors = lib.mapAttrs (
+      name: default:
+      lib.mkOption {
+        inherit default;
+        type = lib.types.str;
+        description = "Hex color value for ${name} (without #)";
+      }
+    ) (paletteFor "mocha");
 
-      config.catppuccin.colors = lib.mapAttrs (_: lib.mkDefault) (paletteFor config.catppuccin.flavor);
-    };
+    config.catppuccin.colors = lib.mapAttrs (_: lib.mkDefault) (paletteFor flavor);
+  };
 in
 {
+  imports = [ catppuccinColorsModule ];
+
   flake.modules.nixos.base = {
     imports = [
       inputs.catppuccin.nixosModules.catppuccin
@@ -150,9 +155,9 @@ in
     ];
 
     catppuccin = {
+      inherit accent flavor;
       enable = true;
-      accent = "teal";
-      flavor = "mocha";
+      autoEnable = true;
       tty.enable = true;
     };
   };
@@ -164,9 +169,9 @@ in
     ];
 
     catppuccin = {
+      inherit accent flavor;
       enable = true;
-      accent = "teal";
-      flavor = "mocha";
+      autoEnable = true;
     };
   };
 }

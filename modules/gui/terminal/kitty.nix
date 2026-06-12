@@ -1,5 +1,11 @@
 { config, ... }:
 {
+  flake.wrappers.niri =
+    { pkgs, lib, ... }:
+    {
+      settings.binds."Mod+Return".spawn = [ (lib.getExe pkgs.kitty) ];
+    };
+
   flake.modules.homeManager.gui =
     { lib, pkgs, ... }:
     {
@@ -22,7 +28,5 @@
       };
 
       wayland.windowManager.hyprland.settings.bind = [ "SUPER,Return,exec,${lib.getExe pkgs.kitty}" ];
-
-      programs.niri.settings.binds."Mod+Return".action.spawn = [ (lib.getExe pkgs.kitty) ];
     };
 }

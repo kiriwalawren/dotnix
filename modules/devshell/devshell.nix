@@ -18,11 +18,9 @@
           ++ [
             age
             cachix
+            sops
             self'.packages.bootstrap-nixos
             self'.packages.create-vm
-            sops
-            ssh-to-age
-            yq-go
           ];
       };
     };

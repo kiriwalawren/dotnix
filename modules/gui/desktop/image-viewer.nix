@@ -2,18 +2,21 @@
   flake.modules.homeManager.gui =
     { pkgs, ... }:
     {
-      home.packages = [ pkgs.loupe ];
-
+      home.packages = [
+        pkgs.qimgv
+      ];
       xdg.mimeApps = {
         enable = true;
         defaultApplications = {
-          "image/png" = "org.gnome.Loupe.desktop";
-          "image/jpeg" = "org.gnome.Loupe.desktop";
-          "image/gif" = "org.gnome.Loupe.desktop";
-          "image/webp" = "org.gnome.Loupe.desktop";
-          "image/tiff" = "org.gnome.Loupe.desktop";
-          "image/bmp" = "org.gnome.Loupe.desktop";
-          "image/svg+xml" = "org.gnome.Loupe.desktop";
+          "image/png" = "qimgv.desktop";
+          "image/jpeg" = "qimgv.desktop";
+          "image/gif" = "qimgv.desktop";
+          "image/webp" = "qimgv.desktop";
+          "image/tiff" = "qimgv.desktop";
+          "image/bmp" = "qimgv.desktop";
+          "image/svg+xml" = "qimgv.desktop";
+          "image/x-sony-arw" = "qimgv.desktop";
+          "image/x-dcraw" = "qimgv.desktop";
         };
       };
     };
