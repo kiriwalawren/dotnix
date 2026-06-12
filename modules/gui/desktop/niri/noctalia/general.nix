@@ -24,6 +24,8 @@
     allowPanelsOnScreenWithoutBar = true;
     showChangelogOnStartup = true;
     telemetryEnabled = false;
+    enableLockScreenMediaControls = false;
+    enableBlurBehind = true;
     enableLockScreenCountdown = true;
     lockScreenCountdownDuration = 10000;
     autoStartAuth = true;
@@ -39,10 +41,14 @@
       keyDown = [ "Down" ];
       keyLeft = [ "Left" ];
       keyRight = [ "Right" ];
-      keyEnter = [ "Return" ];
+      keyEnter = [
+        "Return"
+        "Enter"
+      ];
       keyEscape = [ "Esc" ];
       keyRemove = [ "Del" ];
     };
     reverseScroll = false;
+    smoothScrollEnabled = true;
   };
 }

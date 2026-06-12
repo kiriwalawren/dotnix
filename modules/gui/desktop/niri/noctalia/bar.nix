@@ -44,6 +44,8 @@
               occupiedColor = "secondary";
               pillSize = 0.6;
               showApplications = false;
+              showApplicationsHover = false;
+              fontWeight = "bold";
               showBadge = true;
               showLabelsOnlyWhenOccupied = true;
               unfocusedIconsOpacity = 1;
@@ -68,6 +70,7 @@
               compactMode = true;
               diskPath = "/";
               iconColor = "primary";
+              showCpuCores = false;
               showCpuFreq = false;
               showCpuTemp = true;
               showCpuUsage = true;
@@ -180,6 +183,7 @@
               id = "ControlCenter";
               colorizeDistroLogo = true;
               colorizeSystemIcon = "tertiary";
+              colorizeSystemText = "none";
               customIconPath = "";
               enableColorization = true;
               icon = "noctalia";

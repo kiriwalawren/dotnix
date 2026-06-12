@@ -31,15 +31,17 @@
       imports = [ wlib.wrapperModules.noctalia-shell ];
 
       settings = {
-        settingsVersion = 53;
+        settingsVersion = 59;
         ui = {
           fontDefault = "Sans Serif";
           fontFixed = "monospace";
           fontDefaultScale = 1;
           fontFixedScale = 1;
           tooltipsEnabled = true;
+          scrollbarAlwaysVisible = true;
           boxBorderEnabled = false;
           panelBackgroundOpacity = 0.93;
+          translucentWidgets = false;
           panelsAttachedToBar = true;
           settingsPanelMode = "attached";
           settingsPanelSideBarCardStyle = false;
@@ -57,6 +59,8 @@
           firstDayOfWeek = -1;
           hideWeatherTimezone = false;
           hideWeatherCityName = false;
+          weatherTaliaMascotAlways = false;
+          autoLocate = false;
         };
         calendar = {
           cards = [
@@ -110,6 +114,7 @@
           bluetoothDetailsViewMode = "grid";
           bluetoothHideUnnamedDevices = false;
           disableDiscoverability = false;
+          bluetoothAutoConnect = true;
         };
         osd = {
           enabled = true;
@@ -127,7 +132,8 @@
         audio = {
           volumeStep = 5;
           volumeOverdrive = false;
-          cavaFrameRate = 30;
+          spectrumFrameRate = 30;
+          spectrumMirrored = true;
           visualizerType = "linear";
           mprisBlacklist = [ ];
           preferredPlayer = "";
@@ -149,6 +155,7 @@
           manualSunset = "18:30";
           generationMethod = "tonal-spot";
           monitorForColors = "";
+          syncGsettings = true;
         };
         templates = {
           activeTemplates = [ ];
@@ -173,6 +180,7 @@
           performanceModeDisabled = "";
           startup = "";
           session = "";
+          colorGeneration = "";
         };
         idle = {
           enabled = true;
@@ -180,7 +188,17 @@
           lockTimeout = 600;
           suspendTimeout = 900;
           fadeDuration = 5;
+          screenOffCommand = "";
+          lockCommand = "";
+          suspendCommand = "";
+          resumeScreenOffCommand = "";
+          resumeLockCommand = "";
+          resumeSuspendCommand = "";
           customCommands = "[]";
+        };
+        noctaliaPerformance = {
+          disableWallpaper = true;
+          disableDesktopWidgets = true;
         };
       };
     };

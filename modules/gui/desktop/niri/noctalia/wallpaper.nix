@@ -9,6 +9,7 @@
     showHiddenFiles = false;
     viewMode = "single";
     setWallpaperOnAllMonitors = true;
+    linkLightAndDarkWallpapers = true;
     fillMode = "crop";
     fillColor = "#000000";
     useSolidColor = false;
@@ -17,11 +18,19 @@
     wallpaperChangeMode = "random";
     randomIntervalSec = 3600;
     transitionDuration = 1500;
-    transitionType = "random";
+    transitionType = [
+      "fade"
+      "disc"
+      "stripes"
+      "wipe"
+      "pixelate"
+      "honeycomb"
+    ];
     skipStartupTransition = false;
     transitionEdgeSmoothness = 0.05;
     panelPosition = "follow_bar";
     hideWallpaperFilenames = false;
+    useOriginalImages = false;
     overviewBlur = 0.4;
     overviewTint = 0.6;
     useWallhaven = false;
