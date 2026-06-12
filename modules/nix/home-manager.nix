@@ -16,6 +16,7 @@ in
             { osConfig, ... }:
             {
               home.stateVersion = osConfig.system.stateVersion;
+              home.enableNixpkgsReleaseCheck = false;
             }
           )
         ];

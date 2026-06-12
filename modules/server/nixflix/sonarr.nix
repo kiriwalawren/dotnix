@@ -7,6 +7,8 @@
         "sonarr/password" = { };
       };
 
+      system.backup.paths = [ config.nixflix.sonarr.dataDir ];
+
       nixflix.sonarr = {
         enable = true;
         subdomain = "tv";

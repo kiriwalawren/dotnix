@@ -1,6 +1,6 @@
 {
   configurations.nixos.vps.modules.configuration =
-    { pkgs, ... }:
+    { pkgs, inputs, ... }:
     {
       imports = [
         ./_hardware-configuration.nix
@@ -14,6 +14,13 @@
           address = "fe80::1";
           interface = "enp1s0";
         };
+
+        interfaces.enp1s0.ipv6.addresses = [
+          {
+            address = inputs.secrets.ipv6.vps;
+            prefixLength = 64;
+          }
+        ];
       };
 
       documentation.man.enable = false;
@@ -28,6 +35,8 @@
         };
 
         ddns.enable = true;
+
+        backup.paths = [ "/var/lib" ];
       };
 
       server.adguardhome.serverIP = "100.64.0.4";

@@ -1,11 +1,8 @@
 {
   lib,
-  inputs,
   ...
 }:
 {
-  nixpkgs.overlays = [ inputs.headplane.overlays.default ];
-
   flake.modules.nixos.base =
     { config, ... }:
     {
@@ -38,8 +35,6 @@
   flake.modules.nixos.vps =
     { config, ... }:
     {
-      imports = [ inputs.headplane.nixosModules.headplane ];
-
       sops.secrets."headplane/cookie-secret" = {
         owner = "headscale";
         group = "headscale";
@@ -49,6 +44,10 @@
         group = "headscale";
       };
       sops.secrets."pocket-id/headscale-client-secret" = {
+        owner = "headscale";
+        group = "headscale";
+      };
+      sops.secrets."headscale-pre-authkey" = {
         owner = "headscale";
         group = "headscale";
       };
@@ -230,30 +229,32 @@
       services.headplane = {
         enable = true;
         # debug = true;
+
         settings = {
           server = {
             host = "127.0.0.1";
             port = 4040;
-            base_url = "https://headscale.${config.system.ddns.domain}/admin";
+            base_url = "https://headscale.${config.system.ddns.domain}";
             cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
             cookie_secure = true;
           };
 
           headscale = {
             config_path = config.services.headscale.configFile;
-            url = "https://headscale.${config.system.ddns.domain}";
-            api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
+            public_url = "https://headscale.${config.system.ddns.domain}";
           };
 
           integration.agent = {
             enabled = true;
+            pre_authkey_path = config.sops.secrets."headscale-pre-authkey".path;
           };
 
           oidc = {
             inherit (config.system.auth) issuer;
+            use_pkce = true;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            use_pkce = true;
+            headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
         };
       };

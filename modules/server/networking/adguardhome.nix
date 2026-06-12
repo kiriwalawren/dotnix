@@ -94,31 +94,6 @@
                 "https://cloudflare-dns.com/dns-query"
               ];
             };
-            filtering = {
-              blocked_services = {
-                schedule =
-                  let
-                    dailyAccessWindow = {
-                      start = "5h";
-                      end = "23h";
-                    };
-                  in
-                  {
-                    time_zone = "Local";
-                    sun = dailyAccessWindow;
-                    mon = dailyAccessWindow;
-                    tue = dailyAccessWindow;
-                    wed = dailyAccessWindow;
-                    thu = dailyAccessWindow;
-                    fri = dailyAccessWindow;
-                    sat = dailyAccessWindow;
-                  };
-                ids = [
-                  "instagram"
-                  "reddit"
-                ];
-              };
-            };
             filters =
               map
                 (url: {

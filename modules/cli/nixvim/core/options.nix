@@ -1,5 +1,7 @@
 {
   flake.modules.nixvim.base = {
+    version.enableNixpkgsReleaseCheck = false;
+
     globals = {
       mapleader = " ";
       maplocalleader = "\\";

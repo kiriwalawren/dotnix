@@ -7,9 +7,12 @@
         "indexer-api-keys/NZBFinder" = { };
         "indexer-api-keys/NzbPlanet" = { };
         "indexer-api-keys/NZBgeek" = { };
+        "indexer-api-keys/C411" = { };
         "prowlarr/api_key" = { };
         "prowlarr/password" = { };
       };
+
+      system.backup.paths = [ config.nixflix.prowlarr.dataDir ];
 
       nixflix.prowlarr = {
         enable = true;
@@ -55,17 +58,22 @@
               baseUrl = "https://yts.bz/";
             }
             {
-              enable = true;
+              enable = false;
+              name = "C411";
+              apikey._secret = config.sops.secrets."indexer-api-keys/C411".path;
+            }
+            {
+              enable = false;
               name = "The Pirate Bay";
               baseUrl = "https://thepiratebay.org/";
             }
             {
-              enable = true;
+              enable = false;
               name = "LimeTorrents";
               baseUrl = "https://www.limetorrents.fun/";
             }
             {
-              enable = true;
+              enable = false;
               name = "TorrentDownload";
               baseUrl = "https://www.torrentdownload.info/";
             }

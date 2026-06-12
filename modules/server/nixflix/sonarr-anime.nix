@@ -7,6 +7,8 @@
         "sonarr-anime/password" = { };
       };
 
+      system.backup.paths = [ config.nixflix.sonarr-anime.dataDir ];
+
       nixflix.sonarr-anime = {
         enable = true;
         subdomain = "anime";

@@ -60,8 +60,6 @@ in
           content = ''
             CLOUDFLARE_API_TOKEN=${config.sops.placeholder."cloudflare/api-token"}
             CLOUDFLARE_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dns-api-token"}
-            CF_API_TOKEN=${config.sops.placeholder."cloudflare/api-token"}
-            CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dns-api-token"}
           '';
         };
 
@@ -78,7 +76,10 @@ in
           acceptTerms = true;
           defaults = {
             dnsProvider = "cloudflare";
-            credentialsFile = config.sops.templates."cloudflare-ddns.env".path;
+            credentialFiles = {
+              CLOUDFLARE_API_TOKEN_FILE = config.sops.secrets."cloudflare/api-token".path;
+              CLOUDFLARE_DNS_API_TOKEN_FILE = config.sops.secrets."cloudflare/dns-api-token".path;
+            };
             email = "${config.networking.hostName}@${cfg.domain}";
             dnsResolver = "100.64.0.6:53";
           };

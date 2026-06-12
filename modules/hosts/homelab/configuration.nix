@@ -18,6 +18,8 @@
       };
 
       ddns.enable = true;
+
+      backup.paths = [ "/var/lib" ];
     };
 
     server.adguardhome = {
@@ -33,6 +35,7 @@
           allowHevcEncoding = true;
           enableHardwareEncoding = true;
           hardwareAccelerationType = "vaapi"; # AMD Graphics Card
+          enableTonemapping = true;
         };
         system.trickplayOptions.enableHwEncoding = true;
       };
