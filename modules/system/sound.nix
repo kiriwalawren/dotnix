@@ -3,6 +3,39 @@ let
   user = config.user.name;
 in
 {
+  flake.wrappers.niri =
+    { lib, ... }:
+    let
+      noctalia =
+        cmd:
+        [
+          "noctalia-shell"
+          "ipc"
+          "call"
+        ]
+        ++ (lib.splitString " " cmd);
+    in
+    {
+      settings = {
+        binds = {
+          "XF86AudioRaiseVolume".spawn = noctalia "volume increase";
+          "XF86AudioLowerVolume".spawn = noctalia "volume decrease";
+          "XF86AudioMute".spawn = noctalia "volume muteOutput";
+          "CTRL+Space".spawn = noctalia "volume muteInput";
+        };
+
+        window-rules = [
+          {
+            matches = [ { app-id = "wiremix"; } ];
+            open-floating = true;
+            default-column-width.fixed = 750;
+            default-window-height.fixed = 700;
+            opacity = 1.0;
+          }
+        ];
+      };
+    };
+
   flake.modules.nixos.sound = {
     users.users.${user}.extraGroups = [
       "audio"
@@ -63,16 +96,6 @@ in
       # Waybar integration - override the pulseaudio on-click
       programs.waybar.settings.mainBar.pulseaudio.on-click =
         "pkill wiremix || ${lib.getExe pkgs.kitty} --class=wiremix ${lib.getExe pkgs.wiremix}";
-
-      programs.niri.settings.window-rules = [
-        {
-          matches = [ { app-id = "wiremix"; } ];
-          open-floating = true;
-          default-column-width.fixed = 750;
-          default-window-height.fixed = 700;
-          opacity = 1.0;
-        }
-      ];
 
       wayland.windowManager.hyprland.settings = {
         windowrule = [

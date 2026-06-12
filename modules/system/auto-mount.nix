@@ -8,17 +8,18 @@
       '';
     };
 
+  flake.wrappers.niri =
+    { pkgs, lib, ... }:
+    {
+      settings.spawn-at-startup = [
+        "${(lib.getExe pkgs.udiskie)}"
+        "--notify"
+      ];
+    };
+
   flake.modules.homeManager.gui =
     { pkgs, lib, ... }:
     {
-      programs.niri.settings.spawn-at-startup = [
-        {
-          command = [
-            (lib.getExe pkgs.udiskie)
-            "--notify"
-          ];
-        }
-      ];
 
       wayland.windowManager.hyprland.settings = {
         "exec-once" = [

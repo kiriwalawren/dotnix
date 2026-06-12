@@ -1,7 +1,6 @@
 {
-  flake.modules.homeManager.niri =
+  flake.wrappers.niri =
     {
-      config,
       pkgs,
       lib,
       ...
@@ -30,9 +29,9 @@
       '';
     in
     {
-      programs.niri.settings.binds = {
-        "Mod+C".action.spawn = [ (lib.getExe screenshot-copy) ];
-        "Mod+E".action.spawn = [ (lib.getExe screenshot-edit) ];
+      settings.binds = {
+        "Mod+C".spawn = [ (lib.getExe screenshot-copy) ];
+        "Mod+E".spawn = [ (lib.getExe screenshot-edit) ];
       };
     };
 }

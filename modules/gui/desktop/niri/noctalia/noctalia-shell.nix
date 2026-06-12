@@ -8,21 +8,19 @@
     imports = [ inputs.noctalia.homeModules.default ];
   };
 
-  flake.modules.homeManager.niri = {
-    programs.niri.settings = {
+  flake.wrappers.niri = {
+    settings = {
       debug.honor-xdg-activation-with-invalid-serial = [ ];
 
       spawn-at-startup = [
-        {
-          command = [
-            "env"
-            "NOCTALIA_PAM_SERVICE=noctalia-shell"
-            "noctalia-shell"
-          ];
-        }
+        "env"
+        "NOCTALIA_PAM_SERVICE=noctalia-shell"
+        "noctalia-shell"
       ];
     };
+  };
 
+  flake.modules.homeManager.niri = {
     programs.noctalia-shell = {
       enable = true;
       settings = {

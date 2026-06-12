@@ -207,10 +207,12 @@
       services.headplane = {
         enable = true;
         # debug = true;
+
         settings = {
           server = {
             host = "127.0.0.1";
             port = 4040;
+            base_url = "https://headscale.${config.system.ddns.domain}";
             cookie_secret_path = config.sops.secrets."headplane/cookie-secret".path;
             cookie_secure = true;
           };
@@ -227,10 +229,10 @@
 
           oidc = {
             inherit (config.system.auth) issuer;
+            use_pkce = true;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
             headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
-            redirect_uri = "https://headscale.${config.system.ddns.domain}/admin/oidc/callback";
           };
         };
       };
