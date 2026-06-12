@@ -1,38 +1,47 @@
-{ inputs, ... }:
+{ self, ... }:
 {
-  flake.modules.nixos.niri = {
-    services.upower.enable = true;
-  };
-
-  flake.modules.homeManager.gui = {
-    imports = [ inputs.noctalia.homeModules.default ];
-  };
-
-  flake.wrappers.niri = {
-    settings = {
-      debug.honor-xdg-activation-with-invalid-serial = [ ];
-
-      spawn-at-startup = [
-        "env"
-        "NOCTALIA_PAM_SERVICE=noctalia-shell"
-        "noctalia-shell"
-      ];
+  flake.modules.nixos.niri =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell ];
+      services.upower.enable = true;
     };
-  };
 
-  flake.modules.homeManager.niri = {
-    programs.noctalia-shell = {
-      enable = true;
+  flake.wrappers.niri =
+    {
+      lib,
+      pkgs,
+      ...
+    }:
+    {
       settings = {
-        settingsVersion = 53;
+        debug.honor-xdg-activation-with-invalid-serial = [ ];
+
+        spawn-at-startup = [
+          "env"
+          "NOCTALIA_PAM_SERVICE=noctalia-shell"
+          (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell)
+        ];
+      };
+    };
+
+  flake.wrappers.noctalia-shell =
+    { wlib, ... }:
+    {
+      imports = [ wlib.wrapperModules.noctalia-shell ];
+
+      settings = {
+        settingsVersion = 59;
         ui = {
           fontDefault = "Sans Serif";
           fontFixed = "monospace";
           fontDefaultScale = 1;
           fontFixedScale = 1;
           tooltipsEnabled = true;
+          scrollbarAlwaysVisible = true;
           boxBorderEnabled = false;
           panelBackgroundOpacity = 0.93;
+          translucentWidgets = false;
           panelsAttachedToBar = true;
           settingsPanelMode = "attached";
           settingsPanelSideBarCardStyle = false;
@@ -50,6 +59,8 @@
           firstDayOfWeek = -1;
           hideWeatherTimezone = false;
           hideWeatherCityName = false;
+          weatherTaliaMascotAlways = false;
+          autoLocate = false;
         };
         calendar = {
           cards = [
@@ -103,6 +114,7 @@
           bluetoothDetailsViewMode = "grid";
           bluetoothHideUnnamedDevices = false;
           disableDiscoverability = false;
+          bluetoothAutoConnect = true;
         };
         osd = {
           enabled = true;
@@ -120,7 +132,8 @@
         audio = {
           volumeStep = 5;
           volumeOverdrive = false;
-          cavaFrameRate = 30;
+          spectrumFrameRate = 30;
+          spectrumMirrored = true;
           visualizerType = "linear";
           mprisBlacklist = [ ];
           preferredPlayer = "";
@@ -142,6 +155,7 @@
           manualSunset = "18:30";
           generationMethod = "tonal-spot";
           monitorForColors = "";
+          syncGsettings = true;
         };
         templates = {
           activeTemplates = [ ];
@@ -166,6 +180,7 @@
           performanceModeDisabled = "";
           startup = "";
           session = "";
+          colorGeneration = "";
         };
         idle = {
           enabled = true;
@@ -173,9 +188,18 @@
           lockTimeout = 600;
           suspendTimeout = 900;
           fadeDuration = 5;
+          screenOffCommand = "";
+          lockCommand = "";
+          suspendCommand = "";
+          resumeScreenOffCommand = "";
+          resumeLockCommand = "";
+          resumeSuspendCommand = "";
           customCommands = "[]";
+        };
+        noctaliaPerformance = {
+          disableWallpaper = true;
+          disableDesktopWidgets = true;
         };
       };
     };
-  };
 }

@@ -1,7 +1,8 @@
 {
-  flake.modules.homeManager.niri.programs.noctalia-shell.settings = {
+  flake.wrappers.noctalia-shell.settings = {
     plugins = {
       autoUpdate = true;
+      notifyUpdates = true;
       sources = [
         {
           enabled = true;
@@ -25,18 +26,25 @@
     pluginSettings = {
       tailscale = {
         refreshInterval = 5000;
-        compactMode = true;
-        showIpAddress = false;
-        showPeerCount = false;
+        compactMode = false;
+        showIpAddress = true;
+        showPeerCount = true;
         hideDisconnected = false;
-        terminalCommand = "kitty";
+        hideMullvadExitNodes = true;
+        loginServer = "";
+        showSearchBar = false;
+        sshUsername = "";
+        taildropDownloadDir = "~/Downloads";
+        taildropEnabled = true;
+        taildropReceiveMode = "operator";
+        terminalCommand = "";
         pingCount = 5;
-        defaultPeerAction = "copy";
+        defaultPeerAction = "copy-ip";
       };
 
       timer = {
-        defaulltDuration = 0;
-        compactMode = true;
+        defaultDuration = 0;
+        compactMode = false;
         iconColor = "tertiary";
         textColor = "tertiary";
       };
