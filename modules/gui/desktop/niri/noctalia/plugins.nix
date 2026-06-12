@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.niri.programs.noctalia-shell.settings = {
+  flake.wrappers.noctalia-shell.settings = {
     plugins = {
       autoUpdate = true;
       sources = [

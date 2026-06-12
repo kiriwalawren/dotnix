@@ -1,8 +1,8 @@
 {
-  flake.modules.homeManager.niri =
+  flake.wrappers.noctalia-shell =
     { lib, pkgs, ... }:
     {
-      programs.noctalia-shell.settings.bar = {
+      settings.bar = {
         barType = "floating";
         position = "top";
         monitors = [ ];

@@ -1,15 +1,16 @@
+{ self, ... }:
 {
   flake.wrappers.niri =
-    { pkgs, ... }:
+    { pkgs, lib, ... }:
     let
       noctalia =
         cmd:
         [
-          "noctalia-shell"
+          (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell)
           "ipc"
           "call"
         ]
-        ++ (pkgs.lib.splitString " " cmd);
+        ++ (lib.splitString " " cmd);
     in
     {
       settings.binds = {
@@ -30,6 +31,11 @@
         # Brightness
         "XF86MonBrightnessUp".spawn = noctalia "brightness increase";
         "XF86MonBrightnessDown".spawn = noctalia "brightness decrease";
+
+        # Wallpaper
+        "Mod+R".spawn = noctalia "wallpaper random";
       };
     };
+
+  # TODO: bindings for hyperland should be replicated/moved here
 }

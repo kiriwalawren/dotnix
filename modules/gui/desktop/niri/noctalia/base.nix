@@ -1,28 +1,35 @@
-{ inputs, ... }:
+{ self, ... }:
 {
-  flake.modules.nixos.niri = {
-    services.upower.enable = true;
-  };
-
-  flake.modules.homeManager.gui = {
-    imports = [ inputs.noctalia.homeModules.default ];
-  };
-
-  flake.wrappers.niri = {
-    settings = {
-      debug.honor-xdg-activation-with-invalid-serial = [ ];
-
-      spawn-at-startup = [
-        "env"
-        "NOCTALIA_PAM_SERVICE=noctalia-shell"
-        "noctalia-shell"
-      ];
+  flake.modules.nixos.niri =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell ];
+      services.upower.enable = true;
     };
-  };
 
-  flake.modules.homeManager.niri = {
-    programs.noctalia-shell = {
-      enable = true;
+  flake.wrappers.niri =
+    {
+      lib,
+      pkgs,
+      ...
+    }:
+    {
+      settings = {
+        debug.honor-xdg-activation-with-invalid-serial = [ ];
+
+        spawn-at-startup = [
+          "env"
+          "NOCTALIA_PAM_SERVICE=noctalia-shell"
+          (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell)
+        ];
+      };
+    };
+
+  flake.wrappers.noctalia-shell =
+    { wlib, ... }:
+    {
+      imports = [ wlib.wrapperModules.noctalia-shell ];
+
       settings = {
         settingsVersion = 53;
         ui = {
@@ -177,5 +184,4 @@
         };
       };
     };
-  };
 }

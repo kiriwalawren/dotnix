@@ -1,8 +1,8 @@
 {
-  flake.modules.homeManager.niri =
+  flake.wrappers.noctalia-shell =
     { lib, pkgs, ... }:
     {
-      programs.noctalia-shell.settings.appLauncher = {
+      settings.appLauncher = {
         enableClipboardHistory = true;
         autoPasteClipboard = false;
         enableClipPreview = true;
