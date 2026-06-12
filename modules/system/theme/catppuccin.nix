@@ -132,20 +132,18 @@ let
       tertiaryAccent = palettes.${flavor}.${tertiaryAccent};
     };
 
-  catppuccinColorsModule =
-    _:
-    {
-      options.catppuccin.colors = lib.mapAttrs (
-        name: default:
-        lib.mkOption {
-          inherit default;
-          type = lib.types.str;
-          description = "Hex color value for ${name} (without #)";
-        }
-      ) (paletteFor "mocha");
+  catppuccinColorsModule = _: {
+    options.catppuccin.colors = lib.mapAttrs (
+      name: default:
+      lib.mkOption {
+        inherit default;
+        type = lib.types.str;
+        description = "Hex color value for ${name} (without #)";
+      }
+    ) (paletteFor "mocha");
 
-      config.catppuccin.colors = lib.mapAttrs (_: lib.mkDefault) (paletteFor flavor);
-    };
+    config.catppuccin.colors = lib.mapAttrs (_: lib.mkDefault) (paletteFor flavor);
+  };
 in
 {
   imports = [ catppuccinColorsModule ];
@@ -159,6 +157,7 @@ in
     catppuccin = {
       inherit accent flavor;
       enable = true;
+      autoEnable = true;
       tty.enable = true;
     };
   };
@@ -172,6 +171,7 @@ in
     catppuccin = {
       inherit accent flavor;
       enable = true;
+      autoEnable = true;
     };
   };
 }

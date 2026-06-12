@@ -8,7 +8,7 @@ in
   ];
 
   flake.modules.homeManager.gui =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       catppuccin.firefox = {
         enable = true;
@@ -17,6 +17,7 @@ in
 
       programs.firefox = {
         enable = true;
+        configPath = "${config.xdg.configHome}/mozilla/firefox";
 
         policies = {
           DisableTelemetry = true;
