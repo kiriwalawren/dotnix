@@ -163,6 +163,7 @@ in
                   "@nixpkgs"
                 ];
               };
+
               "Nix Options" = {
                 urls = [
                   {
@@ -185,6 +186,7 @@ in
                   "@nixopts"
                 ];
               };
+
               "NixOS Wiki" = {
                 urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
                 iconUpdateUrl = "https://nixos.wiki/favicon.png";
@@ -194,6 +196,24 @@ in
                   "@nixwiki"
                 ];
               };
+
+              "YouTube" = {
+                urls = [
+                  {
+                    template = "https://youtube.com/results";
+                    params = [
+                      {
+                        name = "search_query";
+                        value = "{searchTerms}";
+                      }
+                    ];
+                  }
+                ];
+                definedAliases = [
+                  "@yt"
+                ];
+              };
+
               "bing".metaData.hidden = true;
               "google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias
             };
