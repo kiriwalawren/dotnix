@@ -19,6 +19,7 @@ in
       primaryAccent = rgba config.catppuccin.colors.primaryAccent;
       secondaryAccent = rgba config.catppuccin.colors.secondaryAccent;
       crust = rgba config.catppuccin.colors.crust;
+      base = rgba config.catppuccin.colors.base;
     in
     {
       imports = [ wlib.wrapperModules.niri ];
@@ -93,6 +94,10 @@ in
               };
               inactive-color = crust;
             };
+          };
+
+          overview = {
+            backdrop-color = base;
           };
 
           binds =
