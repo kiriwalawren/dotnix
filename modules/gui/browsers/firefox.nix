@@ -15,9 +15,15 @@ in
         profiles.${user}.force = true;
       };
 
+      programs.firefoxpwa = {
+        enable = true;
+      };
+
       programs.firefox = {
         enable = true;
         configPath = "${config.xdg.configHome}/mozilla/firefox";
+
+        nativeMessagingHosts = [ pkgs.firefoxpwa ];
 
         policies = {
           DisableTelemetry = true;
@@ -130,6 +136,7 @@ in
               stylus
               ublock-origin
               vimium
+              pwas-for-firefox
             ];
           };
 
