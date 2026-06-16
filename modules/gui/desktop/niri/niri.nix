@@ -19,6 +19,9 @@ in
       primaryAccent = rgba config.catppuccin.colors.primaryAccent;
       secondaryAccent = rgba config.catppuccin.colors.secondaryAccent;
       crust = rgba config.catppuccin.colors.crust;
+      base = rgba config.catppuccin.colors.base;
+      overlay = rgba config.catppuccin.colors.overlay0;
+      red = rgba config.catppuccin.colors.red;
     in
     {
       imports = [ wlib.wrapperModules.niri ];
@@ -93,6 +96,18 @@ in
               };
               inactive-color = crust;
             };
+          };
+
+          recent-windows = {
+            highlight = {
+              corner-radius = theme.radius;
+              active-color = overlay;
+              urgent-color = red;
+            };
+          };
+
+          overview = {
+            backdrop-color = base;
           };
 
           binds =
