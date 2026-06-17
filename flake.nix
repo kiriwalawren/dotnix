@@ -98,7 +98,7 @@
 
     # Server Dependencies
     nixflix = {
-      url = "github:kiriwalawren/nixflix/maintainerr";
+      url = "/home/walawren/gitrepos/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

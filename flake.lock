@@ -331,18 +331,14 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1780775588,
-        "narHash": "sha256-NkCMkg6mjNbfz0v7DXjkET9cXE/p/8Peq+wh/zV52ic=",
-        "owner": "kiriwalawren",
-        "repo": "nixflix",
-        "rev": "6a3dc8370520d8d85f31c5fa5987a14d2de9afcf",
-        "type": "github"
+        "lastModified": 1781679722,
+        "narHash": "sha256-GIF/j+I+h+LQMoYnklkzsEPFlYwH+8PTbqyitSqlIo0=",
+        "path": "/home/walawren/gitrepos/nixflix",
+        "type": "path"
       },
       "original": {
-        "owner": "kiriwalawren",
-        "ref": "maintainerr",
-        "repo": "nixflix",
-        "type": "github"
+        "path": "/home/walawren/gitrepos/nixflix",
+        "type": "path"
       }
     },
     "nixos-anywhere": {
@@ -699,11 +695,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775636079,
-        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
+        "lastModified": 1780220602,
+        "narHash": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
+        "rev": "db947814a175b7ca6ded66e21383d938df01c227",
         "type": "github"
       },
       "original": {
