@@ -3,32 +3,30 @@ let
   inherit (config) theme;
 in
 {
-  flake.modules.homeManager.hyprland =
-    { pkgs, ... }:
-    {
-      catppuccin.hyprlock.enable = true;
+  flake.modules.homeManager.hyprland = {
+    catppuccin.hyprlock.enable = true;
 
-      programs.hyprlock = {
-        enable = true;
+    programs.hyprlock = {
+      enable = true;
 
-        settings = {
-          general = {
-            hide_cursor = false;
-          };
-
-          background = [
-            {
-              monitor = "";
-              path = "${theme.defaultWallpaper}";
-            }
-          ];
+      settings = {
+        general = {
+          hide_cursor = false;
         };
-      };
 
-      wayland.windowManager.hyprland.settings = {
-        bind = [
-          "SUPER,N,exec,hyprlock"
+        background = [
+          {
+            monitor = "";
+            path = "${theme.defaultWallpaper}";
+          }
         ];
       };
     };
+
+    wayland.windowManager.hyprland.settings = {
+      bind = [
+        "SUPER,N,exec,hyprlock"
+      ];
+    };
+  };
 }
