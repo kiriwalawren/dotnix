@@ -139,6 +139,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "cleanup.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "movies.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
