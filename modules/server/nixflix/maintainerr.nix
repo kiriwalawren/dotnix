@@ -10,10 +10,6 @@
 
         settings.forceJellyfinToIgnoreEmptyMediaFolders = true;
 
-        overlays = {
-          settings.enabled = true;
-        };
-
         rules = [
           {
             name = "Movies To Delete";
@@ -445,6 +441,147 @@
             ];
           }
         ];
+
+        overlays = {
+          settings.enabled = true;
+
+          templates = [
+            {
+              name = "\"The\" Classic Pill";
+              description = "Rounded pill in the top-left corner showing \"Leaving <date>\"";
+              mode = "poster";
+              canvasWidth = 1000;
+              canvasHeight = 1500;
+              isDefault = true;
+              elements = [
+                {
+                  id = "pill-bg";
+                  type = "shape";
+                  x = 30;
+                  y = 60;
+                  width = 500;
+                  height = 80;
+                  rotation = 0;
+                  layerOrder = 0;
+                  opacity = 1;
+                  visible = true;
+                  shapeType = "rectangle";
+                  fillColor = "#B20710";
+                  strokeColor = null;
+                  strokeWidth = 0;
+                  cornerRadius = 35;
+                }
+                {
+                  id = "pill-text";
+                  type = "variable";
+                  x = 30;
+                  y = 60;
+                  width = 500;
+                  height = 80;
+                  rotation = 0;
+                  layerOrder = 1;
+                  opacity = 1;
+                  visible = true;
+                  segments = [
+                    {
+                      type = "text";
+                      value = "Leaving ";
+                    }
+                    {
+                      type = "variable";
+                      field = "date";
+                    }
+                  ];
+                  fontFamily = "Inter";
+                  fontPath = "Inter-Bold.ttf";
+                  fontSize = 56;
+                  fontColor = "#FFFFFF";
+                  fontWeight = "bold";
+                  textAlign = "center";
+                  verticalAlign = "middle";
+                  backgroundColor = null;
+                  backgroundRadius = 0;
+                  backgroundPadding = 0;
+                  shadow = true;
+                  uppercase = false;
+                  dateFormat = "MMM d";
+                  language = "en-US";
+                  enableDaySuffix = false;
+                  textToday = "today";
+                  textDay = "in 1 day";
+                  textDays = "in {0} days";
+                }
+              ];
+            }
+            {
+              name = "\"The\" Title Card Pill";
+              description = "Rounded pill overlay for title cards (episodes) showing \"Leaving <date>\"";
+              mode = "titlecard";
+              canvasWidth = 1920;
+              canvasHeight = 1080;
+              isDefault = true;
+              elements = [
+                {
+                  id = "tc-pill-bg";
+                  type = "shape";
+                  x = 40;
+                  y = 40;
+                  width = 500;
+                  height = 80;
+                  rotation = 0;
+                  layerOrder = 0;
+                  opacity = 1;
+                  visible = true;
+                  shapeType = "rectangle";
+                  fillColor = "#B20710";
+                  strokeColor = null;
+                  strokeWidth = 0;
+                  cornerRadius = 35;
+                }
+                {
+                  id = "tc-pill-text";
+                  type = "variable";
+                  x = 40;
+                  y = 40;
+                  width = 500;
+                  height = 80;
+                  rotation = 0;
+                  layerOrder = 1;
+                  opacity = 1;
+                  visible = true;
+                  segments = [
+                    {
+                      type = "text";
+                      value = "Leaving ";
+                    }
+                    {
+                      type = "variable";
+                      field = "date";
+                    }
+                  ];
+                  fontFamily = "Inter";
+                  fontPath = "Inter-Bold.ttf";
+                  fontSize = 56;
+                  fontColor = "#FFFFFF";
+                  fontWeight = "bold";
+                  textAlign = "center";
+                  verticalAlign = "middle";
+                  backgroundColor = null;
+                  backgroundRadius = 0;
+                  backgroundPadding = 0;
+                  shadow = true;
+                  uppercase = false;
+                  dateFormat = "MMM d";
+                  language = "en-US";
+                  enableDaySuffix = false;
+                  textToday = "today";
+                  textDay = "in 1 day";
+                  textDays = "in {0} days";
+                }
+              ];
+            }
+          ];
+        };
       };
     };
 }
