@@ -8,6 +8,8 @@
         enable = true;
         subdomain = "cleanup";
 
+        settings.forceJellyfinToIgnoreEmptyMediaFolders = true;
+
         overlays = {
           settings.enabled = true;
         };
@@ -372,90 +374,6 @@
                 customVal = {
                   ruleTypeId = 3;
                   value = "1";
-                };
-                operator = "0";
-                firstVal = [
-                  2
-                  7
-                ];
-                action = 2;
-                section = 0;
-              }
-              {
-                operator = "0";
-                firstVal = [
-                  6
-                  40
-                ];
-                action = 19;
-                section = 1;
-              }
-            ];
-          }
-          {
-            name = "Shows To Ignore";
-            description = "Creates list of shows that should be ignore because their folders are empty, but they are not ended.";
-            library = "Shows";
-            dataType = "show";
-            arrAction = 4;
-            sonarrServerName = "Sonarr";
-            rules = [
-              {
-                customVal = {
-                  ruleTypeId = 0;
-                  value = "0";
-                };
-                firstVal = [
-                  2
-                  1
-                ];
-                action = 2;
-                section = 0;
-              }
-              {
-                customVal = {
-                  ruleTypeId = 3;
-                  value = "0";
-                };
-                operator = "0";
-                firstVal = [
-                  2
-                  7
-                ];
-                action = 2;
-                section = 0;
-              }
-              {
-                operator = "0";
-                firstVal = [
-                  6
-                  40
-                ];
-                action = 19;
-                section = 1;
-              }
-            ];
-          }
-          {
-            name = "Anime To Ignore";
-            description = "Creates list of shows that should be ignore because their folders are empty, but they are not ended.";
-            library = "Anime";
-            dataType = "show";
-            arrAction = 4;
-            sonarrServerName = "Sonarr Anime";
-            rules = [
-              {
-                firstVal = [
-                  2
-                  1
-                ];
-                action = 19;
-                section = 0;
-              }
-              {
-                customVal = {
-                  ruleTypeId = 3;
-                  value = "0";
                 };
                 operator = "0";
                 firstVal = [
