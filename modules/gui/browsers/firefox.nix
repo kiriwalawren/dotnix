@@ -32,6 +32,7 @@ in
           isDefault = true;
 
           settings = {
+            "browser.aboutConfig.showWarning" = false;
             "browser.search.defaultenginename" = "ddg";
             "browser.startup.page" = 3; # remember tabs
             "browser.tabs.inTitlebar" = 0;
@@ -137,41 +138,41 @@ in
             force = true;
             default = "ddg";
             engines = {
-              "Nix Packages" = {
+              nix-packages = {
                 urls = [ { template = "https://search.nixos.org/packages?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
                 definedAliases = [ "@np" ];
               };
 
-              "Nix Options" = {
+              nix-options = {
                 urls = [ { template = "https://search.nixos.org/options?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
                 definedAliases = [ "@no" ];
               };
 
-              "NixOS Wiki" = {
+              nixos-wiki = {
                 urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
                 iconUpdateUrl = "https://nixos.wiki/favicon.png";
                 updateInterval = 24 * 60 * 60 * 1000; # every day
                 definedAliases = [ "@nw" ];
               };
 
-              "YouTube" = {
+              youtube = {
                 urls = [ { template = "https://youtube.com/results?search_query={searchTerms}"; } ];
                 definedAliases = [ "@yt" ];
               };
 
-              "GitHub Code" = {
+              github-code = {
                 urls = [ { template = "https://github.com/search?type=code&q={searchTerms}"; } ];
                 definedAliases = [ "@ghc" ];
               };
 
-              "GitHub Repositories" = {
+              github-repos = {
                 urls = [ { template = "https://github.com/search?type=repositories&q={searchTerms}"; } ];
                 definedAliases = [ "@ghr" ];
               };
 
-              "bing".metaData.hidden = true;
+              bing.metaData.hidden = true;
             };
           };
         };
