@@ -327,11 +327,11 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1782468259,
-        "narHash": "sha256-8/sfJK0OxvBwFASkkb8pqLMi0lHniPvY99s5kwm+//k=",
+        "lastModified": 1782504017,
+        "narHash": "sha256-jootB0gic9aFME0gxMlzGTR+dowmb/FoVQ7A42vZuaQ=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "b47bde471909690fdf4c405709187bbd4b38fa8f",
+        "rev": "166f4c36d642012a8d35334bf95c08bc7b437695",
         "type": "github"
       },
       "original": {
@@ -371,7 +371,9 @@
     },
     "nixos-hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1782379505,
@@ -453,30 +455,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767892417,
-        "narHash": "sha256-8bW3q88CEg2u4hSP66Vf4lpbLonHz7hqDNBMcCY7E9U=",
-        "rev": "3497aa5c9457a9d88d71fa93a4a8368816fbeeba",
-        "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.05pre924538.3497aa5c9457/nixexprs.tar.xz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1781577229,
-        "narHash": "sha256-lrp67w8AulE9Ks53n27I45ADSzbOCn4H+CNW1Ck8B+8=",
+        "lastModified": 1779765834,
+        "narHash": "sha256-33uVlwwdSc434CQIc5DN2arJFJx6UP6uoqePrWtU8bk=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+        "rev": "345c7799602100e663a0c834b429a2c575f5eb17",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-unstable",
         "repo": "nixpkgs",
+        "rev": "345c7799602100e663a0c834b429a2c575f5eb17",
         "type": "github"
       }
     },
@@ -541,7 +530,7 @@
         "nixflix": "nixflix",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
         "secrets": "secrets",
         "sops-nix": "sops-nix",
