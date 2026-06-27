@@ -136,86 +136,42 @@ in
           search = {
             force = true;
             default = "ddg";
-            order = [
-              "ddg"
-              "google"
-            ];
             engines = {
               "Nix Packages" = {
-                urls = [
-                  {
-                    template = "https://search.nixos.org/packages";
-                    params = [
-                      {
-                        name = "type";
-                        value = "packages";
-                      }
-                      {
-                        name = "query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
+                urls = [ { template = "https://search.nixos.org/packages?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                definedAliases = [
-                  "@np"
-                  "@nixpkgs"
-                ];
+                definedAliases = [ "@np" ];
               };
 
               "Nix Options" = {
-                urls = [
-                  {
-                    template = "https://search.nixos.org/options";
-                    params = [
-                      {
-                        name = "type";
-                        value = "packages";
-                      }
-                      {
-                        name = "query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
+                urls = [ { template = "https://search.nixos.org/options?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                definedAliases = [
-                  "@no"
-                  "@nixopts"
-                ];
+                definedAliases = [ "@no" ];
               };
 
               "NixOS Wiki" = {
                 urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
                 iconUpdateUrl = "https://nixos.wiki/favicon.png";
                 updateInterval = 24 * 60 * 60 * 1000; # every day
-                definedAliases = [
-                  "@nw"
-                  "@nixwiki"
-                ];
+                definedAliases = [ "@nw" ];
               };
 
               "YouTube" = {
-                urls = [
-                  {
-                    template = "https://youtube.com/results";
-                    params = [
-                      {
-                        name = "search_query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
-                definedAliases = [
-                  "@yt"
-                ];
+                urls = [ { template = "https://youtube.com/results?search_query={searchTerms}"; } ];
+                definedAliases = [ "@yt" ];
+              };
+
+              "GitHub Code" = {
+                urls = [ { template = "https://github.com/search?type=code&q={searchTerms}"; } ];
+                definedAliases = [ "@ghc" ];
+              };
+
+              "GitHub Repositories" = {
+                urls = [ { template = "https://github.com/search?type=repositories&q={searchTerms}"; } ];
+                definedAliases = [ "@ghr" ];
               };
 
               "bing".metaData.hidden = true;
-              "google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias
             };
           };
         };
