@@ -3,12 +3,18 @@
 
   inputs = {
     # Repo configuration dependencies
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixpkgs.url = "github:nixos/nixpkgs/345c7799602100e663a0c834b429a2c575f5eb17";
+
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+
     import-tree.url = "github:vic/import-tree";
 
     treefmt-nix = {
