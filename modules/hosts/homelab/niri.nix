@@ -40,6 +40,8 @@ in
     { pkgs, lib, ... }:
     {
       programs.niri.package = lib.mkForce self.packages.${pkgs.stdenv.hostPlatform.system}.niri-homelab;
-      environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell-homelab ];
+      environment.systemPackages = [
+        self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell-homelab
+      ];
     };
 }
