@@ -11,11 +11,12 @@
       tailscale-server-mode
 
       # Uncomment for temporary gaming
-      # bluetooth
-      # gaming
-      # gui
-      # niri
-      # sound
+      bluetooth
+      gaming
+      gui
+      niri
+      niri-homelab
+      sound
       ;
   };
 }
