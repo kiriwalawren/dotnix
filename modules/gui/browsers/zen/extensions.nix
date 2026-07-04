@@ -27,7 +27,7 @@
         private_browsing = true;
       };
       "{446900e4-71c2-419f-a6a7-df9c091e268b}" = mkExtensionEntry {
-        id = "bitwwarden";
+        id = "bitwarden-password-manager";
         pinned = true;
         private_browsing = true;
       };
