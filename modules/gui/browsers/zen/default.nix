@@ -5,7 +5,7 @@
 
     programs.zen-browser = {
       enable = true;
-      # setAsDefaultBrowser = true;
+      setAsDefaultBrowser = true;
 
       profiles.default = {
         settings = {
