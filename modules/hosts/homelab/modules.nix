@@ -8,15 +8,13 @@
       base
       homelab
       ssh
+      steamos
       tailscale-server-mode
 
-      # Uncomment for temporary gaming
-      bluetooth
-      gaming
-      gui
-      niri
-      niri-homelab
-      sound
+      # TODO: figure out desktop mode for steam os
+      # gui
+      # niri
+      # niri-homelab
       ;
   };
 }

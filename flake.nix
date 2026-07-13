@@ -109,6 +109,11 @@
       };
     };
 
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Server Dependencies
     nixflix = {
       url = "github:kiriwalawren/nixflix";
