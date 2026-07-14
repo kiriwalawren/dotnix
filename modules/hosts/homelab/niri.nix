@@ -9,7 +9,7 @@ in
     { lib, ... }:
     {
       imports = [ noctaliaShellModule ];
-      settings.idle.suspendTimeout = lib.mkForce 0;
+      settings.idle.enable = lib.mkForce false;
     };
 
   flake.wrappers.niri-homelab =
