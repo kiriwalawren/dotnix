@@ -8,13 +8,12 @@
       base
       homelab
       ssh
-      steamos
       tailscale-server-mode
 
-      # TODO: figure out desktop mode for steam os
-      # gui
-      # niri
-      # niri-homelab
+      steamos
+      gui
+      niri
+      niri-steamos
       ;
   };
 }
