@@ -10,8 +10,9 @@
       inherit (inputs.nixflix.lib.jellyfinPlugins) fromRepo;
     in
     {
-      sops.secrets."jellyfin/kiri_password" = { };
-      sops.secrets."jellyfin/api_key" = { };
+      sops.secrets."jellyfin/kiri-password" = { };
+      sops.secrets."jellyfin/guest-password" = { };
+      sops.secrets."jellyfin/api-key" = { };
       sops.secrets."jellyfin/oidc-client-id" = { };
       sops.secrets."jellyfin/oidc-client-secret" = { };
       sops.secrets."opensubtitles-com/api-key" = { };
@@ -21,7 +22,7 @@
 
       nixflix.jellyfin = {
         enable = true;
-        apiKey._secret = config.sops.secrets."jellyfin/api_key".path;
+        apiKey._secret = config.sops.secrets."jellyfin/api-key".path;
         subdomain = "watch";
         network.enableRemoteAccess = true;
         branding = {
@@ -52,7 +53,14 @@
             mutable = false;
             policy.isAdministrator = true;
             password = {
-              _secret = config.sops.secrets."jellyfin/kiri_password".path;
+              _secret = config.sops.secrets."jellyfin/kiri-password".path;
+            };
+          };
+          guest = {
+            mutable = false;
+            policy.isAdministrator = lib.mkForce false;
+            password = {
+              _secret = config.sops.secrets."jellyfin/guest-password".path;
             };
           };
         };
