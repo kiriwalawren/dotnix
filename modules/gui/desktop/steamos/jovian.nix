@@ -32,4 +32,10 @@ in
 
     services.greetd.enable = lib.mkForce false;
   };
+
+  flake.modules.homeManager.steamos =
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.sgdboop ];
+    };
 }
