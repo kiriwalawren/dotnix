@@ -13,8 +13,6 @@
       sops.secrets."jellyfin/kiri-password" = { };
       sops.secrets."jellyfin/guest-password" = { };
       sops.secrets."jellyfin/api-key" = { };
-      sops.secrets."jellyfin/oidc-client-id" = { };
-      sops.secrets."jellyfin/oidc-client-secret" = { };
       sops.secrets."opensubtitles-com/api-key" = { };
       sops.secrets."opensubtitles-com/password" = { };
 
@@ -26,25 +24,8 @@
         subdomain = "watch";
         network.enableRemoteAccess = true;
         branding = {
-          loginDisclaimer = ''
-            <form action="https://watch.walawren.com/sso/OID/start/PocketID">
-              <button class="raised block emby-button button-submit">
-                Sign in with PocketID
-              </button>
-            </form>
-          '';
-
           customCss = ''
             @import url("https://theme-park.dev/css/base/jellyfin/${config.nixflix.theme.name}.css");
-
-            a.raised.emby-button {
-              padding: 0.9em 1em;
-              color: inherit !important;
-            }
-
-            .disclaimerContainer {
-              display: block;
-            }
           '';
         };
 
@@ -86,10 +67,6 @@
           "Intro Skipper" = {
             url = "https://raw.githubusercontent.com/intro-skipper/manifest/d56c137ae182c04a894dd700c25b04c8d2eba855/10.11/manifest.json";
             hash = "sha256-ENwn7Ei3WU2REcxnFNwzF6NGFUcnH2kJ4E5TKbpcDII=";
-          };
-          "Jellyfin SSO" = {
-            url = "https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/4ee785577e77b703f206c7a33f4123986d90f2c2/manifest.json";
-            hash = "sha256-KeMfhBGoeeC3dW329sr1K0dnUaM35rYdAhr2y/o3vp4=";
           };
         };
 
@@ -177,53 +154,6 @@
               SkipbuttonHideDelay = "8";
               EnableMainMenu = true;
               FileTransformationPluginEnabled = false;
-            };
-          };
-
-          "SSO Authentication" = {
-            apiName = "SSO-Auth";
-            package = fromRepo {
-              version = "4.0.0.4";
-              hash = "sha256-MJTyE6CeVLk7mlugauJ/F6bpi1kYwNtzNmQeH3+CFeQ=";
-            };
-            config = {
-              SamlConfigs = { };
-              OidConfigs = {
-                PocketID = {
-                  OidProviderName = "PocketID";
-                  OidEndpoint = "https://auth.walawren.com";
-                  OidClientId._secret = config.sops.secrets."jellyfin/oidc-client-id".path;
-                  OidSecret._secret = config.sops.secrets."jellyfin/oidc-client-secret".path;
-                  RoleClaim = "groups";
-                  DefaultProvider = "Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider";
-                  DefaultUsernameClaim = "preferred_username";
-                  AvatarUrlFormat = "@{picture}";
-                  SchemeOverride = "https";
-                  PortOverride = null;
-                  Enabled = true;
-                  EnableAuthorization = true;
-                  EnableAllFolders = true;
-                  EnableFolderRoles = false;
-                  EnableLiveTvRoles = false;
-                  EnableLiveTv = false;
-                  EnableLiveTvManagement = false;
-                  DisableHttps = false;
-                  DisablePushedAuthorization = false;
-                  DoNotValidateEndpoints = false;
-                  DoNotValidateIssuerName = false;
-                  DoNotLoadProfile = false;
-                  Roles = [
-                    "watchers"
-                    "admins"
-                  ];
-                  AdminRoles = [ "admins" ];
-                  LiveTvRoles = [ ];
-                  LiveTvManagementRoles = [ ];
-                  OidScopes = [ "groups" ];
-                  EnabledFolders = [ ];
-                  FolderRoleMapping = [ ];
-                };
-              };
             };
           };
         };
