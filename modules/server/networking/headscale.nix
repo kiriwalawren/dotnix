@@ -223,6 +223,7 @@
           };
 
           headscale = {
+            api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
             config_path = config.services.headscale.configFile;
             public_url = "https://headscale.${config.system.ddns.domain}";
           };
@@ -237,7 +238,6 @@
             use_pkce = true;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
         };
       };
