@@ -228,10 +228,7 @@
             public_url = "https://headscale.${config.system.ddns.domain}";
           };
 
-          integration.agent = {
-            enabled = true;
-            pre_authkey_path = config.sops.secrets."headscale-pre-authkey".path;
-          };
+          integration.agent.enabled = true;
 
           oidc = {
             inherit (config.system.auth) issuer;
