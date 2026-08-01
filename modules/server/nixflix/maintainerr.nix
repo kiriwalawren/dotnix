@@ -1,6 +1,9 @@
 {
   flake.modules.nixos.homelab =
     { config, ... }:
+    let
+      staleDays = "15552000"; # 180 days in seconds
+    in
     {
       system.backup.paths = [ config.nixflix.maintainerr.dataDir ];
 
@@ -80,7 +83,7 @@
               {
                 customVal = {
                   ruleTypeId = 0;
-                  value = "7776000";
+                  value = staleDays;
                 };
                 operator = "0";
                 firstVal = [
@@ -93,7 +96,7 @@
               {
                 customVal = {
                   ruleTypeId = 0;
-                  value = "7776000";
+                  value = staleDays;
                 };
                 operator = "1";
                 firstVal = [
@@ -188,7 +191,7 @@
               {
                 customVal = {
                   ruleTypeId = 0;
-                  value = "7776000";
+                  value = staleDays;
                 };
                 operator = "0";
                 firstVal = [
@@ -201,7 +204,7 @@
               {
                 customVal = {
                   ruleTypeId = 0;
-                  value = "7776000";
+                  value = staleDays;
                 };
                 operator = "1";
                 firstVal = [
