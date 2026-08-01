@@ -13,15 +13,15 @@
       gtk = {
         enable = true;
         gtk4.theme = config.gtk.theme;
-        theme = {
-          name = "Colloid-Teal-Dark-Compact-Catppuccin";
-          package = pkgs.colloid-gtk-theme.override {
-            themeVariants = [ config.catppuccin.accent ];
-            colorVariants = [ "dark" ];
-            sizeVariants = [ "compact" ];
-            tweaks = [ "catppuccin" ];
-          };
-        };
+        # theme = {
+        #   name = "Colloid-Teal-Dark-Compact-Catppuccin";
+        #   package = pkgs.colloid-gtk-theme.override {
+        #     themeVariants = [ config.catppuccin.accent ];
+        #     colorVariants = [ "dark" ];
+        #     sizeVariants = [ "compact" ];
+        #     tweaks = [ "catppuccin" ];
+        #   };
+        # };
 
         iconTheme = lib.mkDefault {
           package = pkgs.yaru-theme;
