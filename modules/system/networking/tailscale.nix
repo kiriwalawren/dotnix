@@ -64,6 +64,8 @@ in
 
       config = mkIf cfg.enable {
         sops.secrets.${authKeySecret} = { };
+
+        environment.systemPackages = [ pkgs.davfs2 ];
         networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
         services = {

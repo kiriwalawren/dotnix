@@ -102,7 +102,10 @@
 
                   # Let kiri access nixflix shares
                   {
-                    src = [ "kiriwalawren@" ];
+                    src = [
+                      "kiriwalawren@"
+                      "tag:nixflix"
+                    ];
                     dst = [ "tag:nixflix" ];
                     app = {
                       "tailscale.com/cap/drive" = [
