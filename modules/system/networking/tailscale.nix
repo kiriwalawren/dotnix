@@ -67,6 +67,7 @@ in
 
         environment.systemPackages = [ pkgs.davfs2 ];
         networking.firewall.trustedInterfaces = [ "tailscale0" ];
+        users.groups.davfs2 = { };
 
         services = {
           # resolved prevent DNS fighting between tailscale and NetworkManager
