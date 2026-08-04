@@ -71,6 +71,33 @@
                   "tag:dns" = [ "kiriwalawren@" ];
                 };
 
+                # Enable Taildrive
+                nodeAttrs = [
+                  {
+                    target = [ "autogroup:member" ];
+                    attr = [
+                      "drive:share"
+                      "drive:access"
+                    ];
+                  }
+                ];
+
+                # Let members access and use their own shared directories
+                grants = [
+                  {
+                    src = [ "autogroup:member" ];
+                    dst = [ "autogroup:self" ];
+                    app = {
+                      "tailscale.com/cap/drive" = [
+                        {
+                          shares = [ "*" ];
+                          access = "rw";
+                        }
+                      ];
+                    };
+                  }
+                ];
+
                 acls = [
                   # kiri can SSH into her tagged machines, or use HTTP(S)
                   {
