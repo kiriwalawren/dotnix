@@ -74,7 +74,10 @@
                 # Enable Taildrive
                 nodeAttrs = [
                   {
-                    target = [ "autogroup:member" ];
+                    target = [
+                      "autogroup:member"
+                      "tag:nixflix"
+                    ];
                     attr = [
                       "drive:share"
                       "drive:access"
@@ -82,11 +85,25 @@
                   }
                 ];
 
-                # Let members access and use their own shared directories
                 grants = [
+                  # Let members access and use their own shared directories
                   {
                     src = [ "autogroup:member" ];
                     dst = [ "autogroup:self" ];
+                    app = {
+                      "tailscale.com/cap/drive" = [
+                        {
+                          shares = [ "*" ];
+                          access = "rw";
+                        }
+                      ];
+                    };
+                  }
+
+                  # Let kiri access nixflix shares
+                  {
+                    src = [ "kiriwalawren@" ];
+                    dst = [ "tag:nixflix" ];
                     app = {
                       "tailscale.com/cap/drive" = [
                         {
