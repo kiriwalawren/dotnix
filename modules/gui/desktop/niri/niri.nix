@@ -70,14 +70,15 @@ in
             {
               excludes = [
                 { app-id = ".gimp-2.10-wrapped_"; }
+                { app-id = "Geeqie"; }
+                { app-id = "Loupe"; }
                 { app-id = "darktable"; }
                 { app-id = "firefox"; }
-                { app-id = "plezy"; }
-                { app-id = "rapidraw"; }
-                { app-id = "Loupe"; }
-                { app-id = "qimgv"; }
                 { app-id = "imv"; }
-                { app-id = "Geeqie"; }
+                { app-id = "plezy"; }
+                { app-id = "qimgv"; }
+                { app-id = "rapidraw"; }
+                { app-id = "zen"; }
               ];
               opacity = .85;
             }
