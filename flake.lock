@@ -608,10 +608,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1784009473,
-        "narHash": "sha256-huLxlUprvX2YyIq6s/UmlxVw+OSZtrPxZVby3KXkLL0=",
+        "lastModified": 1786483933,
+        "narHash": "sha256-UNhm51qEWboZ1HXsK2xUFnpMA8myzV70wvms02+noF8=",
         "ref": "main",
-        "rev": "1fb4f8818d9f4541febe230c55ee91505da0ae55",
+        "rev": "72759d0b600ca8c513565fe7b7435d0273154886",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -823,11 +823,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785510969,
-        "narHash": "sha256-WwofM0M7VKVIGmgD4d+UPwt+M3SVDaeQWPqCoPj8yac=",
+        "lastModified": 1786462155,
+        "narHash": "sha256-fMe8/wWP1G09wW2h6IntoyuId8Q9gZQQZ/LagL093bw=",
         "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "6f9f54728f2d48096baac35bac613797b5cc2024",
+        "rev": "8c6857e833ad1a5568fae46004d3fdd0c0289ff5",
         "type": "github"
       },
       "original": {
