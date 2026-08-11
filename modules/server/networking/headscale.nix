@@ -169,6 +169,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "listen.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "photos.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
