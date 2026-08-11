@@ -12,6 +12,9 @@
         deadnix.enable = true;
         statix.enable = true;
 
+        # Python
+        black.enable = true;
+
         # Markdown
         mdformat.enable = true;
 
@@ -32,6 +35,7 @@
           ".prettierignore"
           "**/.keep"
           "**/*.pub"
+          "**/*.csv"
         ];
         on-unmatched = "fatal";
         global.excludes = [
