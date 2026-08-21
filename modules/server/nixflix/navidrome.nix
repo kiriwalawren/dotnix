@@ -5,6 +5,7 @@
       sops.secrets = {
         "lastfm/api-key" = { };
         "lastfm/shared-secret" = { };
+        "navidrome/passwords/kiri" = { };
       };
 
       sops.templates."navidrome.env" = {
@@ -24,6 +25,12 @@
       nixflix.navidrome = {
         enable = true;
         subdomain = "listen";
+
+        users.Kiri = {
+          isAdmin = true;
+          username = "kiri";
+          password._secret = config.sops.secrets."navidrome/passwords/kiri".path;
+        };
 
         settings = {
           DefaultTheme = "Catppuccin Macchiato";
