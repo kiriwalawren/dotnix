@@ -13,7 +13,7 @@ best match it finds. Anything it can't confidently match is logged to
 a report file so you can handle it manually instead of risking a wrong star.
 
 Usage:
-    python favorite_spotify_liked.py \
+    python _like_my_songs.py \
         --server https://your-navidrome-url \
         --user your_username \
         --password your_password \
@@ -32,6 +32,7 @@ import argparse
 import csv
 import difflib
 import hashlib
+import os
 import random
 import string
 import sys
@@ -161,8 +162,10 @@ def main():
     parser.add_argument("--password", required=True, help="Navidrome password")
     parser.add_argument(
         "--csv",
-        default=os.getcwd() + "/_liked_songs.csv",
-        help="Path to Exportify CSV export",
+        default=os.environ.get(
+            "LIKE_MY_SONGS_CSV", os.path.join(os.getcwd(), "_liked-songs.csv")
+        ),
+        help="Path to Exportify CSV export (defaults to the bundled copy when packaged via Nix)",
     )
     parser.add_argument(
         "--threshold",
