@@ -112,11 +112,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1787112172,
-        "narHash": "sha256-UMk1vXwGwx7dSxHAst6EcOvsryXIRuRF1QIFCz3oG+k=",
+        "lastModified": 1787284994,
+        "narHash": "sha256-ekBKvaEJY74xfbvB/QWLaB42XspwLlO5ySfmgvgKeeM=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "b6890db16471fa96d9223b538bcd30af7ea0a9bb",
+        "rev": "6e90cf8523a05e55621ede7cf1e101e1a70c5446",
         "type": "gitlab"
       },
       "original": {
@@ -229,11 +229,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786999651,
-        "narHash": "sha256-MTGMFlLDTklsXhCp4r5GXB4VAVadPdalXLvUjd/K7h0=",
+        "lastModified": 1787176219,
+        "narHash": "sha256-djoRr6jBpe35q/0JwAvXpFXg1Ktf+X54NU2RLR7wnHw=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "353742587cbaf079b3caee743115d037bc51fea6",
+        "rev": "c53d643b3737e2fcd04e6cb3b3580ef50b2087a0",
         "type": "github"
       },
       "original": {
@@ -249,11 +249,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782811467,
-        "narHash": "sha256-JP0D8r8o9+jnYk0/B5O722La+oZeC5iNQ3lonKFTmbQ=",
+        "lastModified": 1787301232,
+        "narHash": "sha256-qSzrIIqQUtEVeVZxQLj/L4p7+xKBEtPhgMTzFW2c6P8=",
         "owner": "hyprwm",
         "repo": "contrib",
-        "rev": "3dcbce715ae8b93107fa8632db15bf976862a573",
+        "rev": "57baf317e5196a8286b80976771ef55febad8660",
         "type": "github"
       },
       "original": {
@@ -370,11 +370,11 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1787151324,
-        "narHash": "sha256-5gAo7vr5uK1TZp51b1WFM3iKVn5bv8ZzjaF547qyrbg=",
+        "lastModified": 1787357749,
+        "narHash": "sha256-wayhTe2qFg2uymd+R5dTRUaeTeXyqVAfYgsFoN2QmGU=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "e9a1017c983d66d1ef5ee9d27263e96a29ea0417",
+        "rev": "60def597b891dfa7ef3b267a96985cfe1045156d",
         "type": "github"
       },
       "original": {
@@ -498,11 +498,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787070829,
-        "narHash": "sha256-vXNVDVtvfiQuXthP0NHPFdNvvMTkGpx0UP8oddIWbNk=",
+        "lastModified": 1787135253,
+        "narHash": "sha256-RD2kNWCG+Bjo6h+JVjWVNntZs2GtRoeY2xHjts/FNkA=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "0ae2bc1419c3f345984c2629e72e7a631820fa4d",
+        "rev": "ffb3c9b700e759be2ef13237c9d8f953b32a1e46",
         "type": "github"
       },
       "original": {
@@ -523,11 +523,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1787151631,
-        "narHash": "sha256-EblMdrDFBFNNlUPm5zUQdh0j6gDx+OFQPv7LFE4B5AA=",
+        "lastModified": 1787270640,
+        "narHash": "sha256-L3ZXW7MSCPsOZz5powJZZqzZLxuPLh9QXHp5shwzqb8=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "d0d62a2b5027da689b4e8d5ee43f1cf83f2e975d",
+        "rev": "bd46166bd8308861cd36984a52ed5d25522d0ba8",
         "type": "github"
       },
       "original": {
@@ -608,10 +608,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1786483933,
-        "narHash": "sha256-UNhm51qEWboZ1HXsK2xUFnpMA8myzV70wvms02+noF8=",
+        "lastModified": 1787345865,
+        "narHash": "sha256-j/VWW4KjhXVxzHeJZ4HAomtwPttj8lGQOEZMor59gaU=",
         "ref": "main",
-        "rev": "72759d0b600ca8c513565fe7b7435d0273154886",
+        "rev": "818c02da00cbb15ff6c52e19373621e599aa0cda",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -781,11 +781,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786998037,
-        "narHash": "sha256-QJ8QmuqmiOiHCT0HidqwlRpejNfCVcizLmLtzRWHWeQ=",
+        "lastModified": 1787170572,
+        "narHash": "sha256-uVHI/TBIX1dVaCZfw0f/gj67f9gOmRLy0kwqGucztRI=",
         "owner": "BirdeeHub",
         "repo": "nix-wrapper-modules",
-        "rev": "780954265c11444ed0c9e164115360f4f5d24d0b",
+        "rev": "7a6279b12ee668bd897c7ed444ce2031c6dbeaa0",
         "type": "github"
       },
       "original": {
@@ -804,11 +804,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787102102,
-        "narHash": "sha256-NmX0gGqJovFZ4iu5bsAxTdojz6Jz29M4mdsLUZpWY3s=",
+        "lastModified": 1787281392,
+        "narHash": "sha256-WnGPcxoouwp2ZNQ2lBfVunY77AIFy6cdAfT4J5Vw6Fs=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "c66ece4c518550545f45dd0633551f23a085e01c",
+        "rev": "4ab199700226db9b91ab69fa2b78816ebe475358",
         "type": "github"
       },
       "original": {
@@ -824,11 +824,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787056666,
-        "narHash": "sha256-WH6nhJIs1RfXOqY6Oci9AJ06bzKS86H0OM6GvInAjNs=",
+        "lastModified": 1787168575,
+        "narHash": "sha256-6zclBbmGZZyZPlLf9+rzdz2uqIz6GhHz5S54/ZQ7VSI=",
         "owner": "openziti",
         "repo": "ziti-tunnel-sdk-c",
-        "rev": "fd2e2515186b986f6f5943ce48a2583b4cd53919",
+        "rev": "b687256c0190eb064d2ac1da678ebc9e55a39e38",
         "type": "github"
       },
       "original": {
