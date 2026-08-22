@@ -370,11 +370,11 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1786113870,
-        "narHash": "sha256-Zddv947ARHwMT+CT17vdWkG/MjfcbPIe8uHibWwAn/E=",
+        "lastModified": 1787357749,
+        "narHash": "sha256-wayhTe2qFg2uymd+R5dTRUaeTeXyqVAfYgsFoN2QmGU=",
         "owner": "kiriwalawren",
         "repo": "nixflix",
-        "rev": "f1df9c3c23a85c739a20302f6d6c1faca5cd2928",
+        "rev": "60def597b891dfa7ef3b267a96985cfe1045156d",
         "type": "github"
       },
       "original": {
@@ -608,10 +608,10 @@
     },
     "secrets": {
       "locked": {
-        "lastModified": 1784009473,
-        "narHash": "sha256-huLxlUprvX2YyIq6s/UmlxVw+OSZtrPxZVby3KXkLL0=",
+        "lastModified": 1787345865,
+        "narHash": "sha256-j/VWW4KjhXVxzHeJZ4HAomtwPttj8lGQOEZMor59gaU=",
         "ref": "main",
-        "rev": "1fb4f8818d9f4541febe230c55ee91505da0ae55",
+        "rev": "818c02da00cbb15ff6c52e19373621e599aa0cda",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/kiriwalawren/secrets.git"
@@ -725,11 +725,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785360170,
-        "narHash": "sha256-XE1lKgQ3eIO3E7zWryqcRsax+mYXod/5RHBn4YaR9YE=",
+        "lastModified": 1785945821,
+        "narHash": "sha256-NLSyTCW4K4ofhNBllt3omPasm6QpralXH1DBZOc91Dw=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "d1187f8bc71fb8aab02395869ec3f5c1920f75c0",
+        "rev": "ae7910970dddc408fe6ab1c8e4b277bb21d72dc0",
         "type": "github"
       },
       "original": {
