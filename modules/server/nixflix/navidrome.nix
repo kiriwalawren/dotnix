@@ -28,7 +28,8 @@
 
         users.Kiri = {
           isAdmin = true;
-          username = "kiri";
+          mutable = false;
+          userName = "kiri";
           password._secret = config.sops.secrets."navidrome/passwords/kiri".path;
         };
 
