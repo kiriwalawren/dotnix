@@ -108,12 +108,6 @@
               useFixedWidth = false;
               visualizerType = "linear";
             }
-            {
-              id = "AudioVisualizer";
-              colorName = "tertiary";
-              hideWhenIdle = true;
-              width = 150;
-            }
           ];
           right = [
             {

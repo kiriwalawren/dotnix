@@ -48,6 +48,12 @@
               definedAliases = [ "@no" ];
             };
 
+            nixpkgs-tracker = {
+              urls = [ { template = "https://nixpk.gs/pr-tracker.html?pr={searchTerms}"; } ];
+              icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              definedAliases = [ "@nt" ];
+            };
+
             nixos-wiki = {
               urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
               iconUpdateUrl = "https://nixos.wiki/favicon.png";

@@ -75,10 +75,12 @@ in
                 { app-id = "darktable"; }
                 { app-id = "firefox"; }
                 { app-id = "imv"; }
+                { app-id = "com.jeffser.Nocturne"; }
                 { app-id = "plezy"; }
                 { app-id = "qimgv"; }
                 { app-id = "rapidraw"; }
                 { app-id = "zen"; }
+                { app-id = "zen-beta"; }
               ];
               opacity = .85;
             }
