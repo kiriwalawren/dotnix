@@ -7,7 +7,11 @@
       domain = "${subdomain}.${ddns.domain}";
     in
     {
-      sops.secrets."vaultwarden/admin-token" = { };
+      sops.secrets = {
+        "vaultwarden/admin-token" = { };
+        "vaultwarden/push-installation-id" = { };
+        "vaultwarden/push-installation-key" = { };
+      };
 
       sops.templates."vaultwarden.env" = {
         owner = config.users.users.vaultwarden.name;
@@ -15,6 +19,8 @@
         mode = "0440";
         content = ''
           ADMIN_TOKEN=${config.sops.placeholder."vaultwarden/admin-token"}
+          PUSH_INSTALLATION_ID=${config.sops.placeholder."vaultwarden/push-installation-id"}
+          PUSH_INSTALLATION_KEY=${config.sops.placeholder."vaultwarden/push-installation-key"}
         '';
       };
 
@@ -27,6 +33,8 @@
           ENABLE_WEBSOCKET = true;
           ROCKET_ADDRESS = "127.0.0.1";
           ROCKET_PORT = 8222;
+
+          PUSH_ENABLED = true;
         };
         environmentFile = config.sops.templates."vaultwarden.env".path;
         configurePostgres = true;
