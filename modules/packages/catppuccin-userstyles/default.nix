@@ -7,7 +7,7 @@
           fetchFromGitHub,
           lessc,
           jq,
-          perl,
+          python3,
           rev ? "04413649d48c355ab716fd53c0d77d5cd432bb0a",
           hash ? "sha256-xA19P9CuNkPVqDSt8DXksmRYIbxRhTxx8CINJjyzEvA=",
           lightFlavor ? "latte",
@@ -27,7 +27,7 @@
           nativeBuildInputs = [
             lessc
             jq
-            perl
+            python3
           ];
 
           dontConfigure = true;
@@ -90,7 +90,7 @@
                 # fields - not left embedded in the code, where Gecko silently
                 # ignores them. Split the wrapper into matcher pairs (on
                 # stderr) and the bare inner rules (on stdout).
-                perl ${./_catppuccin-userstyles-split.pl} "$site.raw.css" \
+                python3 ${./_catppuccin-userstyles-split.py} "$site.raw.css" \
                   > "compiled/$site.css" 2> "compiled/$site.matchers.txt"
               else
                 echo "Warning: failed to compile $site, skipping" >&2
