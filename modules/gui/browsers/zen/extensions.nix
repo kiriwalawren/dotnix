@@ -7,13 +7,21 @@
       ...
     }:
     {
+      home.activation.darkreaderCatppuccinZen = import ../_darkreader-exclusions.nix {
+        inherit config pkgs lib;
+        profileDir = "${config.programs.zen-browser.configPath}/default";
+      };
+
       programs.zen-browser = {
         profiles.default = {
-          extensions.force = true;
-          extensions.settings."{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}".settings =
-            import ../_catppuccin-stylus.nix
-              { inherit config pkgs lib; };
+          extensions = {
+            force = true;
+            settings."{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}".settings = import ../_catppuccin-stylus.nix {
+              inherit config pkgs lib;
+            };
+          };
         };
+
         policies.ExtensionSettings =
           let
             mkPluginUrl = id: "https://addons.mozilla.org/firefox/downloads/latest/${id}/latest.xpi";

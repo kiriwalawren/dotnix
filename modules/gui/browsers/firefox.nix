@@ -20,6 +20,11 @@ in
         profiles.${user}.force = true;
       };
 
+      home.activation.darkreaderCatppuccinFirefox = import ./_darkreader-exclusions.nix {
+        inherit config pkgs lib;
+        profileDir = "${config.programs.firefox.configPath}/${user}";
+      };
+
       programs.firefox = {
         enable = true;
         configPath = "${config.xdg.configHome}/mozilla/firefox";
