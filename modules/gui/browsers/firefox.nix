@@ -20,6 +20,10 @@ in
         profiles.${user}.force = true;
       };
 
+      programs.firefoxpwa = {
+        enable = true;
+      };
+
       home.activation.darkreaderCatppuccinFirefox = import ./_darkreader-exclusions.nix {
         inherit config pkgs lib;
         profileDir = "${config.programs.firefox.configPath}/${user}";
@@ -28,6 +32,8 @@ in
       programs.firefox = {
         enable = true;
         configPath = "${config.xdg.configHome}/mozilla/firefox";
+
+        nativeMessagingHosts = [ pkgs.firefoxpwa ];
 
         policies = {
           DisableTelemetry = true;
@@ -145,6 +151,7 @@ in
               stylus
               ublock-origin
               vimium
+              pwas-for-firefox
             ];
           };
 
