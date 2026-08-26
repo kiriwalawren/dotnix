@@ -101,6 +101,11 @@ in
               definedAliases = [ "@ghr" ];
             };
 
+            github-issues = {
+              urls = [ { template = "https://github.com/search?type=issues&q={searchTerms}"; } ];
+              definedAliases = [ "@ghi" ];
+            };
+
             bing.metaData.hidden = true;
           };
         };
