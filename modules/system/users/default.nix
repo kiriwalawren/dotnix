@@ -11,6 +11,12 @@ in
       description = "The name to use for the user account";
     };
 
+    displayName = lib.mkOption {
+      type = lib.types.str;
+      default = "Kiri Carlson";
+      description = "The display name to use for the user.";
+    };
+
     email = lib.mkOption {
       type = lib.types.str;
       default = "kiri@walawren.com";
