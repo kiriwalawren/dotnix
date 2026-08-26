@@ -13,17 +13,6 @@
       action = "<cmd>wa<cr><esc>";
       options.desc = "Save all files";
     }
-    {
-      mode = [
-        "x"
-        "n"
-        "s"
-        "v"
-      ];
-      key = "<leader>a";
-      action = "<cmd>wa<cr><esc>";
-      options.desc = "Save all files";
-    }
 
     # Better up/down
     {

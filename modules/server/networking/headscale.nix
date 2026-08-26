@@ -169,6 +169,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "listen.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "photos.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
@@ -223,21 +228,18 @@
           };
 
           headscale = {
+            api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
             config_path = config.services.headscale.configFile;
             public_url = "https://headscale.${config.system.ddns.domain}";
           };
 
-          integration.agent = {
-            enabled = true;
-            pre_authkey_path = config.sops.secrets."headscale-pre-authkey".path;
-          };
+          integration.agent.enabled = true;
 
           oidc = {
             inherit (config.system.auth) issuer;
             use_pkce = true;
             client_id = config.system.auth.headscaleClientId;
             client_secret_path = config.sops.secrets."pocket-id/headscale-client-secret".path;
-            headscale_api_key_path = config.sops.secrets."headplane/headscale-api-key".path;
           };
         };
       };

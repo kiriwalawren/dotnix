@@ -13,7 +13,7 @@
         impression. If you cannot find research to substantiate your suggestion,
         DO NOT suggest it.
 
-        Always use `jq` when parsing JSON. Do not use python to parse JSON.
+        Always use `jq` when parsing JSON from the command line. Do not use python to parse JSON from the commanline.
       '';
     };
 }

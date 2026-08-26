@@ -21,6 +21,7 @@ in
         heroic
         mangohud
         protonup-rs
+        sgdboop
         (bottles.override { removeWarningPopup = true; })
       ];
 

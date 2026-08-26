@@ -8,7 +8,12 @@ in
   ];
 
   flake.modules.homeManager.gui =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     {
       catppuccin.firefox = {
         enable = true;
@@ -17,6 +22,11 @@ in
 
       programs.firefoxpwa = {
         enable = true;
+      };
+
+      home.activation.darkreaderCatppuccinFirefox = import ./_darkreader-exclusions.nix {
+        inherit config pkgs lib;
+        profileDir = "${config.programs.firefox.configPath}/${user}";
       };
 
       programs.firefox = {
@@ -38,6 +48,7 @@ in
           isDefault = true;
 
           settings = {
+            "browser.aboutConfig.showWarning" = false;
             "browser.search.defaultenginename" = "ddg";
             "browser.startup.page" = 3; # remember tabs
             "browser.tabs.inTitlebar" = 0;
@@ -129,6 +140,10 @@ in
           extensions = {
             force = true;
 
+            settings."{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}".settings = import ./_catppuccin-stylus.nix {
+              inherit config pkgs lib;
+            };
+
             packages = with pkgs.firefox-addons; [
               bitwarden
               darkreader
@@ -143,86 +158,42 @@ in
           search = {
             force = true;
             default = "ddg";
-            order = [
-              "ddg"
-              "google"
-            ];
             engines = {
-              "Nix Packages" = {
-                urls = [
-                  {
-                    template = "https://search.nixos.org/packages";
-                    params = [
-                      {
-                        name = "type";
-                        value = "packages";
-                      }
-                      {
-                        name = "query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
+              nix-packages = {
+                urls = [ { template = "https://search.nixos.org/packages?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                definedAliases = [
-                  "@np"
-                  "@nixpkgs"
-                ];
+                definedAliases = [ "@np" ];
               };
 
-              "Nix Options" = {
-                urls = [
-                  {
-                    template = "https://search.nixos.org/options";
-                    params = [
-                      {
-                        name = "type";
-                        value = "packages";
-                      }
-                      {
-                        name = "query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
+              nix-options = {
+                urls = [ { template = "https://search.nixos.org/options?type=packages&query={searchTerms}"; } ];
                 icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                definedAliases = [
-                  "@no"
-                  "@nixopts"
-                ];
+                definedAliases = [ "@no" ];
               };
 
-              "NixOS Wiki" = {
+              nixos-wiki = {
                 urls = [ { template = "https://nixos.wiki/index.php?search={searchTerms}"; } ];
                 iconUpdateUrl = "https://nixos.wiki/favicon.png";
                 updateInterval = 24 * 60 * 60 * 1000; # every day
-                definedAliases = [
-                  "@nw"
-                  "@nixwiki"
-                ];
+                definedAliases = [ "@nw" ];
               };
 
-              "YouTube" = {
-                urls = [
-                  {
-                    template = "https://youtube.com/results";
-                    params = [
-                      {
-                        name = "search_query";
-                        value = "{searchTerms}";
-                      }
-                    ];
-                  }
-                ];
-                definedAliases = [
-                  "@yt"
-                ];
+              youtube = {
+                urls = [ { template = "https://youtube.com/results?search_query={searchTerms}"; } ];
+                definedAliases = [ "@yt" ];
               };
 
-              "bing".metaData.hidden = true;
-              "google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias
+              github-code = {
+                urls = [ { template = "https://github.com/search?type=code&q={searchTerms}"; } ];
+                definedAliases = [ "@ghc" ];
+              };
+
+              github-repos = {
+                urls = [ { template = "https://github.com/search?type=repositories&q={searchTerms}"; } ];
+                definedAliases = [ "@ghr" ];
+              };
+
+              bing.metaData.hidden = true;
             };
           };
         };

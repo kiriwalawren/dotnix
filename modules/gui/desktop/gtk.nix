@@ -6,6 +6,21 @@
       pkgs,
       ...
     }:
+    let
+      capitalize =
+        s:
+        let
+          len = builtins.stringLength s;
+        in
+        if len == 0 then
+          ""
+        else
+          let
+            first = lib.toUpper (builtins.substring 0 1 s);
+            rest = builtins.substring 1 (len - 1) s;
+          in
+          first + rest;
+    in
     {
       dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
@@ -14,12 +29,11 @@
         enable = true;
         gtk4.theme = config.gtk.theme;
         theme = {
-          name = "Colloid-Teal-Dark-Compact-Catppuccin";
-          package = pkgs.colloid-gtk-theme.override {
-            themeVariants = [ config.catppuccin.accent ];
-            colorVariants = [ "dark" ];
-            sizeVariants = [ "compact" ];
-            tweaks = [ "catppuccin" ];
+          name = "Catppuccin-GTK-${capitalize config.catppuccin.accent}-Dark-Compact";
+          package = pkgs.magnetic-catppuccin-gtk.override {
+            accent = [ config.catppuccin.accent ];
+            shade = "dark";
+            size = "compact";
           };
         };
 

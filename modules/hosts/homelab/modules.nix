@@ -10,13 +10,10 @@
       ssh
       tailscale-server-mode
 
-      # Uncomment for temporary gaming
-      bluetooth
-      gaming
+      steamos
       gui
       niri
-      niri-homelab
-      sound
+      niri-steamos
       ;
   };
 }
