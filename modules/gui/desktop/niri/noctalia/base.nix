@@ -26,9 +26,11 @@
     };
 
   flake.wrappers.noctalia-shell =
-    { wlib, ... }:
+    { wlib, pkgs, lib, ... }:
     {
       imports = [ wlib.wrapperModules.noctalia-shell ];
+
+      outOfStoreConfig = "/home/walawren/.config/noctalia/";
 
       settings = {
         settingsVersion = 59;
@@ -158,8 +160,37 @@
           syncGsettings = true;
         };
         templates = {
-          activeTemplates = [ ];
-          enableUserTheming = false;
+          activeTemplates = [
+            {
+              id = "gtk";
+              enabled = true;
+            }
+            {
+              id = "kitty";
+              enabled = true;
+            }
+            {
+              id = "btop";
+              enabled = true;
+            }
+            {
+              id = "niri";
+              enabled = true;
+            }
+            {
+              id = "discord";
+              enabled = true;
+            }
+            {
+              id = "zenBrowser";
+              enabled = true;
+            }
+            {
+              id = "yazi";
+              enabled = true;
+            }
+          ];
+          enableUserTheming = true;
         };
         nightLight = {
           enabled = false;
@@ -171,7 +202,7 @@
           manualSunset = "18:30";
         };
         hooks = {
-          enabled = false;
+          enabled = true;
           wallpaperChange = "";
           darkModeChange = "";
           screenLock = "";
@@ -180,7 +211,7 @@
           performanceModeDisabled = "";
           startup = "";
           session = "";
-          colorGeneration = "";
+          colorGeneration = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-theme-hook;
         };
         idle = {
           enabled = true;

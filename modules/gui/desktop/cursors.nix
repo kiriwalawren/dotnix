@@ -1,12 +1,14 @@
 {
-  flake.modules.homeManager.gui = {
-    catppuccin.cursors.enable = true;
-
-    home.pointerCursor = {
-      enable = true;
-      gtk.enable = true;
-      x11.enable = true;
-      size = 24;
+  flake.modules.homeManager.gui =
+    { pkgs, ... }:
+    {
+      home.pointerCursor = {
+        enable = true;
+        gtk.enable = true;
+        x11.enable = true;
+        size = 24;
+        package = pkgs.phinger-cursors;
+        name = "phinger-cursors-dark";
+      };
     };
-  };
 }

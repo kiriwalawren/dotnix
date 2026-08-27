@@ -1,4 +1,13 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
+let
+  spicetifyThemeName =
+    {
+      Catppuccin = "catppuccin";
+      Nord = "nord";
+      Tokyo-Night = "tokyoNight";
+    }
+    .${config.theme.colorSchemeName} or "default";
+in
 {
   nixpkgs.config.allowUnfreePackages = [ "spotify" ];
   flake.modules.nixos.gui = {
@@ -9,7 +18,7 @@
   };
 
   flake.modules.homeManager.gui =
-    { config, pkgs, ... }:
+    { pkgs, lib, ... }:
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
     in
@@ -21,10 +30,12 @@
       programs.spicetify = {
         enable = true;
 
-        theme = spicePkgs.themes.catppuccin;
-
-        colorScheme = config.catppuccin.flavor;
-
+        theme = spicePkgs.themes.${spicetifyThemeName};
+      }
+      // lib.optionalAttrs (spicetifyThemeName == "catppuccin") {
+        colorScheme = "mocha";
+      }
+      // {
         enabledExtensions = with spicePkgs.extensions; [
           # Official extensions
           keyboardShortcut

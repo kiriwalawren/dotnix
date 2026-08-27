@@ -14,17 +14,17 @@ in
       wlib,
       ...
     }:
-    let
-      rgba = color: "#${color}ee";
-      primaryAccent = rgba config.catppuccin.colors.primaryAccent;
-      secondaryAccent = rgba config.catppuccin.colors.secondaryAccent;
-      crust = rgba config.catppuccin.colors.crust;
-      base = rgba config.catppuccin.colors.base;
-      overlay = rgba config.catppuccin.colors.overlay0;
-      red = rgba config.catppuccin.colors.red;
-    in
     {
       imports = [ wlib.wrapperModules.niri ];
+
+      extraSettings = [
+        {
+          include = [
+            { optional = true; }
+            "~/.config/niri/noctalia.kdl"
+          ];
+        }
+      ];
 
       settings =
         let
@@ -88,30 +88,10 @@ in
 
           layout = {
             gaps = 7;
-            focus-ring = {
-              width = 2;
-              active-gradient = _: {
-                props = {
-                  from = primaryAccent;
-                  to = secondaryAccent;
-                  angle = 45;
-                };
-              };
-              inactive-color = crust;
-            };
+            focus-ring.width = 2;
           };
 
-          recent-windows = {
-            highlight = {
-              corner-radius = theme.radius;
-              active-color = overlay;
-              urgent-color = red;
-            };
-          };
-
-          overview = {
-            backdrop-color = base;
-          };
+          recent-windows.highlight.corner-radius = theme.radius;
 
           binds =
             let

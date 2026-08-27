@@ -1,7 +1,5 @@
 {
   flake.modules.homeManager.base = {
-    catppuccin.tmux.enable = true;
-
     programs.tmux = {
       enable = true;
       shortcut = "a";
@@ -25,6 +23,8 @@
 
         # Allow (n)vim to see TMUX focus events
         set -g focus-events on
+
+        source-file -q ~/.config/tmux/noctalia.tmux
       '';
     };
   };

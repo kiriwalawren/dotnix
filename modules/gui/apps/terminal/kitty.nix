@@ -9,8 +9,6 @@
   flake.modules.homeManager.gui =
     { lib, pkgs, ... }:
     {
-      catppuccin.kitty.enable = true;
-
       programs.kitty = {
         enable = true;
 
@@ -25,6 +23,8 @@
           copy_on_select = "clipboard";
           term = "xterm-256color";
         };
+
+        extraConfig = "include current-theme.conf";
       };
 
       wayland.windowManager.hyprland.settings.bind = [ "SUPER,Return,exec,${lib.getExe pkgs.kitty}" ];

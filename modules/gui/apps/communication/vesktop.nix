@@ -1,7 +1,5 @@
 {
   flake.modules.homeManager.gui = {
-    catppuccin.vesktop.enable = true;
-
     programs.vesktop = {
       enable = true;
 
@@ -9,8 +7,6 @@
         discordBranch = "stable";
         firstLaunch = false;
         arRPC = true;
-        splashBackground = "#181825";
-        splashColor = "#cdd6f4";
         minimizeToTray = false;
       };
 
@@ -26,6 +22,7 @@
         macosTranslucency = false;
         disableMinSize = false;
         winNativeTitleBar = false;
+        enabledThemes = [ "noctalia.theme.css" ];
 
         plugins = {
           BadgeAPI.enabled = true;

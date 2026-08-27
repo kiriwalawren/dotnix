@@ -157,7 +157,7 @@ in
     catppuccin = {
       inherit accent flavor;
       enable = true;
-      autoEnable = true;
+      autoEnable = false;
       tty.enable = true;
     };
   };
@@ -171,7 +171,7 @@ in
     catppuccin = {
       inherit accent flavor;
       enable = true;
-      autoEnable = true;
+      autoEnable = false;
     };
   };
 }

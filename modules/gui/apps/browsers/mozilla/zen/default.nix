@@ -1,25 +1,6 @@
+{ inputs, ... }:
 {
-  inputs,
-  lib,
-  ...
-}:
-let
-  capitalize =
-    s:
-    let
-      len = builtins.stringLength s;
-    in
-    if len == 0 then
-      ""
-    else
-      let
-        first = lib.toUpper (builtins.substring 0 1 s);
-        rest = builtins.substring 1 (len - 1) s;
-      in
-      first + rest;
-in
-{
-  flake.modules.homeManager.gui = { pkgs, config, ... }: {
+  flake.modules.homeManager.gui = { pkgs, ... }: {
     imports = [ inputs.zen-browser.homeModules.default ];
 
     programs.zen-browser = {
@@ -49,12 +30,6 @@ in
 
           # Enable "Tell websites not to sell or share my data"
           "privacy.globalprivacycontrol.enabled" = true;
-        };
-
-        presets.catppuccin = {
-          enable = true;
-          accent = capitalize config.catppuccin.accent;
-          flavor = capitalize config.catppuccin.flavor;
         };
 
         search = import ../_search.nix { inherit pkgs; };
