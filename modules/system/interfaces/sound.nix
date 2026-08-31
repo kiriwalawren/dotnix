@@ -93,10 +93,6 @@ in
         pkgs.wiremix
       ];
 
-      # Waybar integration - override the pulseaudio on-click
-      programs.waybar.settings.mainBar.pulseaudio.on-click =
-        "pkill wiremix || ${lib.getExe pkgs.kitty} --class=wiremix ${lib.getExe pkgs.wiremix}";
-
       wayland.windowManager.hyprland.settings = {
         windowrule = [
           "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on"
