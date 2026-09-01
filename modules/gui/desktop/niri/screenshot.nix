@@ -13,8 +13,10 @@
 
       screenshot-edit = pkgs.writeShellScriptBin "screenshot-edit" ''
         set -eo pipefail
+
         tmp=$(mktemp --suffix=.png)
         ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp -d)" "$tmp"
+
         systemd-run --user --scope \
           ${pkgs.satty}/bin/satty \
             --filename "$tmp" \
@@ -25,6 +27,7 @@
             --init-tool line \
             --actions-on-escape "save-to-clipboard" \
             --actions-on-enter "save-to-clipboard,save-to-file"
+
         rm -f "$tmp"
       '';
     in
