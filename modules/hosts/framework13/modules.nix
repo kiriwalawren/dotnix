@@ -12,7 +12,7 @@
       niri
       sound
       virtualisation
-      # ziti-edge-tunnel # disables tailscale
+      ziti-edge-tunnel # disables tailscale
       ;
   };
 }
