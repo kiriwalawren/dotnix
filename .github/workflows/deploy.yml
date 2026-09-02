@@ -89,4 +89,4 @@ jobs:
           args: "--login-server=https://headscale.walawren.com"
 
       - name: Deploy
-        run: nix run .#depoy-${{ matrix.configuration }}
+        run: nix run .#deploy-${{ matrix.configuration }}
