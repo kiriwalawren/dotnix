@@ -40,7 +40,7 @@ in
 
             runtimeInputs = [ pkgs.deploy-rs ];
 
-            text = ''deploy .#${name} --skip-checks --remote-build --dry-activate "$@"'';
+            text = ''deploy .#${name} --skip-checks --remote-build "$@"'';
           }
         )
       ) deployTargets;
