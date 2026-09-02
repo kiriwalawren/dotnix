@@ -4,7 +4,8 @@ on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-    branches: [main, deploy-rs]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,6 +21,7 @@ jobs:
   prepare:
     name: Find NixOS Deploy Targets 🔍
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
@@ -50,7 +52,7 @@ jobs:
 
   deploy:
     name: Deploy NixOS Configuration 🚀
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     needs: [prepare]
     strategy:
       fail-fast: false
