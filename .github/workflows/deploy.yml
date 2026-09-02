@@ -79,5 +79,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
+      - name: Connect to Headscale via Tailscale
+        uses: tailscale/github-action@v4.1.2
+        with:
+          authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
+          hostname: gh-runner-${{ github.run_id }}
+          ping: homelab
+          tags: ci
+          args: "--login-server=https://headscale.walawren.com"
+
       - name: Deploy
         run: nix run .#depoy-${{ matrix.configuration }}
