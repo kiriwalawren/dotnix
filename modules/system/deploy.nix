@@ -37,7 +37,7 @@ in
     {
       packages = lib.mapAttrs' (
         name: _:
-        lib.nameValuePair ("deploy-" + name) (
+        lib.nameValuePair ("deploy-${name}") (
           pkgs.writeShellApplication {
             name = "deploy-${name}";
 
