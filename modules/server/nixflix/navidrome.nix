@@ -22,7 +22,10 @@
 
       services.navidrome.environmentFile = config.sops.templates."navidrome.env".path;
 
-      # nixflix.beets.enable = true;
+      nixflix.beets = {
+        enable = true;
+        settings.lyrics.auto = true;
+      };
 
       nixflix.navidrome = {
         enable = true;
