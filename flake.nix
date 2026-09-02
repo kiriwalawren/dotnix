@@ -53,15 +53,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    cachix-deploy-flake = {
-      url = "github:cachix/cachix-deploy-flake";
-      inputs = {
-        disko.follows = "disko";
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
