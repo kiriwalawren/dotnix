@@ -43,12 +43,17 @@ jobs:
       - name: Find NixOS Deploy Targets 🔍
         id: matrix
         run: |
-          nix eval --json .#deploy.nodes --apply '
-            configs:
-            builtins.map (name: {
-              configuration = name;
-            }) (builtins.attrNames configs)
-          ' | perl -pe 's|(.*)|matrix=\1|' >>$GITHUB_OUTPUT
+          targets=$(nix eval --json .#deploy.nodes --apply 'builtins.attrNames')
+          archs=$(nix eval --json .#nixosConfigurations --apply '
+            configs: builtins.mapAttrs (n: c: c.config.nixpkgs.hostPlatform.system) configs
+          ')
+          matrix=$(jq -nc --argjson targets "$targets" --argjson archs "$archs" '
+            $targets | map({
+              configuration: .,
+              runner: ({ "x86_64-linux": "ubuntu-latest", "aarch64-linux": "ubuntu-24.04-arm" }[ $archs[.] ])
+            })
+          ')
+          echo "matrix=$matrix" >>"$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy NixOS Configuration 🚀
@@ -59,20 +64,16 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     environment: ${{ matrix.configuration }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - uses: docker/setup-qemu-action@v4
-
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-          extra_nix_config: |
-            extra-platforms = aarch64-linux
 
       - name: Setup Cachix
         uses: cachix/cachix-action@v17
