@@ -43,7 +43,7 @@ jobs:
       - name: Find NixOS Deploy Targets 🔍
         id: matrix
         run: |
-          nix eval --json .#nixosConfigurations --apply '
+          nix eval --json .#deploy.nodes --apply '
             configs:
             builtins.map (name: {
               configuration = name;
