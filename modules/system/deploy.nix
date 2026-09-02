@@ -22,6 +22,21 @@
     }
   ) (lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos);
 
+  perSystem =
+    { pkgs, lib, ... }:
+    {
+      packages = lib.mapAttrs (
+        name: _:
+        pkgs.writeShellApplication {
+          name = "deploy-${name}";
+
+          runtimeInputs = [ pkgs.deploy-rs ];
+
+          text = ''deploy .#${name} -s --remote-build "$@"'';
+        }
+      ) (lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos);
+    };
+
   flake.modules.nixos.deploy =
     { config, ... }:
     {

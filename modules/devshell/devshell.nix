@@ -15,14 +15,12 @@
           with pkgs;
           [ config.treefmt.build.wrapper ]
           ++ (lib.attrValues config.treefmt.build.programs)
+          ++ builtins.attrValues self'.packages
           ++ [
             age
             cachix
             sops
             deploy-rs
-            self'.packages.bootstrap-nixos
-            self'.packages.create-vm
-            self'.packages.like-my-songs
           ];
       };
     };
