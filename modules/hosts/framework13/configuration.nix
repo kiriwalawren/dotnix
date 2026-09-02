@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   nixpkgs.config.allowUnfreePackages = [
     "broadcom-bt-firmware"
@@ -27,8 +23,8 @@ in
         backup = {
           healthchecks.enable = false;
           paths = [
-            "${config.users.users.${user}.home}/Documents"
-            "${config.users.users.${user}.home}/photos-staging"
+            "${config.users.users.${config.user.name}.home}/Documents"
+            "${config.users.users.${config.user.name}.home}/photos-staging"
           ];
         };
 

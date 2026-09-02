@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   nixpkgs.config.allowUnfreePackages = [
     "steam"
@@ -9,7 +5,7 @@ in
   ];
 
   flake.modules.nixos.gaming =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       programs.steam = {
         enable = true;
@@ -28,14 +24,14 @@ in
       programs.gamemode.enable = true;
 
       environment.sessionVariables = {
-        STEAM_EXTRA_COMPAT_TOOLS_PATH = "/home/${user}/.steam/root/compatibilitytools.d";
+        STEAM_EXTRA_COMPAT_TOOLS_PATH = "/home/${config.user.name}/.steam/root/compatibilitytools.d";
       };
 
       systemd.services.protonup-rs = {
         description = "Update GE-Proton for Steam";
         serviceConfig = {
           Type = "oneshot";
-          User = user;
+          User = config.user.name;
           ExecStart = "${pkgs.protonup-rs}/bin/protonup-rs -q";
         };
       };

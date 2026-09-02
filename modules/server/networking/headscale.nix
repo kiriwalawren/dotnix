@@ -69,16 +69,27 @@
                 tagOwners = {
                   "tag:nixflix" = [ "kiriwalawren@" ];
                   "tag:dns" = [ "kiriwalawren@" ];
+                  "tag:ci" = [ "kiriwalawren@" ];
                 };
 
                 acls = [
-                  # kiri can SSH into her tagged machines, or use HTTP(S)
+                  # kiri can ssh into her tagged machines, or use http(s)
                   {
                     action = "accept";
                     src = [ "kiriwalawren@" ];
                     dst = [
                       "tag:nixflix:22,80,443"
                       "tag:dns:22,80,443"
+                    ];
+                  }
+
+                  # CI can ssh into kiri's and tagged devices
+                  {
+                    action = "accept";
+                    src = [ "tag:ci" ];
+                    dst = [
+                      "kiriwalawren@:22"
+                      "autogroup:tagged:22"
                     ];
                   }
 

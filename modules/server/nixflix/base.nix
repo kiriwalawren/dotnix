@@ -1,11 +1,7 @@
 {
-  config,
   inputs,
   ...
 }:
-let
-  user = config.user.name;
-in
 {
   flake.modules.nixos.homelab =
     { config, ... }:
@@ -19,7 +15,7 @@ in
 
       nixflix = {
         enable = true;
-        mediaUsers = [ user ];
+        mediaUsers = [ config.user.name ];
 
         theme = {
           enable = true;

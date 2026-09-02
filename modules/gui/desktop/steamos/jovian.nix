@@ -1,12 +1,8 @@
 {
-  config,
   inputs,
   lib,
   ...
 }:
-let
-  user = config.user.name;
-in
 {
   nixpkgs.config.allowUnfreePackages = [
     "steamdeck-hw-theme"
@@ -17,7 +13,7 @@ in
     imports = [ inputs.jovian.nixosModules.jovian ];
 
     jovian.steam = {
-      inherit user;
+      user = config.user.name;
       enable = true;
       autoStart = true;
 

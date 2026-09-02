@@ -3,7 +3,7 @@
   configurations.nixos.vps.modules = {
     inherit (config.flake.modules.nixos)
       adguardhome # offsite backup incase homelab goes down
-      auto-deploy
+      deploy
       backup
       base
       # expose-ssh

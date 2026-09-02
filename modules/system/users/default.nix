@@ -1,61 +1,71 @@
-{ config, lib, ... }:
+{ config, ... }:
 let
   keys = config.flake.publicSshKeys;
-  user = config.user.name;
 in
 {
-  options.user = {
-    name = lib.mkOption {
-      type = lib.types.str;
-      default = "walawren";
-      description = "The name to use for the user account";
-    };
 
-    displayName = lib.mkOption {
-      type = lib.types.str;
-      default = "Kiri Carlson";
-      description = "The display name to use for the user.";
-    };
-
-    email = lib.mkOption {
-      type = lib.types.str;
-      default = "kiri@walawren.com";
-      description = "The user's email";
-    };
-  };
-
-  config.flake.modules.nixos.base =
-    { config, ... }:
+  flake.modules.nixos.base =
+    { config, lib, ... }:
     {
-      users.mutableUsers = config.wsl.enable;
+      options.user = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = "walawren";
+          description = "The name to use for the user account";
+        };
 
-      users.users.${user} = {
-        name = user;
-        home = "/home/${user}";
-        isNormalUser = true;
-        group = "users";
+        displayName = lib.mkOption {
+          type = lib.types.str;
+          default = "Kiri Carlson";
+          description = "The display name to use for the user.";
+        };
 
-        hashedPasswordFile =
-          if !config.wsl.enable then config.sops.secrets."passwords/${user}".path else null;
+        email = lib.mkOption {
+          type = lib.types.str;
+          default = "kiri@walawren.com";
+          description = "The user's email";
+        };
+      };
 
-        openssh.authorizedKeys.keys = keys;
+      config = {
+        users.mutableUsers = config.wsl.enable;
 
-        extraGroups = [
-          "wheel"
-          "networkmanager"
-          "video"
-          "input"
-          "tty"
-          "media"
-        ];
+        users.users.${config.user.name} = {
+          name = config.user.name;
+          home = "/home/${config.user.name}";
+          isNormalUser = true;
+          group = "users";
+
+          hashedPasswordFile =
+            if !config.wsl.enable then config.sops.secrets."passwords/${config.user.name}".path else null;
+
+          openssh.authorizedKeys.keys = keys;
+
+          extraGroups = [
+            "wheel"
+            "networkmanager"
+            "video"
+            "input"
+            "tty"
+            "media"
+          ];
+        };
       };
     };
 
-  config.flake.modules.homeManager.base = {
-    home = {
-      username = user;
-      homeDirectory = "/home/${user}";
+  flake.modules.homeManager.base = { lib, ... }: {
+    options.home = {
+      email = lib.mkOption {
+        type = lib.types.str;
+        default = "kiri@walawren.com";
+        description = "The user's email";
+      };
+
+      displayName = lib.mkOption {
+        type = lib.types.str;
+        default = "Kiri Carlson";
+        description = "The display name to use for the user.";
+      };
     };
-    programs.home-manager.enable = true;
   };
 }

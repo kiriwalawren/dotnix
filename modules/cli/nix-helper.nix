@@ -1,6 +1,5 @@
-{ config, ... }:
 {
-  flake.modules.nixos.base = {
+  flake.modules.nixos.base = { config, ... }: {
     programs.nh = {
       enable = true;
 

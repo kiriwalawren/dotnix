@@ -21,7 +21,7 @@
           ];
         };
 
-        programs.ssh = lib.optionalAttrs pkgs.stdenv.isLinux {
+        programs.ssh = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
           knownHostsFiles = [
             (builtins.toFile "custom_known_hosts" ''
               gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf

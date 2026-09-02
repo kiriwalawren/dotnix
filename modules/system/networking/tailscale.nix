@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.modules.nixos.base =
     {
@@ -76,7 +72,7 @@ in
             useRoutingFeatures = if cfg.mode == "server" then "both" else "client";
             extraUpFlags = [
               "--accept-routes=false"
-              "--operator=${user}"
+              "--operator=${config.user.name}"
               "--exit-node=${if cfg.exitNode.enable then cfg.exitNode.node else ""}"
             ]
             ++ optional (cfg.mode == "server") "--advertise-exit-node"
@@ -97,7 +93,7 @@ in
           wantedBy = [ "multi-user.target" ];
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${lib.getExe pkgs.tailscale} set --operator=${user}";
+            ExecStart = "${lib.getExe pkgs.tailscale} set --operator=${config.user.name}";
             RemainAfterExit = true;
           };
         };

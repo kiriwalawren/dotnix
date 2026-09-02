@@ -50,18 +50,12 @@
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.1.0";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    cachix-deploy-flake = {
-      url = "github:cachix/cachix-deploy-flake";
-      inputs = {
-        disko.follows = "disko";
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-      };
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     secrets.url = "git+ssh://git@github.com/kiriwalawren/secrets.git?ref=main&shallow=1";

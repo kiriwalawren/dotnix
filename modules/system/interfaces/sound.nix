@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.wrappers.niri =
     { lib, ... }:
@@ -36,8 +32,8 @@ in
       };
     };
 
-  flake.modules.nixos.sound = {
-    users.users.${user}.extraGroups = [
+  flake.modules.nixos.sound = { config, ... }: {
+    users.users.${config.user.name}.extraGroups = [
       "audio"
       "sound"
     ];
