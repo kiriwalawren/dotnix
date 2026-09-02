@@ -115,7 +115,7 @@
 
     # Server Dependencies
     nixflix = {
-      url = "github:kiriwalawren/nixflix";
+      url = "github:kiriwalawren/nixflix/beets";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

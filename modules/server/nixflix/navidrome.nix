@@ -22,6 +22,8 @@
 
       services.navidrome.environmentFile = config.sops.templates."navidrome.env".path;
 
+      # nixflix.beets.enable = true;
+
       nixflix.navidrome = {
         enable = true;
         subdomain = "listen";
