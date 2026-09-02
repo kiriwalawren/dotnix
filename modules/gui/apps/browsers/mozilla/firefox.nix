@@ -1,7 +1,4 @@
-{ config, inputs, ... }:
-let
-  user = config.user.name;
-in
+{ inputs, ... }:
 {
   nixpkgs.overlays = [
     inputs.firefox-addons.overlays.default
@@ -17,12 +14,12 @@ in
     {
       catppuccin.firefox = {
         enable = true;
-        profiles.${user}.force = true;
+        profiles.${config.home.username}.force = true;
       };
 
       home.activation.darkreaderCatppuccinFirefox = import ./_darkreader-exclusions.nix {
         inherit config pkgs lib;
-        profileDir = "${config.programs.firefox.configPath}/${user}";
+        profileDir = "${config.programs.firefox.configPath}/${config.home.username}";
       };
 
       programs.firefox = {
@@ -36,7 +33,7 @@ in
           SearchBar = "unified";
         };
 
-        profiles.${user} = {
+        profiles.${config.home.username} = {
           id = 0;
           name = "default";
           isDefault = true;

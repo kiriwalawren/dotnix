@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.modules.nixos.base =
     {
@@ -63,7 +59,7 @@ in
           '';
         };
 
-        users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ user ];
+        users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ config.user.name ];
 
         services.cloudflare-ddns = lib.mkIf (cfg.subdomains != [ ]) {
           enable = true;

@@ -1,10 +1,6 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.modules.nixos.virtualisation =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       virtualisation = {
         libvirtd = {
@@ -20,7 +16,7 @@ in
 
       programs.virt-manager.enable = true;
 
-      users.extraGroups.libvirt.members = [ user ];
+      users.extraGroups.libvirt.members = [ config.user.name ];
 
       environment.systemPackages = with pkgs; [
         swtpm

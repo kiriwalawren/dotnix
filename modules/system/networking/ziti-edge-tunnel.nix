@@ -1,8 +1,4 @@
-{ inputs, config, ... }:
-let
-  user = config.user.name;
-
-in
+{ inputs, ... }:
 {
   flake.modules.nixos.ziti-edge-tunnel =
     { config, lib, ... }:
@@ -20,7 +16,7 @@ in
 
       services.ziti-edge-tunnel = {
         enable = true;
-        extraUsers = [ user ];
+        extraUsers = [ config.user.name ];
 
         enrollment.identities = {
           kcarlson-personal-lt-framework13-production = lib.mkIf isFramework13 {

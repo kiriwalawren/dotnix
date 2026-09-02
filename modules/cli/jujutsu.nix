@@ -1,8 +1,3 @@
-{ config, ... }:
-let
-  inherit (config.user) email;
-  name = config.user.displayName;
-in
 {
   flake.modules.homeManager.base =
     {
@@ -17,7 +12,8 @@ in
 
         settings = {
           user = {
-            inherit name email;
+            name = config.home.username;
+            inherit (config.home) email;
           };
 
           signing = {

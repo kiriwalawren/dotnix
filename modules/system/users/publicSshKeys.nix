@@ -1,8 +1,5 @@
 { lib, config, ... }:
 let
-  user = config.user.name;
-  inherit (config.user) email;
-  key = config.flake.users.${user}.publicSshKey;
   users = config.flake.users;
 in
 {
@@ -13,15 +10,22 @@ in
     };
     publicSshKeys = lib.mapAttrsToList (_name: value: value.publicSshKey) users;
 
-    modules.homeManager.base = {
-      home = {
-        file.".ssh/allowed_signers".text = ''
-          ${email} ${key}
-        '';
-        file.".ssh/id_ed25519.pub".text = ''
-          ${key}
-        '';
+    modules.homeManager.base =
+      { config, ... }:
+      let
+        user = config.home.username;
+        inherit (config.home) email;
+        key = users.${user}.publicSshKey;
+      in
+      {
+        home = {
+          file.".ssh/allowed_signers".text = ''
+            ${email} ${key}
+          '';
+          file.".ssh/id_ed25519.pub".text = ''
+            ${key}
+          '';
+        };
       };
-    };
   };
 }

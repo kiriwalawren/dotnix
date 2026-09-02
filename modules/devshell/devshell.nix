@@ -19,6 +19,7 @@
             age
             cachix
             sops
+            deploy-rs
             self'.packages.bootstrap-nixos
             self'.packages.create-vm
             self'.packages.like-my-songs

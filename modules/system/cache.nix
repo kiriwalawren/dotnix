@@ -1,7 +1,6 @@
-{ config, ... }:
 {
   flake.modules.nixos.base =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       environment.systemPackages = [
         pkgs.cachix

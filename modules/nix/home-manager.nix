@@ -1,9 +1,5 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
-  flake.modules.nixos.base = {
+  flake.modules.nixos.base = { config, ... }: {
     programs.dconf.enable = true; # Configuration System & Setting Management - required for Home Manager
 
     home-manager = {
@@ -15,8 +11,14 @@ in
           (
             { osConfig, ... }:
             {
-              home.stateVersion = osConfig.system.stateVersion;
-              home.enableNixpkgsReleaseCheck = false;
+              home = {
+                username = config.user.name;
+                email = config.user.email;
+                displayName = config.user.displayName;
+                homeDirectory = "/home/${config.user.name}";
+                stateVersion = osConfig.system.stateVersion;
+                enableNixpkgsReleaseCheck = false;
+              };
             }
           )
         ];
@@ -24,11 +26,7 @@ in
     };
   };
 
-  flake.modules.homeManger.base = {
-    home = {
-      username = user;
-      homeDirectory = "/home/${user}";
-    };
+  flake.modules.homeManager.base = {
     programs.home-manager.enable = true;
   };
 }
