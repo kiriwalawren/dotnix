@@ -43,12 +43,14 @@ jobs:
       - name: Find NixOS Deploy Targets 🔍
         id: matrix
         run: |
-          nix eval --json .#deploy.nodes --apply '
-            configs:
-            builtins.map (name: {
-              configuration = name;
-            }) (builtins.attrNames configs)
-          ' | perl -pe 's|(.*)|matrix=\1|' >>$GITHUB_OUTPUT
+          groups=$(nix eval --json .#deploy.nodes --apply 'builtins.mapAttrs (n: v: v.groups)')
+          matrix=$(jq -nc --argjson groups "$groups" '
+            $groups
+            | to_entries
+            | map(select(.value | index("auto-deploy")))
+            | map({ configuration: .key })
+          ')
+          echo "matrix=$matrix" >>"$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy NixOS Configuration 🚀

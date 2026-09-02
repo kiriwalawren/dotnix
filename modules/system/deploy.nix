@@ -6,16 +6,19 @@
   ...
 }:
 let
-  deployTargets = lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos;
+  deployTargets = lib.filterAttrs (_name: cfg: cfg.modules ? base) config.configurations.nixos;
 in
 {
+  flake.modules.nixos.auto-deploy = { };
+
   flake.deploy.nodes = lib.mapAttrs (
-    name: _:
+    name: cfg:
     let
       system = self.nixosConfigurations.${name}.config.nixpkgs.hostPlatform.system;
       user = self.nixosConfigurations.${name}.config.user.name;
     in
     {
+      groups = lib.optionals (cfg.modules ? auto-deploy) [ "auto-deploy" ];
       hostname = name;
       sshOpts = [
         "-o"
@@ -46,7 +49,7 @@ in
       ) deployTargets;
     };
 
-  flake.modules.nixos.deploy =
+  flake.modules.nixos.base =
     { config, ... }:
     {
       users.users.${config.user.name}.extraGroups = [

@@ -3,7 +3,7 @@
   configurations.nixos.homelab.modules = {
     inherit (config.flake.modules.nixos)
       adguardhome
-      deploy
+      auto-deploy
       backup
       base
       homelab
