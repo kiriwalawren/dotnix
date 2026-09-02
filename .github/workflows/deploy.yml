@@ -91,7 +91,7 @@ jobs:
           authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
           hostname: gh-runner-${{ github.run_id }}
           ping: homelab
-          tags: ci
+          tags: tag:ci
           args: "--login-server=https://headscale.walawren.com"
 
       - name: Deploy

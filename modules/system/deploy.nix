@@ -17,6 +17,10 @@ in
     in
     {
       hostname = name;
+      sshOpts = [
+        "-o"
+        "StrictHostKeyChecking=accept-new"
+      ];
       profiles.system = {
         user = "root";
         sshUser = user;
