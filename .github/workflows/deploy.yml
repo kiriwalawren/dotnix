@@ -80,4 +80,4 @@ jobs:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
       - name: Deploy
-        run: nix run nixpkgs#deploy-rs -- .#${{ matrix.configuration }} --skip-checks --remote-build
+        run: nix run .#depoy-${{ matrix.configuration }}

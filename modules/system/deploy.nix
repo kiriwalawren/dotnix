@@ -5,6 +5,9 @@
   lib,
   ...
 }:
+let
+  deployTargets = lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos;
+in
 {
   flake.deploy.nodes = lib.mapAttrs (
     name: _:
@@ -20,21 +23,23 @@
         path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.${name};
       };
     }
-  ) (lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos);
+  ) deployTargets;
 
   perSystem =
     { pkgs, lib, ... }:
     {
-      packages = lib.mapAttrs (
+      packages = lib.mapAttrs' (
         name: _:
-        pkgs.writeShellApplication {
-          name = "deploy-${name}";
+        lib.nameValuePair ("deploy-" + name) (
+          pkgs.writeShellApplication {
+            name = "deploy-${name}";
 
-          runtimeInputs = [ pkgs.deploy-rs ];
+            runtimeInputs = [ pkgs.deploy-rs ];
 
-          text = ''deploy .#${name} -s --remote-build "$@"'';
-        }
-      ) (lib.filterAttrs (_name: cfg: cfg.modules ? deploy) config.configurations.nixos);
+            text = ''deploy .#${name} --skip-checks --remote-build "$@"'';
+          }
+        )
+      ) deployTargets;
     };
 
   flake.modules.nixos.deploy =
