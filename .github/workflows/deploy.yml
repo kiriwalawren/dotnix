@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   prepare:
-    name: Find NixOS Configurations 🔍
+    name: Find NixOS Deploy Targets 🔍
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -31,14 +31,14 @@ jobs:
       - name: Setup SSH for private repository
         uses: webfactory/ssh-agent@v0.10.0
         with:
-          ssh-private-key: ${{ secrets.SECRETS_REPO_SSH_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - name: Find NixOS Configurations 🔍
+      - name: Find NixOS Deploy Targets 🔍
         id: matrix
         run: |
           nix eval --json .#nixosConfigurations --apply '
@@ -49,8 +49,9 @@ jobs:
           ' | perl -pe 's|(.*)|matrix=\1|' >>$GITHUB_OUTPUT
 
   deploy:
-    name: Deploy NixOS Configuration (${{ matrix.configuration }})🚀
+    name: Deploy NixOS Configuration 🚀
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [prepare]
     strategy:
       fail-fast: false
       matrix:
