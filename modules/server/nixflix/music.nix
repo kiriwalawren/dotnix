@@ -1,11 +1,19 @@
 {
   flake.modules.nixos.homelab =
-    { config, ... }:
+    { config, pkgs, ... }:
     {
       sops.secrets = {
         "lastfm/api-key" = { };
         "lastfm/shared-secret" = { };
         "navidrome/passwords/kiri" = { };
+      };
+
+      sops.templates."beets-secrets.yml" = {
+        mode = "0440";
+        content = ''
+          fetchart:
+            lastfm_key: ${config.sops.placeholder."lastfm/api-key"}
+        '';
       };
 
       sops.templates."navidrome.env" = {
@@ -24,12 +32,17 @@
 
       nixflix.beets = {
         enable = true;
-        settings.lyrics.auto = true;
+        secretsYamlFile = config.sops.templates."beets-secrets.yml".path;
+        settings = {
+          lyrics.auto = true;
+        };
       };
 
       nixflix.navidrome = {
         enable = true;
         subdomain = "listen";
+
+        plugins = with pkgs.navidromePlugins; [ audiomuseai ];
 
         users.Kiri = {
           isAdmin = true;
