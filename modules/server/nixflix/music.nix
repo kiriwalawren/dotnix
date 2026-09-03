@@ -26,7 +26,10 @@
         '';
       };
 
-      system.backup.paths = [ config.nixflix.navidrome.settings.DataFolder ];
+      system.backup.paths = [
+        config.nixflix.navidrome.settings.DataFolder
+        config.nixflix.beets.dataDir
+      ];
 
       services.navidrome.environmentFile = config.sops.templates."navidrome.env".path;
 
@@ -41,8 +44,6 @@
       nixflix.navidrome = {
         enable = true;
         subdomain = "listen";
-
-        plugins = with pkgs.navidromePlugins; [ audiomuseai ];
 
         users.Kiri = {
           isAdmin = true;
