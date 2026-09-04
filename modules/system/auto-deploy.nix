@@ -54,27 +54,17 @@ in
   perSystem =
     { pkgs, lib, ... }:
     {
-      packages =
-        (lib.mapAttrs' (
-          name: _:
-          lib.nameValuePair "deploy-${name}" (
-            pkgs.writeShellApplication {
-              name = "deploy-${name}";
-
-              runtimeInputs = [ pkgs.deploy-rs ];
-
-              text = ''${lib.getExe pkgs.deploy-rs} .#${name} --skip-checks --remote-build "$@"'';
-            }
-          )
-        ) deployTargets)
-        // {
-          deploy = pkgs.writeShellApplication {
-            name = "deploy";
+      packages = lib.mapAttrs' (
+        name: _:
+        lib.nameValuePair "deploy-${name}" (
+          pkgs.writeShellApplication {
+            name = "deploy-${name}";
 
             runtimeInputs = [ pkgs.deploy-rs ];
 
-            text = ''${lib.getExe pkgs.deploy-rs} . --skip-checks --remote-build "$@"'';
-          };
-        };
+            text = ''${lib.getExe pkgs.deploy-rs} .#${name} --skip-checks --remote-build "$@"'';
+          }
+        )
+      ) deployTargets;
     };
 }

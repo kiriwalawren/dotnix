@@ -19,6 +19,7 @@
           ++ [
             age
             cachix
+            deploy-rs
             sops
           ];
       };
