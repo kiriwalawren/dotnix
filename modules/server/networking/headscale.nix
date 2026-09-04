@@ -165,6 +165,16 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "music2.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
+                name = "slskd.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "indexers.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;
