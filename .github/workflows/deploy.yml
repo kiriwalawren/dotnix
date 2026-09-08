@@ -84,7 +84,7 @@ jobs:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
       - name: Connect to Headscale via Tailscale
-        uses: tailscale/github-action@v4.1.2
+        uses: tailscale/github-action@v4.1.3
         with:
           authkey: ${{ secrets.HEADSCALE_AUTH_KEY }}
           hostname: gh-runner-${{ github.run_id }}
