@@ -30,6 +30,11 @@
             }
             {
               enable = true;
+              name = "Nzb.life";
+              apiKey._secret = config.sops.secrets."indexer-api-keys/nzblife".path;
+            }
+            {
+              enable = true;
               name = "NZBFinder";
               apiKey._secret = config.sops.secrets."indexer-api-keys/NZBFinder".path;
             }
