@@ -9,6 +9,7 @@
         "slskd/username" = { };
         "slskd/password" = { };
         "slskd/api-key" = { };
+        "droppedneedle/passwords/kiriwalawren" = { };
       };
 
       sops.templates."navidrome.env" = {
@@ -30,7 +31,7 @@
 
       nixflix = {
         slskd = {
-          enable = true;
+          enable = false;
           subdomain = "slskd";
           username._secret = config.sops.secrets."slskd/username".path;
           password._secret = config.sops.secrets."slskd/password".path;
@@ -40,6 +41,12 @@
         droppedneedle = {
           enable = true;
           subdomain = "music2";
+
+          settings.users.Kiri = {
+            userName = "kiriwalawren";
+            role = "admin";
+            password._secret = config.sops.secrets."droppedneedle/passwords/kiriwalawren".path;
+          };
         };
 
         navidrome = {

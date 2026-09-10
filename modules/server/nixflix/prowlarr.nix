@@ -5,6 +5,7 @@
       sops.secrets = {
         "indexer-api-keys/DrunkenSlug" = { };
         "indexer-api-keys/NZBFinder" = { };
+        "indexer-api-keys/nzblife" = { };
         "indexer-api-keys/NzbPlanet" = { };
         "indexer-api-keys/NZBgeek" = { };
         "indexer-api-keys/C411" = { };
@@ -27,6 +28,11 @@
               enable = true;
               name = "DrunkenSlug";
               apiKey._secret = config.sops.secrets."indexer-api-keys/DrunkenSlug".path;
+            }
+            {
+              enable = true;
+              name = "Nzb.life";
+              apiKey._secret = config.sops.secrets."indexer-api-keys/nzblife".path;
             }
             {
               enable = true;
