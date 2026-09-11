@@ -5,6 +5,7 @@
       sops.secrets = {
         "indexer-api-keys/DrunkenSlug" = { };
         "indexer-api-keys/NZBFinder" = { };
+        "indexer-api-keys/nzblife" = { };
         "indexer-api-keys/NzbPlanet" = { };
         "indexer-api-keys/NZBgeek" = { };
         "indexer-api-keys/C411" = { };
