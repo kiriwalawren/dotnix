@@ -86,8 +86,8 @@
 
           "Intro Skipper" = {
             package = fromRepo {
-              version = "1.10.11.17";
-              hash = "sha256-cfEnLqKeEGpQSth3NPjDnxCkgv2pePfgCXfVIOrYSiQ=";
+              version = "12.0.4.0";
+              hash = "sha256-sPEZXGB3s+YI1E9+qJ3EWdKFu2gdqK7LfNjV4QjMlnA=";
             };
             config = {
               ExcludeSeries = "";
