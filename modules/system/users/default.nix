@@ -47,7 +47,6 @@ in
             "video"
             "input"
             "tty"
-            "media"
           ];
         };
       };
