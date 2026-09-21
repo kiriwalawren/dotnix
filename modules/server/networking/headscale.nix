@@ -140,6 +140,11 @@
                 value = config.tailscale.ips.homelab;
               }
               {
+                name = "slskd.${config.system.ddns.domain}";
+                type = "A";
+                value = config.tailscale.ips.homelab;
+              }
+              {
                 name = "tv.${config.system.ddns.domain}";
                 type = "A";
                 value = config.tailscale.ips.homelab;

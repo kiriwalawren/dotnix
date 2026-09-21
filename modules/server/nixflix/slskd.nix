@@ -1,0 +1,108 @@
+{
+  flake.modules.nixos.homelab =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    {
+      sops.secrets = {
+        "wireguard-confs/protonvpn-slskd" = { };
+        "slskd/username" = { };
+        "slskd/password" = { };
+        "slskd/api-key" = { };
+      };
+
+      vpnNamespaces.slsk = {
+        enable = config.nixflix.slskd.enable;
+        wireguardConfigFile = config.sops.secrets."wireguard-confs/protonvpn-slskd".path;
+        inherit (config.vpnNamespaces.wg) accessibleFrom;
+
+        # Must differ from the "wg" namespace's addresses (both default to
+        # 192.168.15.1/192.168.15.5 in VPN-Confinement).
+        namespaceAddress = "192.168.16.1";
+        namespaceAddressIPv6 = "fd93:9701:1d00::1:2";
+        bridgeAddress = "192.168.16.5";
+        bridgeAddressIPv6 = "fd93:9701:1d00::1:1";
+      };
+
+      nixflix.slskd = {
+        enable = true;
+        # Must differ from the "slskd" service name itself: vpn-confinement
+        # generates a systemd unit named after the namespace, which would
+        # otherwise collide with systemd.services.slskd.
+        vpn.namespace = "slsk";
+
+        username._secret = config.sops.secrets."slskd/username".path;
+        password._secret = config.sops.secrets."slskd/password".path;
+      };
+
+      # systemd.services.slskd-protonvpn-port-forward =
+      #   lib.mkIf (config.nixflix.vpn.enable && config.nixflix.slskd.enable)
+      #     {
+      #       description = "ProtonVPN port forwarding for slskd";
+      #       after = [
+      #         "${config.systemd.services.slskd.vpnConfinement.vpnNamespace}.service"
+      #         "slskd.service"
+      #       ];
+      #       requires = [
+      #         "${config.systemd.services.slskd.vpnConfinement.vpnNamespace}.service"
+      #         "slskd.service"
+      #       ];
+      #       wantedBy = [ "multi-user.target" ];
+      #
+      #       path = [
+      #         pkgs.curl
+      #         pkgs.jq
+      #         pkgs.libnatpmp
+      #         pkgs.iproute2
+      #         pkgs.gawk
+      #       ];
+      #
+      #       serviceConfig = {
+      #         Type = "simple";
+      #         Restart = "on-failure";
+      #         RestartSec = "5s";
+      #         ExecStart =
+      #           let
+      #             ns = config.systemd.services.slskd.vpnConfinement.vpnNamespace;
+      #             slskdHost = "http://127.0.0.1:${toString config.services.slskd.settings.web.port}";
+      #             apiKeyFile = config.sops.secrets."slskd/api-key".path;
+      #           in
+      #           pkgs.writeShellScript "slskd-protonvpn-port-forward" ''
+      #             SLSKD_HOST="${slskdHost}"
+      #             API_KEY=$(cat ${apiKeyFile})
+      #
+      #             CURRENT_PORT=$(ip netns exec ${ns} curl -s -H "X-API-Key: $API_KEY" \
+      #               "$SLSKD_HOST/api/v0/options" | jq '.soulseek.listenPort')
+      #
+      #             while true; do
+      #               UDP_OUT=$(ip netns exec ${ns} natpmpc -a 1 0 udp 60 -g 10.2.0.1)
+      #               ip netns exec ${ns} natpmpc -a 1 0 tcp 60 -g 10.2.0.1
+      #
+      #               PORT=$(echo "$UDP_OUT" | grep "Mapped public port" | awk '{print $4}')
+      #
+      #               if [ -z "$PORT" ]; then
+      #                 echo "Failed to get port, is the tunnel up?"
+      #                 sleep 5
+      #                 continue
+      #               fi
+      #
+      #               if [ "$PORT" != "$CURRENT_PORT" ]; then
+      #                 echo "Port changed: $CURRENT_PORT -> $PORT, updating slskd..."
+      #                 ip netns exec ${ns} curl -s -H "X-API-Key: $API_KEY" \
+      #                   -H "Content-Type: application/json" \
+      #                   --request PATCH \
+      #                   --data "{\"soulseek\":{\"listenPort\":$PORT}}" \
+      #                   "$SLSKD_HOST/api/v0/options"
+      #                 CURRENT_PORT=$PORT
+      #               fi
+      #
+      #               sleep 45
+      #             done
+      #           '';
+      #       };
+      #     };
+    };
+}
