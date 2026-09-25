@@ -6,6 +6,9 @@
       pkgs,
       ...
     }:
+    let
+      vpnNamespace = "slsk";
+    in
     {
       sops.secrets = {
         "wireguard-confs/protonvpn-slskd" = { };
@@ -14,7 +17,7 @@
         "slskd/api-key" = { };
       };
 
-      vpnNamespaces.slsk = {
+      vpnNamespaces.${vpnNamespace} = {
         enable = config.nixflix.slskd.enable;
         wireguardConfigFile = config.sops.secrets."wireguard-confs/protonvpn-slskd".path;
         inherit (config.vpnNamespaces.wg) accessibleFrom;
@@ -32,10 +35,15 @@
         # Must differ from the "slskd" service name itself: vpn-confinement
         # generates a systemd unit named after the namespace, which would
         # otherwise collide with systemd.services.slskd.
-        vpn.namespace = "slsk";
+        vpn.namespace = vpnNamespace;
 
         username._secret = config.sops.secrets."slskd/username".path;
         password._secret = config.sops.secrets."slskd/password".path;
+
+        settings.soulseek = {
+          username._secret = config.sops.secrets."slskd/username".path;
+          password._secret = config.sops.secrets."slskd/password".path;
+        };
       };
 
       # systemd.services.slskd-protonvpn-port-forward =
