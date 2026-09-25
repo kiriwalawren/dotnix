@@ -66,29 +66,23 @@
         plugins = {
           subbuzz = {
             enable = true;
-
             config = {
               OpenSubApiKey._secret = config.sops.secrets."opensubtitles-com/api-key".path;
               OpenSubUserName = "kiriwalawren.com";
               OpenSubPassword._secret = config.sops.secrets."opensubtitles-com/password".path;
               EnableOpenSubtitles = true;
               EnableYifySubtitles = true;
-
               Cache.SubLifeInMinutes = "Always";
             };
           };
 
           "Subtitle Extract" = {
             enable = true;
-
             config.ExtractionDuringLibraryScan = true;
           };
 
           "Intro Skipper" = {
-            package = fromRepo {
-              version = "12.0.4.0";
-              hash = "sha256-sPEZXGB3s+YI1E9+qJ3EWdKFu2gdqK7LfNjV4QjMlnA=";
-            };
+            enable = true;
             config = {
               ExcludeSeries = "";
               AutoDetectIntros = true;
