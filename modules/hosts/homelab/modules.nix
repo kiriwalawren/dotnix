@@ -6,6 +6,7 @@
       auto-deploy
       backup
       base
+      # ffxiv
       homelab
       ssh
       tailscale-server-mode

@@ -55,6 +55,10 @@
             nixflix = "cd ~/gitrepos/nixflix";
             secrets = "cd ~/gitrepos/secrets";
 
+            # SSH
+            homelab = "ssh homelab";
+            vps = "ssh vps";
+
             # Nix
             ns = "NIXPKGS_ALLOW_UNFREE=1 nix-shell -p";
           };

@@ -1,11 +1,5 @@
 {
-  flake.modules.homeManager.gaming =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.xivlauncher ];
-    };
-
-  flake.modules.homeManager.steamos =
+  flake.modules.homeManager.ffxiv =
     { pkgs, ... }:
     {
       home.packages = [ pkgs.xivlauncher ];
