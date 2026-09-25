@@ -357,14 +357,17 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1790367996,
-        "narHash": "sha256-X1YkbaOiT4YZyjGxor2xUwhnjsw4VI86Er+5+d6BM7c=",
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "lastModified": 1790369183,
+        "narHash": "sha256-URfzX1n5Tc85OlnikWqr0lpouUZYSFZ59cgoBIKnoPw=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "5c55d998cd130164bb111c06211c2dacb1c29bd1",
+        "type": "github"
       },
       "original": {
-        "path": "/home/walawren/gitrepos/nixflix",
-        "type": "path"
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "type": "github"
       }
     },
     "nixos-hardware": {
