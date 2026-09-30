@@ -6,9 +6,6 @@
       lib,
       ...
     }:
-    let
-      inherit (inputs.nixflix.lib.jellyfinPlugins) fromRepo;
-    in
     {
       sops.secrets."jellyfin/kiri-password" = { };
       sops.secrets."jellyfin/guest-password" = { };
