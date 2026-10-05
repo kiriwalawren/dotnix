@@ -2,7 +2,6 @@
   flake.modules.nixos.homelab =
     {
       config,
-      inputs,
       lib,
       ...
     }:
