@@ -82,7 +82,7 @@
           certs.${cfg.domain} = {
             domain = "*.${cfg.domain}";
             group = "nginx";
-            extraLegoFlags = [ "--dns.propagation-wait=60s" ];
+            extraLegoFlags = [ "--dns.propagation.wait=60s" ];
           };
         };
       };
