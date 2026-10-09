@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   imports = [ inputs.treefmt-nix.flakeModule ];
 
   perSystem =
@@ -15,13 +14,12 @@
           with pkgs;
           [ config.treefmt.build.wrapper ]
           ++ (lib.attrValues config.treefmt.build.programs)
+          ++ builtins.attrValues self'.packages
           ++ [
             age
             cachix
+            deploy-rs
             sops
-            self'.packages.bootstrap-nixos
-            self'.packages.create-vm
-            self'.packages.like-my-songs
           ];
       };
     };

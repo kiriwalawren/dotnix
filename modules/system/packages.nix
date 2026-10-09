@@ -6,15 +6,7 @@ let
     ];
 in
 {
-  flake.modules.nixos.base =
-    { pkgs, ... }:
-    {
-      environment.systemPackages = getBasePackages pkgs;
-    };
+  flake.modules.nixos.base = { pkgs, ... }: { environment.systemPackages = getBasePackages pkgs; };
 
-  flake.modules.homeManager.base =
-    { pkgs, ... }:
-    {
-      home.packages = getBasePackages pkgs;
-    };
+  flake.modules.homeManager.base = { pkgs, ... }: { home.packages = getBasePackages pkgs; };
 }

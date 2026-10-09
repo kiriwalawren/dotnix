@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.wrappers.niri =
     { lib, ... }:
@@ -36,8 +32,8 @@ in
       };
     };
 
-  flake.modules.nixos.sound = {
-    users.users.${user}.extraGroups = [
+  flake.modules.nixos.sound = { config, ... }: {
+    users.users.${config.user.name}.extraGroups = [
       "audio"
       "sound"
     ];
@@ -93,14 +89,8 @@ in
         pkgs.wiremix
       ];
 
-      # Waybar integration - override the pulseaudio on-click
-      programs.waybar.settings.mainBar.pulseaudio.on-click =
-        "pkill wiremix || ${lib.getExe pkgs.kitty} --class=wiremix ${lib.getExe pkgs.wiremix}";
-
       wayland.windowManager.hyprland.settings = {
-        windowrule = [
-          "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on"
-        ];
+        windowrule = [ "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on" ];
 
         bind = [
           ",XF86AudioMute,exec,${pamixer} -t"
@@ -110,9 +100,7 @@ in
         ];
 
         # Executes when key is released
-        bindr = [
-          "CTRL,Space,exec,${mutemic}/bin/mutemic"
-        ];
+        bindr = [ "CTRL,Space,exec,${mutemic}/bin/mutemic" ];
 
         # Repeats when held
         binde = [
@@ -127,9 +115,7 @@ in
           ",XF86AudioNext,exec,${playerctl} next"
         ];
 
-        "exec-once" = [
-          "${mutemic}/bin/mutemic"
-        ];
+        "exec-once" = [ "${mutemic}/bin/mutemic" ];
       };
     };
 }

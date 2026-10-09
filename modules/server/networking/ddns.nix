@@ -1,14 +1,6 @@
-{ config, ... }:
-let
-  user = config.user.name;
-in
 {
   flake.modules.nixos.base =
-    {
-      config,
-      lib,
-      ...
-    }:
+    { config, lib, ... }:
     let
       cfg = config.system.ddns;
     in
@@ -63,7 +55,7 @@ in
           '';
         };
 
-        users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ user ];
+        users.extraGroups.${config.services.cloudflare-ddns.group}.members = [ config.user.name ];
 
         services.cloudflare-ddns = lib.mkIf (cfg.subdomains != [ ]) {
           enable = true;
@@ -86,7 +78,7 @@ in
           certs.${cfg.domain} = {
             domain = "*.${cfg.domain}";
             group = "nginx";
-            extraLegoFlags = [ "--dns.propagation-wait=60s" ];
+            extraLegoFlags = [ "--dns.propagation.wait=60s" ];
           };
         };
       };

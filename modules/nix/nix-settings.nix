@@ -1,5 +1,4 @@
-{ lib, config, ... }:
-{
+{ lib, config, ... }: {
   options.nix.settings = {
     keep-outputs = lib.mkOption { type = lib.types.bool; };
     experimental-features = lib.mkOption {
@@ -25,9 +24,7 @@
         optimise.automatic = true;
       };
 
-      homeManager.base.nix = {
-        inherit (config.nix) settings;
-      };
+      homeManager.base.nix = { inherit (config.nix) settings; };
     };
   };
 }

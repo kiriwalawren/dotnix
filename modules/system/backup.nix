@@ -1,24 +1,25 @@
 {
-  flake.modules.nixos.base =
-    {
-      lib,
-      ...
-    }:
-    {
-      options.system.backup = {
-        paths = lib.mkOption {
-          type = lib.types.listOf lib.types.path;
-          default = [ ];
-          description = "Paths to backup.";
-        };
+  flake.modules.nixos.base = { lib, ... }: {
+    options.system.backup = {
+      paths = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [ ];
+        description = "Paths to backup.";
+      };
 
-        exclude = lib.mkOption {
-          type = lib.types.listOf lib.types.path;
-          default = [ ];
-          description = "Paths to exclude from backup.";
-        };
+      exclude = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [ ];
+        description = "Paths to exclude from backup.";
+      };
+
+      healthchecks.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to report backup results to healthchecks.";
       };
     };
+  };
 
   flake.modules.nixos.backup =
     {
@@ -45,7 +46,7 @@
         sops.secrets."backblaze/kiriwalawren/key-id" = { };
         sops.secrets."backblaze/kiriwalawren/application-key" = { };
         sops.secrets."restic/encryption-key" = { };
-        sops.secrets."healthchecks/ping-key" = { };
+        sops.secrets."healthchecks/ping-key" = lib.mkIf cfg.healthchecks.enable { };
         sops.templates."restic.env".content = ''
           AWS_ACCESS_KEY_ID=${config.sops.placeholder."backblaze/kiriwalawren/key-id"}
           AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."backblaze/kiriwalawren/application-key"}
@@ -67,17 +68,15 @@
               "--keep-weekly 4"
               "--keep-monthly 6"
             ];
-            checkOpts = [
-              "--read-data-subset=10%"
-            ];
+            checkOpts = [ "--read-data-subset=10%" ];
           };
         };
 
-        systemd.services."restic-backups-${config.networking.hostName}" = {
+        systemd.services."restic-backups-${config.networking.hostName}" = lib.mkIf cfg.healthchecks.enable {
           onSuccess = [ "restic-backup-ping-healthchecks.service" ];
         };
 
-        systemd.services."restic-backup-ping-healthchecks" = {
+        systemd.services."restic-backup-ping-healthchecks" = lib.mkIf cfg.healthchecks.enable {
           serviceConfig = {
             Type = "oneshot";
             ExecStart = pkgs.writeShellScript "restic-backup-ping-healthchecks" ''

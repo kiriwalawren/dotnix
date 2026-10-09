@@ -1,13 +1,4 @@
-{
-  config,
-  inputs,
-  lib,
-  ...
-}:
-let
-  user = config.user.name;
-in
-{
+{ inputs, lib, ... }: {
   nixpkgs.config.allowUnfreePackages = [
     "steamdeck-hw-theme"
     "steam-jupiter-unwrapped"
@@ -17,7 +8,7 @@ in
     imports = [ inputs.jovian.nixosModules.jovian ];
 
     jovian.steam = {
-      inherit user;
+      user = config.user.name;
       enable = true;
       autoStart = true;
 
@@ -33,9 +24,5 @@ in
     services.greetd.enable = lib.mkForce false;
   };
 
-  flake.modules.homeManager.steamos =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.sgdboop ];
-    };
+  flake.modules.homeManager.steamos = { pkgs, ... }: { home.packages = [ pkgs.sgdboop ]; };
 }

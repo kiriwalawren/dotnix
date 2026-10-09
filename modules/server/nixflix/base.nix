@@ -1,50 +1,38 @@
-{
-  config,
-  inputs,
-  ...
-}:
-let
-  user = config.user.name;
-in
-{
-  flake.modules.nixos.homelab =
-    { config, ... }:
-    {
-      imports = [
-        inputs.nixflix.nixosModules.default
-      ];
-      sops.secrets."wireguard-confs/protonvpn-homelab-confinement" = { };
+{ inputs, ... }: {
+  flake.modules.nixos.homelab = { config, ... }: {
+    imports = [ inputs.nixflix.nixosModules.default ];
+    sops.secrets."wireguard-confs/protonvpn-homelab-confinement" = { };
 
-      system.backup.paths = [ config.services.postgresql.dataDir ];
+    system.backup.paths = [ config.services.postgresql.dataDir ];
 
-      nixflix = {
+    nixflix = {
+      enable = true;
+      mediaUsers = [ config.user.name ];
+
+      theme = {
         enable = true;
-        mediaUsers = [ user ];
+        name = "catppuccin-${config.catppuccin.flavor}";
+      };
 
-        theme = {
-          enable = true;
-          name = "catppuccin-${config.catppuccin.flavor}";
-        };
+      vpn = {
+        enable = true;
+        wgConfFile = config.sops.secrets."wireguard-confs/protonvpn-homelab-confinement".path;
+      };
 
-        vpn = {
-          enable = true;
-          wgConfFile = config.sops.secrets."wireguard-confs/protonvpn-homelab-confinement".path;
-        };
+      nginx = {
+        enable = true;
+        addHostsEntries = false;
+        inherit (config.system.ddns) domain;
+        forceSSL = true;
+        enableACME = true;
+      };
 
-        nginx = {
-          enable = true;
-          addHostsEntries = false;
-          inherit (config.system.ddns) domain;
-          forceSSL = true;
-          enableACME = true;
-        };
+      postgres.enable = true;
 
-        postgres.enable = true;
-
-        recyclarr = {
-          enable = true;
-          cleanupUnmanagedProfiles.enable = true;
-        };
+      recyclarr = {
+        enable = true;
+        cleanupUnmanagedProfiles.enable = true;
       };
     };
+  };
 }

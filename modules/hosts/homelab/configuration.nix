@@ -1,8 +1,6 @@
 {
   configurations.nixos.homelab.modules.configuration = {
-    imports = [
-      ./_hardware-configuration.nix
-    ];
+    imports = [ ./_hardware-configuration.nix ];
 
     networking.hostName = "homelab";
 

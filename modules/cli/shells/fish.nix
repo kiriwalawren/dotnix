@@ -1,17 +1,15 @@
 {
-  flake.modules.nixos.base =
-    { pkgs, ... }:
-    {
-      # Set fish as default in bash
-      programs.bash.interactiveShellInit = ''
-        if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-        then
-          shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-        fi
-      '';
-      programs.fish.enable = true;
-    };
+  flake.modules.nixos.base = { pkgs, ... }: {
+    # Set fish as default in bash
+    programs.bash.interactiveShellInit = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+      then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
+    '';
+    programs.fish.enable = true;
+  };
 
   flake.modules.homeManager.base =
     { pkgs, ... }:
@@ -54,6 +52,10 @@
             dotnix = "cd ~/gitrepos/dotnix";
             nixflix = "cd ~/gitrepos/nixflix";
             secrets = "cd ~/gitrepos/secrets";
+
+            # SSH
+            homelab = "ssh homelab";
+            vps = "ssh vps";
 
             # Nix
             ns = "NIXPKGS_ALLOW_UNFREE=1 nix-shell -p";

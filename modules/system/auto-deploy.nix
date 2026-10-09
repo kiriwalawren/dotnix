@@ -1,30 +1,66 @@
-{ inputs, self, ... }:
 {
-  flake.modules.nixos.auto-deploy =
-    { config, ... }:
-    {
-      sops.secrets."cachix/agent-token" = { };
-      sops.templates."cachix-agent.env".content = ''
-        CACHIX_AGENT_TOKEN="${config.sops.placeholder."cachix/agent-token"}"
-      '';
+  inputs,
+  self,
+  config,
+  lib,
+  ...
+}:
+let
+  deployTargets = lib.filterAttrs (_name: cfg: cfg.modules ? auto-deploy) config.configurations.nixos;
+in
+{
+  flake.modules.nixos.auto-deploy = { config, ... }: {
+    users.users.${config.user.name}.extraGroups = [
+      "wheel"
+      "sudo"
+    ];
 
-      services.cachix-agent = {
-        enable = true;
-        credentialsFile = config.sops.templates."cachix-agent.env".path;
-      };
-    };
+    security.sudo.extraRules = [
+      {
+        groups = [ "wheel" ];
+        commands = [
+          {
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
+  };
 
-  perSystem =
-    { pkgs, ... }:
+  flake.deploy.nodes = lib.mapAttrs (
+    name: cfg:
     let
-      cachix-deploy-lib = inputs.cachix-deploy-flake.lib pkgs;
+      system = self.nixosConfigurations.${name}.config.nixpkgs.hostPlatform.system;
+      user = self.nixosConfigurations.${name}.config.user.name;
     in
     {
-      packages.cachix-deploy-spec = cachix-deploy-lib.spec {
-        agents = {
-          homelab = self.nixosConfigurations.homelab.config.system.build.toplevel;
-          vps = self.nixosConfigurations.vps.config.system.build.toplevel;
-        };
+      groups = lib.optionals (cfg.modules ? auto-deploy) [ "auto-deploy" ];
+      hostname = name;
+      sshOpts = [
+        "-o"
+        "StrictHostKeyChecking=accept-new"
+      ];
+      profiles.system = {
+        user = "root";
+        sshUser = user;
+        path = inputs.deploy-rs.lib.${system}.activate.nixos self.nixosConfigurations.${name};
       };
-    };
+    }
+  ) deployTargets;
+
+  perSystem = { pkgs, lib, ... }: {
+    packages = lib.mapAttrs' (
+      name: _:
+      lib.nameValuePair "deploy-${name}" (
+        pkgs.writeShellApplication {
+          name = "deploy-${name}";
+
+          runtimeInputs = [ pkgs.deploy-rs ];
+
+          text = ''${lib.getExe pkgs.deploy-rs} .#${name} --skip-checks --remote-build "$@"'';
+        }
+      )
+    ) deployTargets;
+  };
 }

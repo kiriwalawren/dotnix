@@ -1,5 +1,1 @@
-{
-  flake.modules.homeManager.gui = { pkgs, ... }: {
-    home.packages = [ pkgs.bitwarden-desktop ];
-  };
-}
+{ flake.modules.homeManager.gui = { pkgs, ... }: { home.packages = [ pkgs.bitwarden-desktop ]; }; }

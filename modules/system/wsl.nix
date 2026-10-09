@@ -1,6 +1,5 @@
-{ config, inputs, ... }:
-{
-  flake.modules.nixos.base = {
+{ inputs, ... }: {
+  flake.modules.nixos.base = { config, ... }: {
     imports = [ inputs.nixos-wsl.nixosModules.wsl ];
 
     wsl = {

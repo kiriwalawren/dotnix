@@ -24,9 +24,7 @@ in
     };
 
     wayland.windowManager.hyprland.settings = {
-      bind = [
-        "SUPER,N,exec,hyprlock"
-      ];
+      bind = [ "SUPER,N,exec,hyprlock" ];
     };
   };
 }

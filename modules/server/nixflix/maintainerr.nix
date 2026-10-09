@@ -20,6 +20,7 @@
             library = "Movies";
             dataType = "movie";
             radarrServerName = "Radarr";
+            arrAction = "DELETE";
             collection = {
               deleteAfterDays = 14;
               overlayEnabled = true;
@@ -66,6 +67,7 @@
             description = "Deletes entire seasons that have been around for too long.";
             library = "Shows";
             dataType = "season";
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr";
             collection = {
               deleteAfterDays = 14;
@@ -174,6 +176,7 @@
             description = "Deletes entire seasons that have been around for too long.";
             library = "Anime";
             dataType = "season";
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr Anime";
             collection = {
               deleteAfterDays = 14;
@@ -282,6 +285,7 @@
             description = "Deletes shows that have had all episodes removed by other rules and are ended.";
             library = "Shows";
             dataType = "show";
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr";
             collection = {
               deleteAfterDays = 14;
@@ -342,6 +346,7 @@
             description = "Deletes anime that have had all episodes removed by other rules and are ended.";
             library = "Anime";
             dataType = "show";
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr Anime";
             collection = {
               deleteAfterDays = 14;
@@ -397,7 +402,7 @@
             name = "Show Episodes To Delete";
             library = "Shows";
             dataType = "episode";
-            arrAction = 3;
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr";
             collection = {
               deleteAfterDays = 14;
@@ -422,7 +427,7 @@
             name = "Anime Episodes To Delete";
             library = "Anime";
             dataType = "episode";
-            arrAction = 3;
+            arrAction = "DELETE";
             sonarrServerName = "Sonarr Anime";
             collection = {
               deleteAfterDays = 14;
