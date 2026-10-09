@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   imports = [ inputs.treefmt-nix.flakeModule ];
 
   perSystem = {
@@ -8,7 +7,10 @@
 
       programs = {
         # Nix
-        nixfmt.enable = true;
+        nixfmt = {
+          enable = true;
+          strict = true;
+        };
         deadnix.enable = true;
         statix.enable = true;
 

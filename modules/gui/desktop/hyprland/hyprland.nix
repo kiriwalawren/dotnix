@@ -3,46 +3,44 @@ let
   inherit (config) theme;
 in
 {
-  flake.modules.nixos.hyprland =
-    { pkgs, ... }:
-    {
-      services.greetd.cmd = "Hyprland";
+  flake.modules.nixos.hyprland = { pkgs, ... }: {
+    services.greetd.cmd = "Hyprland";
 
-      programs = {
-        hyprland = {
-          enable = true;
-          xwayland.enable = true;
-        };
-      };
-
-      environment = {
-        sessionVariables = {
-          # Hint electron apps to use wayland
-          NIXOS_OZONE_WL = "1";
-        };
-      };
-
-      xdg.portal.extraPortals = [
-        pkgs.xdg-desktop-portal-wlr # Screensharing
-        pkgs.xdg-desktop-portal-hyprland
-      ];
-
-      hardware.graphics.enable = true;
-
-      services = {
-        xserver = {
-          enable = true;
-
-          # Configure keymap in X11
-          xkb = {
-            layout = "us";
-            variant = "";
-          };
-        };
-
-        dbus.enable = true;
+    programs = {
+      hyprland = {
+        enable = true;
+        xwayland.enable = true;
       };
     };
+
+    environment = {
+      sessionVariables = {
+        # Hint electron apps to use wayland
+        NIXOS_OZONE_WL = "1";
+      };
+    };
+
+    xdg.portal.extraPortals = [
+      pkgs.xdg-desktop-portal-wlr # Screensharing
+      pkgs.xdg-desktop-portal-hyprland
+    ];
+
+    hardware.graphics.enable = true;
+
+    services = {
+      xserver = {
+        enable = true;
+
+        # Configure keymap in X11
+        xkb = {
+          layout = "us";
+          variant = "";
+        };
+      };
+
+      dbus.enable = true;
+    };
+  };
 
   flake.modules.homeManager.hyprland =
     {
@@ -116,12 +114,8 @@ in
 
           animations = {
             enabled = true;
-            bezier = [
-              "linear,0.0,0.0,1.0,1.0"
-            ];
-            animation = [
-              "borderangle,1,100,linear,loop"
-            ];
+            bezier = [ "linear,0.0,0.0,1.0,1.0" ];
+            animation = [ "borderangle,1,100,linear,loop" ];
           };
 
           dwindle = {

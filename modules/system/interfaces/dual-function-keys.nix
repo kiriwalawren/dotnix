@@ -46,9 +46,7 @@
           TAP = opts.tap;
           HOLD = opts.hold;
         }
-        // lib.optionalAttrs (opts.hold-start != null) {
-          HOLD_START = opts.hold-start;
-        }
+        // lib.optionalAttrs (opts.hold-start != null) { HOLD_START = opts.hold-start; }
       ) cfg;
 
       input-keys = builtins.attrNames cfg;

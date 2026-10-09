@@ -12,13 +12,11 @@
     };
   };
 
-  flake.modules.homeManager.base =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.nixfmt ];
-      programs.git.ignores = [
-        "result"
-        "result/*"
-      ];
-    };
+  flake.modules.homeManager.base = { pkgs, ... }: {
+    home.packages = [ pkgs.nixfmt ];
+    programs.git.ignores = [
+      "result"
+      "result/*"
+    ];
+  };
 }

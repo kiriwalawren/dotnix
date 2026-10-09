@@ -38,9 +38,7 @@
         };
         users.groups.adguardhome = { };
 
-        systemd.tmpfiles.rules = [
-          "Z /var/lib/AdGuardHome 0750 adguardhome adguardhome -"
-        ];
+        systemd.tmpfiles.rules = [ "Z /var/lib/AdGuardHome 0750 adguardhome adguardhome -" ];
 
         systemd.services.adguardhome = {
           serviceConfig = {

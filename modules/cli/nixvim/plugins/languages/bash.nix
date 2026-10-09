@@ -15,11 +15,5 @@
     };
   };
 
-  flake.modules.homeManager.base =
-    { pkgs, ... }:
-    {
-      home.packages = [
-        pkgs.shfmt
-      ];
-    };
+  flake.modules.homeManager.base = { pkgs, ... }: { home.packages = [ pkgs.shfmt ]; };
 }

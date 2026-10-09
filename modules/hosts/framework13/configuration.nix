@@ -7,32 +7,28 @@
     "facetimehd-firmware"
   ];
 
-  configurations.nixos.framework13.modules.configuration =
-    { config, ... }:
-    {
-      imports = [
-        ./_hardware-configuration.nix
-      ];
+  configurations.nixos.framework13.modules.configuration = { config, ... }: {
+    imports = [ ./_hardware-configuration.nix ];
 
-      networking.hostName = "framework13";
-      nixpkgs.hostPlatform = "x86_64-linux";
+    networking.hostName = "framework13";
+    nixpkgs.hostPlatform = "x86_64-linux";
 
-      system = {
-        stateVersion = "25.05";
+    system = {
+      stateVersion = "25.05";
 
-        backup = {
-          healthchecks.enable = false;
-          paths = [
-            "${config.users.users.${config.user.name}.home}/Documents"
-            "${config.users.users.${config.user.name}.home}/photos-staging"
-          ];
-        };
-
-        disks."/" = {
-          devices = [ "/dev/nvme0n1" ];
-        };
-
-        tailscale.exitNode.enable = true;
+      backup = {
+        healthchecks.enable = false;
+        paths = [
+          "${config.users.users.${config.user.name}.home}/Documents"
+          "${config.users.users.${config.user.name}.home}/photos-staging"
+        ];
       };
+
+      disks."/" = {
+        devices = [ "/dev/nvme0n1" ];
+      };
+
+      tailscale.exitNode.enable = true;
     };
+  };
 }

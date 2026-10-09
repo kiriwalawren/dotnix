@@ -40,21 +40,16 @@ in
           ++ lib.optionals hasHmModules [
             inputs.home-manager.nixosModules.home-manager
 
-            {
-              home-manager.users.${user}.imports = lib.attrValues matchingHmModules;
-            }
+            { home-manager.users.${user}.imports = lib.attrValues matchingHmModules; }
           ]
           ++ [
-            (
-              { config, ... }:
-              {
-                system = {
-                  # Set build label to include git revision
-                  nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
-                  configurationRevision = gitRev;
-                };
-              }
-            )
+            ({ config, ... }: {
+              system = {
+                # Set build label to include git revision
+                nixos.label = lib.mkForce "${config.system.nixos.version}-${shortRev}";
+                configurationRevision = gitRev;
+              };
+            })
           ];
       }
     ) config.configurations.nixos;

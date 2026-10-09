@@ -1,5 +1,4 @@
-{ lib }:
-{
+{ lib }: {
   mkBtrfsSubvolumes =
     {
       withSwap ? false,
@@ -198,13 +197,9 @@
             type = "disk";
             content = {
               type = "gpt";
-              partitions =
-                (lib.optionalAttrs isOsDisk {
-                  esp = helpers.mkEspPartition;
-                })
-                // {
-                  root = mkRootPartition;
-                };
+              partitions = (lib.optionalAttrs isOsDisk { esp = helpers.mkEspPartition; }) // {
+                root = mkRootPartition;
+              };
             };
           };
         };

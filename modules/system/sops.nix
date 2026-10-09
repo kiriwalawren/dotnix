@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   flake.modules.nixos.base =
     { config, ... }:
     let
@@ -14,9 +13,7 @@
 
         age = {
           # automatcally import host SSH keys as age keys
-          sshKeyPaths = [
-            "/etc/ssh/ssh_host_ed25519_key"
-          ];
+          sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
           keyFile = "/var/lib/sops-nix/key.txt";
 

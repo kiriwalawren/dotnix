@@ -32,9 +32,5 @@
     };
   };
 
-  flake.modules.homeManager.base =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.prettierd ];
-    };
+  flake.modules.homeManager.base = { pkgs, ... }: { home.packages = [ pkgs.prettierd ]; };
 }

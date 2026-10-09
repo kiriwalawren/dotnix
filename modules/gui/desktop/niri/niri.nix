@@ -1,8 +1,4 @@
-{
-  config,
-  self,
-  ...
-}:
+{ config, self, ... }:
 let
   inherit (config) theme;
 in
@@ -159,25 +155,23 @@ in
         };
     };
 
-  flake.modules.nixos.niri =
-    { pkgs, ... }:
-    {
-      programs.niri = {
-        enable = true;
-        package = self.packages.${pkgs.stdenv.hostPlatform.system}.niri;
-      };
-
-      services.greetd.cmd = "niri-session";
-
-      environment = {
-        sessionVariables = {
-          NIXOS_OZONE_WL = "1";
-        };
-      };
-
-      hardware.graphics.enable = true;
-      services.dbus.enable = true;
+  flake.modules.nixos.niri = { pkgs, ... }: {
+    programs.niri = {
+      enable = true;
+      package = self.packages.${pkgs.stdenv.hostPlatform.system}.niri;
     };
+
+    services.greetd.cmd = "niri-session";
+
+    environment = {
+      sessionVariables = {
+        NIXOS_OZONE_WL = "1";
+      };
+    };
+
+    hardware.graphics.enable = true;
+    services.dbus.enable = true;
+  };
 
   flake.modules.homeManager.niri = {
     home.sessionVariables.XDG_CURRENT_DESKTOP = "niri";

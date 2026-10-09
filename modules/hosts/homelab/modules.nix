@@ -1,5 +1,4 @@
-{ config, ... }:
-{
+{ config, ... }: {
   configurations.nixos.homelab.modules = {
     inherit (config.flake.modules.nixos)
       adguardhome

@@ -1,16 +1,14 @@
 {
-  flake.modules.nixos.gui =
-    { pkgs, ... }:
-    {
-      xdg = {
-        autostart.enable = true;
-        portal = {
-          enable = true;
-          extraPortals = [
-            pkgs.xdg-desktop-portal-gtk
-            pkgs.xdg-desktop-portal-gnome
-          ];
-        };
+  flake.modules.nixos.gui = { pkgs, ... }: {
+    xdg = {
+      autostart.enable = true;
+      portal = {
+        enable = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+          pkgs.xdg-desktop-portal-gnome
+        ];
       };
     };
+  };
 }

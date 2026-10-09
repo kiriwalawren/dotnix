@@ -23,14 +23,12 @@
   };
 
   config = {
-    perSystem =
-      { system, ... }:
-      {
-        _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          inherit (config.nixpkgs) config overlays;
-        };
+    perSystem = { system, ... }: {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        inherit (config.nixpkgs) config overlays;
       };
+    };
 
     flake.modules.nixos.base.nixpkgs = {
       config = {

@@ -138,9 +138,5 @@
     })
   ];
 
-  perSystem =
-    { pkgs, ... }:
-    {
-      packages.catppuccin-userstyles = pkgs.catppuccin-userstyles;
-    };
+  perSystem = { pkgs, ... }: { packages.catppuccin-userstyles = pkgs.catppuccin-userstyles; };
 }
