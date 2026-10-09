@@ -4,9 +4,5 @@
     conform-nvim.settings.formatters_by_ft.python = [ "black" ];
   };
 
-  flake.modules.homeManager.base =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.black ];
-    };
+  flake.modules.homeManager.base = { pkgs, ... }: { home.packages = [ pkgs.black ]; };
 }

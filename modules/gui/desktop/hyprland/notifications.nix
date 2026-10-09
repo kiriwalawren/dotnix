@@ -1,5 +1,4 @@
-{ config, ... }:
-{
+{ config, ... }: {
   flake.modules.homeManager.hyprland = {
     catppuccin.mako.enable = true;
 

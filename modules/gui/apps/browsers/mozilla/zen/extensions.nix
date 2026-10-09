@@ -54,15 +54,9 @@
               pinned = true;
               private_browsing = true;
             };
-            "addon@darkreader.org" = mkExtensionEntry {
-              id = "darkreader";
-            };
-            "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}" = mkExtensionEntry {
-              id = "styl-us";
-            };
-            "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = mkExtensionEntry {
-              id = "vimium-ff";
-            };
+            "addon@darkreader.org" = mkExtensionEntry { id = "darkreader"; };
+            "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}" = mkExtensionEntry { id = "styl-us"; };
+            "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = mkExtensionEntry { id = "vimium-ff"; };
           };
       };
     };

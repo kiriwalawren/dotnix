@@ -1,5 +1,4 @@
-{ config, ... }:
-{
+{ config, ... }: {
   configurations.nixos.vm-test.modules = {
     inherit (config.flake.modules.nixos)
       base

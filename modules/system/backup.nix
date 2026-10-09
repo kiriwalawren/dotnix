@@ -1,30 +1,25 @@
 {
-  flake.modules.nixos.base =
-    {
-      lib,
-      ...
-    }:
-    {
-      options.system.backup = {
-        paths = lib.mkOption {
-          type = lib.types.listOf lib.types.path;
-          default = [ ];
-          description = "Paths to backup.";
-        };
+  flake.modules.nixos.base = { lib, ... }: {
+    options.system.backup = {
+      paths = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [ ];
+        description = "Paths to backup.";
+      };
 
-        exclude = lib.mkOption {
-          type = lib.types.listOf lib.types.path;
-          default = [ ];
-          description = "Paths to exclude from backup.";
-        };
+      exclude = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        default = [ ];
+        description = "Paths to exclude from backup.";
+      };
 
-        healthchecks.enable = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Whether to report backup results to healthchecks.";
-        };
+      healthchecks.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to report backup results to healthchecks.";
       };
     };
+  };
 
   flake.modules.nixos.backup =
     {
@@ -73,9 +68,7 @@
               "--keep-weekly 4"
               "--keep-monthly 6"
             ];
-            checkOpts = [
-              "--read-data-subset=10%"
-            ];
+            checkOpts = [ "--read-data-subset=10%" ];
           };
         };
 

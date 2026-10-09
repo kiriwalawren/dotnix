@@ -1,10 +1,6 @@
 {
   flake.wrappers.niri =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, lib, ... }:
     let
       screenshot-copy = pkgs.writeShellScriptBin "screenshot-copy" ''
         set -euo pipefail

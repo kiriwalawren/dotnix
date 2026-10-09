@@ -1,18 +1,16 @@
 {
-  flake.modules.nixos.bluetooth =
-    { pkgs, ... }:
-    {
-      hardware.bluetooth = {
-        enable = true;
-        powerOnBoot = true;
-      };
-
-      # PS5 DualSense Control
-      environment.systemPackages = [
-        pkgs.dualsensectl
-        pkgs.bluetui
-      ];
+  flake.modules.nixos.bluetooth = { pkgs, ... }: {
+    hardware.bluetooth = {
+      enable = true;
+      powerOnBoot = true;
     };
+
+    # PS5 DualSense Control
+    environment.systemPackages = [
+      pkgs.dualsensectl
+      pkgs.bluetui
+    ];
+  };
 
   flake.modules.homeManager.bluetooth = {
     wayland.windowManager.hyprland.settings.windowrule = [

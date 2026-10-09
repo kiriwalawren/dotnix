@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   imports = [ inputs.treefmt-nix.flakeModule ];
 
   perSystem =
@@ -19,8 +18,8 @@
           ++ [
             age
             cachix
-            sops
             deploy-rs
+            sops
           ];
       };
     };

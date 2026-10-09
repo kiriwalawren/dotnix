@@ -1,68 +1,65 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   flake.modules.nixos.base =
     { config, lib, ... }:
     let
       cfg = config.system.disks;
       helpers = import ./_lib.nix { inherit lib; };
 
-      diskGroupModule =
-        { name, ... }:
-        {
-          options = {
-            devices = lib.mkOption {
-              type = lib.types.listOf lib.types.str;
-              description = "List of device paths for this disk group";
-            };
+      diskGroupModule = { name, ... }: {
+        options = {
+          devices = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            description = "List of device paths for this disk group";
+          };
 
-            type = lib.mkOption {
-              type = lib.types.enum [
-                "os"
-                "data"
-              ];
-              default = if name == "/" then "os" else "data";
-              description = "Type of disk group: 'os' (BTRFS with subvolumes) or 'data' (EXT4)";
-            };
+          type = lib.mkOption {
+            type = lib.types.enum [
+              "os"
+              "data"
+            ];
+            default = if name == "/" then "os" else "data";
+            description = "Type of disk group: 'os' (BTRFS with subvolumes) or 'data' (EXT4)";
+          };
 
-            raidLevel = lib.mkOption {
-              type = lib.types.nullOr (
-                lib.types.enum [
-                  0
-                  1
-                  5
-                  6
-                  10
-                ]
-              );
-              default = null;
-              description = "RAID level: null (no RAID), 0, 1, 5, 6, or 10";
-            };
+          raidLevel = lib.mkOption {
+            type = lib.types.nullOr (
+              lib.types.enum [
+                0
+                1
+                5
+                6
+                10
+              ]
+            );
+            default = null;
+            description = "RAID level: null (no RAID), 0, 1, 5, 6, or 10";
+          };
 
-            withSwap = lib.mkOption {
-              type = lib.types.bool;
-              default = false;
-              description = "Enable BTRFS swapfile (only for type='os')";
-            };
+          withSwap = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Enable BTRFS swapfile (only for type='os')";
+          };
 
-            swapSize = lib.mkOption {
-              type = lib.types.int;
-              default = 4;
-              description = "Swap size in GB";
-            };
+          swapSize = lib.mkOption {
+            type = lib.types.int;
+            default = 4;
+            description = "Swap size in GB";
+          };
 
-            encrypt = lib.mkOption {
-              type = lib.types.bool;
-              default = false;
-              description = "Enable LUKS encryption for this disk group";
-            };
+          encrypt = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Enable LUKS encryption for this disk group";
+          };
 
-            encryptionPasswordFile = lib.mkOption {
-              type = lib.types.str;
-              default = "/tmp/disk-secret.key";
-              description = "Path to encryption password file";
-            };
+          encryptionPasswordFile = lib.mkOption {
+            type = lib.types.str;
+            default = "/tmp/disk-secret.key";
+            description = "Path to encryption password file";
           };
         };
+      };
 
       # Minimum device count for each RAID level
       minDevicesForRaid = {
@@ -165,9 +162,7 @@
         disko.devices = {
           disk = allDisks;
         }
-        // (lib.optionalAttrs (allMdadm != { }) {
-          mdadm = allMdadm;
-        });
+        // (lib.optionalAttrs (allMdadm != { }) { mdadm = allMdadm; });
       };
     };
 }

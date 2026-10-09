@@ -1,5 +1,4 @@
-{ config, ... }:
-{
+{ config, ... }: {
   flake.wrappers.noctalia-shell.settings.wallpaper = {
     enabled = true;
     overviewEnabled = false;
