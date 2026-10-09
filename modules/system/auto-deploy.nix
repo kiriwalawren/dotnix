@@ -9,26 +9,24 @@ let
   deployTargets = lib.filterAttrs (_name: cfg: cfg.modules ? auto-deploy) config.configurations.nixos;
 in
 {
-  flake.modules.nixos.auto-deploy =
-    { config, ... }:
-    {
-      users.users.${config.user.name}.extraGroups = [
-        "wheel"
-        "sudo"
-      ];
+  flake.modules.nixos.auto-deploy = { config, ... }: {
+    users.users.${config.user.name}.extraGroups = [
+      "wheel"
+      "sudo"
+    ];
 
-      security.sudo.extraRules = [
-        {
-          groups = [ "wheel" ];
-          commands = [
-            {
-              command = "ALL";
-              options = [ "NOPASSWD" ];
-            }
-          ];
-        }
-      ];
-    };
+    security.sudo.extraRules = [
+      {
+        groups = [ "wheel" ];
+        commands = [
+          {
+            command = "ALL";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
+  };
 
   flake.deploy.nodes = lib.mapAttrs (
     name: cfg:
@@ -51,20 +49,18 @@ in
     }
   ) deployTargets;
 
-  perSystem =
-    { pkgs, lib, ... }:
-    {
-      packages = lib.mapAttrs' (
-        name: _:
-        lib.nameValuePair "deploy-${name}" (
-          pkgs.writeShellApplication {
-            name = "deploy-${name}";
+  perSystem = { pkgs, lib, ... }: {
+    packages = lib.mapAttrs' (
+      name: _:
+      lib.nameValuePair "deploy-${name}" (
+        pkgs.writeShellApplication {
+          name = "deploy-${name}";
 
-            runtimeInputs = [ pkgs.deploy-rs ];
+          runtimeInputs = [ pkgs.deploy-rs ];
 
-            text = ''${lib.getExe pkgs.deploy-rs} .#${name} --skip-checks --remote-build "$@"'';
-          }
-        )
-      ) deployTargets;
-    };
+          text = ''${lib.getExe pkgs.deploy-rs} .#${name} --skip-checks --remote-build "$@"'';
+        }
+      )
+    ) deployTargets;
+  };
 }

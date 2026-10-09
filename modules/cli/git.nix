@@ -1,45 +1,43 @@
 {
-  flake.modules.homeManager.base =
-    { config, ... }:
-    {
-      programs.git = {
-        enable = true;
-        signing.format = "openpgp";
+  flake.modules.homeManager.base = { config, ... }: {
+    programs.git = {
+      enable = true;
+      signing.format = "openpgp";
 
-        ignores = [
-          "Session.vim"
-          "secrets.sh"
-          "secrets.tfvars"
-          "local.tfvars"
-          ".claude/"
-          ".omc/"
-        ];
+      ignores = [
+        "Session.vim"
+        "secrets.sh"
+        "secrets.tfvars"
+        "local.tfvars"
+        ".claude/"
+        ".omc/"
+      ];
 
-        settings = {
-          user = {
-            name = config.home.displayName;
-            email = config.home.email;
-          };
+      settings = {
+        user = {
+          name = config.home.displayName;
+          email = config.home.email;
+        };
 
-          gpg = {
-            format = "ssh";
-            ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
-          };
-          user.signingKey = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
-          commit.gpgSign = true;
+        gpg = {
+          format = "ssh";
+          ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
+        };
+        user.signingKey = "${config.home.homeDirectory}/.ssh/id_ed25519.pub";
+        commit.gpgSign = true;
 
-          core = {
-            autocrlf = "input";
-          };
+        core = {
+          autocrlf = "input";
+        };
 
-          init = {
-            defaultBranch = "main";
-          };
+        init = {
+          defaultBranch = "main";
+        };
 
-          pull = {
-            rebase = false;
-          };
+        pull = {
+          rebase = false;
         };
       };
     };
+  };
 }

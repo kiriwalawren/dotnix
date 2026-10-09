@@ -1,35 +1,31 @@
 {
-  configurations.nixos.vm-test.modules.configuration =
-    { lib, ... }:
-    {
-      imports = [
-        ./_hardware-configuration.nix
-      ];
+  configurations.nixos.vm-test.modules.configuration = { lib, ... }: {
+    imports = [ ./_hardware-configuration.nix ];
 
-      networking.hostName = "vm-test";
+    networking.hostName = "vm-test";
 
-      system = {
-        stateVersion = "25.11";
+    system = {
+      stateVersion = "25.11";
 
-        ddns.domain = "vm";
+      ddns.domain = "vm";
 
-        disks."/" = {
-          devices = [ "/dev/vda" ];
-          encrypt = true;
-        };
-
-        disks."/data" = {
-          devices = [
-            "/dev/vdb"
-            "/dev/vdc"
-          ];
-          raidLevel = 1;
-          encrypt = true;
-        };
-
-        ddns.enable = true;
+      disks."/" = {
+        devices = [ "/dev/vda" ];
+        encrypt = true;
       };
 
-      nixflix.nginx.domain = lib.mkForce "vm";
+      disks."/data" = {
+        devices = [
+          "/dev/vdb"
+          "/dev/vdc"
+        ];
+        raidLevel = 1;
+        encrypt = true;
+      };
+
+      ddns.enable = true;
     };
+
+    nixflix.nginx.domain = lib.mkForce "vm";
+  };
 }

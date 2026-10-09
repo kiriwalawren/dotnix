@@ -1,7 +1,1 @@
-{
-  flake.modules.homeManager.gui =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.gnome-calculator ];
-    };
-}
+{ flake.modules.homeManager.gui = { pkgs, ... }: { home.packages = [ pkgs.gnome-calculator ]; }; }

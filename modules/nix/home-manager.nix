@@ -8,19 +8,16 @@
       useUserPackages = true;
       users.${config.user.name} = {
         imports = [
-          (
-            { osConfig, ... }:
-            {
-              home = {
-                username = config.user.name;
-                email = config.user.email;
-                displayName = config.user.displayName;
-                homeDirectory = "/home/${config.user.name}";
-                stateVersion = osConfig.system.stateVersion;
-                enableNixpkgsReleaseCheck = false;
-              };
-            }
-          )
+          ({ osConfig, ... }: {
+            home = {
+              username = config.user.name;
+              email = config.user.email;
+              displayName = config.user.displayName;
+              homeDirectory = "/home/${config.user.name}";
+              stateVersion = osConfig.system.stateVersion;
+              enableNixpkgsReleaseCheck = false;
+            };
+          })
         ];
       };
     };

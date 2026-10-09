@@ -90,9 +90,7 @@
       ];
 
       wayland.windowManager.hyprland.settings = {
-        windowrule = [
-          "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on"
-        ];
+        windowrule = [ "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on" ];
 
         bind = [
           ",XF86AudioMute,exec,${pamixer} -t"
@@ -102,9 +100,7 @@
         ];
 
         # Executes when key is released
-        bindr = [
-          "CTRL,Space,exec,${mutemic}/bin/mutemic"
-        ];
+        bindr = [ "CTRL,Space,exec,${mutemic}/bin/mutemic" ];
 
         # Repeats when held
         binde = [
@@ -119,9 +115,7 @@
           ",XF86AudioNext,exec,${playerctl} next"
         ];
 
-        "exec-once" = [
-          "${mutemic}/bin/mutemic"
-        ];
+        "exec-once" = [ "${mutemic}/bin/mutemic" ];
       };
     };
 }

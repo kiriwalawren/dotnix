@@ -1,9 +1,4 @@
-{
-  inputs,
-  lib,
-  ...
-}:
-{
+{ inputs, lib, ... }: {
   nixpkgs.config.allowUnfreePackages = [
     "steamdeck-hw-theme"
     "steam-jupiter-unwrapped"
@@ -29,9 +24,5 @@
     services.greetd.enable = lib.mkForce false;
   };
 
-  flake.modules.homeManager.steamos =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.sgdboop ];
-    };
+  flake.modules.homeManager.steamos = { pkgs, ... }: { home.packages = [ pkgs.sgdboop ]; };
 }

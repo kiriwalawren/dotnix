@@ -16,16 +16,8 @@
       };
 
       sections = {
-        lualine_a = [
-          {
-            separator.left = "";
-          }
-        ];
-        lualine_z = [
-          {
-            separator.right = "";
-          }
-        ];
+        lualine_a = [ { separator.left = ""; } ];
+        lualine_z = [ { separator.right = ""; } ];
       };
     };
   };

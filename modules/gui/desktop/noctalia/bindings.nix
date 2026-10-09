@@ -1,5 +1,4 @@
-{ self, ... }:
-{
+{ self, ... }: {
   flake.wrappers.niri =
     { pkgs, lib, ... }:
     let

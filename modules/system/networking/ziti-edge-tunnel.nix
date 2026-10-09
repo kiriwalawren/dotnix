@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   flake.modules.nixos.ziti-edge-tunnel =
     { config, lib, ... }:
     let
