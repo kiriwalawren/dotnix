@@ -24,6 +24,8 @@
       enable = true;
       subdomain = "listen";
 
+      plugins.lyrics.enable = true;
+
       users.Kiri = {
         isAdmin = true;
         mutable = false;
@@ -33,6 +35,7 @@
 
       settings = {
         DefaultTheme = "Catppuccin Macchiato";
+        Plugins.LogLevel = "info";
       };
     };
   };

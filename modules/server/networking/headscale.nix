@@ -14,6 +14,20 @@
         description = "IP Address of vps.";
         readOnly = true;
       };
+
+      framework13 = lib.mkOption {
+        type = lib.types.str;
+        default = "100.64.0.7";
+        description = "IP Address of framework13.";
+        readOnly = true;
+      };
+
+      kiri-phone = lib.mkOption {
+        type = lib.types.str;
+        default = "100.64.0.2";
+        description = "IP Address of Kiri's phone.";
+        readOnly = true;
+      };
     };
 
     config.services.headscale.settings.dns.base_domain = "hs.${config.system.ddns.domain}";
@@ -194,12 +208,12 @@
             {
               name = "dns.${config.system.ddns.domain}";
               type = "A";
-              value = config.tailscale.ips.homelab;
+              value = config.tailscale.ips.vps;
             }
             {
               name = "dns2.${config.system.ddns.domain}";
               type = "A";
-              value = config.tailscale.ips.vps;
+              value = config.tailscale.ips.homelab;
             }
           ];
         };
