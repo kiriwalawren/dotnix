@@ -111,6 +111,17 @@
                   "https://adguardteam.github.io/HostlistsRegistry/assets/filter_47.txt" # Block gambling sites
                   "https://big.oisd.nl"
                 ];
+            user_rules =
+              let
+                clients = lib.concatStringsSep "|" [
+                  config.tailscale.ips.framework13
+                  config.tailscale.ips.kiri-phone
+                ];
+              in
+              map (domain: "||${domain}^$client=${clients}") [
+                "reddit.com"
+                "instagram.com"
+              ];
           };
         };
 
