@@ -45,6 +45,7 @@ in
           "video"
           "input"
           "tty"
+          "media" # For Nixflix
         ];
       };
     };
