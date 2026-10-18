@@ -1,10 +1,12 @@
 {
   flake.modules.nixos.homelab = { config, lib, ... }: {
-    sops.secrets."jellyfin/kiri-password" = { };
-    sops.secrets."jellyfin/guest-password" = { };
-    sops.secrets."jellyfin/api-key" = { };
-    sops.secrets."opensubtitles-com/api-key" = { };
-    sops.secrets."opensubtitles-com/password" = { };
+    sops.secrets = {
+      "jellyfin/kiri-password" = { };
+      "jellyfin/guest-password" = { };
+      "jellyfin/api-key" = { };
+      "opensubtitles-com/api-key" = { };
+      "opensubtitles-com/password" = { };
+    };
 
     system.backup.paths = [ config.nixflix.jellyfin.dataDir ];
 
