@@ -88,8 +88,8 @@
 
                   read_current_port() {
                     local response status body
-                    response=$(ip netns exec ${ns} curl -s -w '\n%{http_code}' \
-                      -H "X-API-Key: $API_KEY" "$SLSKD_HOST/api/v0/options")
+                    response=$(printf 'X-API-Key: %s\n' "$API_KEY" | ip netns exec ${ns} curl -s -w '\n%{http_code}' \
+                      -H @- "$SLSKD_HOST/api/v0/options")
                     status=$(echo "$response" | tail -n1)
                     body=$(echo "$response" | sed '$d')
 
@@ -104,8 +104,8 @@
                   update_port() {
                     local port response status body
                     port="$1"
-                    response=$(ip netns exec ${ns} curl -s -w '\n%{http_code}' \
-                      -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+                    response=$(printf 'X-API-Key: %s\n' "$API_KEY" | ip netns exec ${ns} curl -s -w '\n%{http_code}' \
+                      -H @- -H "Content-Type: application/json" \
                       --request PATCH --data "{\"soulseek\":{\"listenPort\":$port}}" \
                       "$SLSKD_HOST/api/v0/options")
                     status=$(echo "$response" | tail -n1)
@@ -140,7 +140,7 @@
                       fi
                     fi
 
-                    sleep 5
+                    sleep 45
                   done
                 '';
             };
