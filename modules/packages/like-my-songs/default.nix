@@ -6,8 +6,8 @@
       makeWrapperArgs = [
         "--set"
         "LIKE_MY_SONGS_CSV"
-        "${./_liked-songs.csv}"
+        "${./liked-songs.csv}"
       ];
-    } ./_like_my_songs.py;
+    } ./like_my_songs.py;
   };
 }
