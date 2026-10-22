@@ -3,13 +3,15 @@
   default = "ddg";
   engines = {
     nix-packages = {
-      urls = [ { template = "https://search.nixos.org/packages?type=packages&query={searchTerms}"; } ];
+      urls = [
+        { template = "https://search.nixos.org/packages?channel=unstable&&query={searchTerms}"; }
+      ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@np" ];
     };
 
     nix-options = {
-      urls = [ { template = "https://search.nixos.org/options?type=packages&query={searchTerms}"; } ];
+      urls = [ { template = "https://search.nixos.org/options?channel=unstable&query={searchTerms}"; } ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@no" ];
     };
