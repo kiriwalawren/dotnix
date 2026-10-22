@@ -176,6 +176,11 @@
               value = config.tailscale.ips.homelab;
             }
             {
+              name = "aurral.${config.system.ddns.domain}";
+              type = "A";
+              value = config.tailscale.ips.homelab;
+            }
+            {
               name = "indexers.${config.system.ddns.domain}";
               type = "A";
               value = config.tailscale.ips.homelab;
