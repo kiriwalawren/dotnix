@@ -17,7 +17,7 @@
     };
 
     nixpkgs-tracker = {
-      urls = [ { template = "https://nixpk.gs/pr-tracker.html?pr={searchTerms}"; } ];
+      urls = [ { template = "https://nixpkgs-tracker.ocfox.me/?pr={searchTerms}"; } ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@nt" ];
     };

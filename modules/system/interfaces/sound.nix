@@ -1,23 +1,22 @@
-{
+{ self, ... }: {
   flake.wrappers.niri =
-    { lib, ... }:
+    { lib, pkgs, ... }:
     let
       noctalia =
         cmd:
         [
-          "noctalia-shell"
-          "ipc"
-          "call"
+          (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia)
+          "msg"
         ]
         ++ (lib.splitString " " cmd);
     in
     {
       settings = {
         binds = {
-          "XF86AudioRaiseVolume".spawn = noctalia "volume increase";
-          "XF86AudioLowerVolume".spawn = noctalia "volume decrease";
-          "XF86AudioMute".spawn = noctalia "volume muteOutput";
-          "CTRL+Space".spawn = noctalia "volume muteInput";
+          "XF86AudioRaiseVolume".spawn = noctalia "volume-up";
+          "XF86AudioLowerVolume".spawn = noctalia "volume-down";
+          "XF86AudioMute".spawn = noctalia "volume-mute";
+          "CTRL+Space".spawn = noctalia "mic-mute";
         };
 
         window-rules = [

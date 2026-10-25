@@ -7,6 +7,7 @@
         default_file_explorer = true;
 
         float = {
+          border = "rounded";
           max_height = 25;
           max_width = 75;
         };
