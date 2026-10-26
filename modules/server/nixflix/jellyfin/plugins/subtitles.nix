@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.homelab = { config, lib, ... }: {
+  flake.modules.nixos.homelab = { config, ... }: {
     sops.secrets."opensubtitles-com/api-key" = { };
     sops.secrets."opensubtitles-com/password" = { };
 
