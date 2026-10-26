@@ -356,8 +356,8 @@
         "vpn-confinement": "vpn-confinement"
       },
       "locked": {
-        "lastModified": 1792629771,
-        "narHash": "sha256-N0sX9DHhBlZ20S5dG7GKtmDgOU5AFuEYmx3EBcX9FAs=",
+        "lastModified": 1792979355,
+        "narHash": "sha256-gsQM8feEd8S/5rT0OdgbQaKDnhjhzO2MkSG/ZK7a8mg=",
         "path": "/home/walawren/gitrepos/nixflix",
         "type": "path"
       },
