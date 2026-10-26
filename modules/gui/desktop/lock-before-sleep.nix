@@ -19,8 +19,8 @@
             if echo "$line" | grep -q "true"; then
               if command -v hyprlock > /dev/null 2>&1; then
                 hyprlock
-              elif command -v noctalia-shell > /dev/null 2>&1; then
-                noctalia-shell ipc call lockScreen lock
+              elif command -v noctalia > /dev/null 2>&1; then
+                noctalia msg session lock
               else
                 ${pkgs.systemd}/bin/loginctl lock-session
               fi

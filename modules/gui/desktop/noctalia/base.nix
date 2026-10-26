@@ -1,6 +1,6 @@
 { self, ... }: {
   flake.modules.nixos.niri = { pkgs, ... }: {
-    environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell ];
+    environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia ];
     services.upower.enable = true;
   };
 
@@ -8,187 +8,179 @@
     settings = {
       debug.honor-xdg-activation-with-invalid-serial = [ ];
 
-      spawn-at-startup = [
-        "env"
-        "NOCTALIA_PAM_SERVICE=noctalia-shell"
-        (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell)
-      ];
+      spawn-at-startup = [ (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia) ];
     };
   };
 
-  flake.wrappers.noctalia-shell = { wlib, ... }: {
-    imports = [ wlib.wrapperModules.noctalia-shell ];
+  flake.wrappers.noctalia =
+    {
+      config,
+      lib,
+      wlib,
+      pkgs,
+      ...
+    }:
+    {
+      imports = [ wlib.modules.default ];
 
-    settings = {
-      settingsVersion = 59;
-      ui = {
-        fontDefault = "Sans Serif";
-        fontFixed = "monospace";
-        fontDefaultScale = 1;
-        fontFixedScale = 1;
-        tooltipsEnabled = true;
-        scrollbarAlwaysVisible = true;
-        boxBorderEnabled = false;
-        panelBackgroundOpacity = 0.93;
-        translucentWidgets = false;
-        panelsAttachedToBar = true;
-        settingsPanelMode = "attached";
-        settingsPanelSideBarCardStyle = false;
+      options.settings = lib.mkOption {
+        inherit ((pkgs.formats.toml { })) type;
+        default = { };
+        description = "Noctalia v5 configuration, written to config.toml.";
       };
-      location = {
-        name = "Tokyo";
-        weatherEnabled = false;
-        weatherShowEffects = true;
-        useFahrenheit = false;
-        use12hourFormat = false;
-        showWeekNumberInCalendar = false;
-        showCalendarEvents = true;
-        showCalendarWeather = true;
-        analogClockInCalendar = false;
-        firstDayOfWeek = -1;
-        hideWeatherTimezone = false;
-        hideWeatherCityName = false;
-        weatherTaliaMascotAlways = false;
-        autoLocate = false;
-      };
-      calendar = {
-        cards = [
-          {
+
+      config = {
+        package = lib.mkDefault pkgs.noctalia;
+        env.NOCTALIA_CONFIG_HOME = "${placeholder config.outputName}/noctalia-config";
+        passthru.generatedConfig = "${
+          config.wrapper.${config.outputName}
+        }/noctalia-config/noctalia/config.toml";
+
+        constructFiles.config = {
+          relPath = "noctalia-config/noctalia/config.toml";
+          content = builtins.toJSON config.settings;
+          # `config validate` only warns on unknown keys, so fail on any warning other than
+          # plugin ones (plugins are fetched at runtime and can't be resolved here).
+          builder = ''
+            ${pkgs.remarshal}/bin/json2toml "$1" "$2"
+            report="$(HOME="$(mktemp -d)" ${lib.getExe config.package} config validate "$2" 2>&1)" || {
+              echo "$report"
+              exit 1
+            }
+            unexpected="$(echo "$report" | grep '^WARN' \
+              | grep -v 'unrecognized widget type "[^"]*/[^"]*:' \
+              | grep -v 'no loaded plugin with this id' || true)"
+            if [ -n "$unexpected" ]; then
+              echo "$unexpected"
+              exit 1
+            fi
+          '';
+        };
+
+        settings = {
+          shell = {
+            font_family = "Sans Serif";
+            card_borders = false;
+            telemetry_enabled = false;
+            polkit_agent = true;
+          };
+
+          location = {
+            address = "New York City";
+            auto_locate = true;
+            custom_schedule = false;
+            sunrise = "06:30";
+            sunset = "18:30";
+          };
+
+          weather = {
             enabled = true;
-            id = "calendar-header-card";
-          }
-          {
+            effects = true;
+            unit = "imperial";
+          };
+
+          control_center.calendar = {
+            show_week_numbers = false;
+            show_events_card = true;
+          };
+
+          system.monitor = {
+            cpu_usage_activity_threshold = 80.0;
+            cpu_usage_critical_threshold = 90.0;
+            cpu_temp_activity_threshold = 80.0;
+            cpu_temp_critical_threshold = 90.0;
+            gpu_temp_activity_threshold = 80.0;
+            gpu_temp_critical_threshold = 90.0;
+            ram_pct_activity_threshold = 80.0;
+            ram_pct_critical_threshold = 90.0;
+            swap_pct_activity_threshold = 80.0;
+            swap_pct_critical_threshold = 90.0;
+            disk_used_pct_activity_threshold = 80.0;
+            disk_used_pct_critical_threshold = 90.0;
+          };
+
+          battery.warning_threshold = 20;
+
+          dock.enabled = false;
+
+          osd = {
             enabled = true;
-            id = "calendar-month-card";
-          }
-          {
+            position = "top_right";
+            hide_delay_ms = 2000;
+            background_opacity = 0.85;
+            monitors = [ ];
+            # v4 enabledTypes = [ Volume InputVolume Brightness ]; LockKey was off and v4
+            # had no OSD for the other kinds, so they are off too.
+            kinds = {
+              volume = true;
+              volume_input = true;
+              volume_output = true;
+              brightness = true;
+              lock_keys = false;
+              bluetooth = false;
+              caffeine = false;
+              dnd = false;
+              keyboard_backlight = false;
+              media = false;
+              nightlight = false;
+              power_profile = false;
+              privacy = false;
+              wifi = false;
+            };
+          };
+
+          audio = {
+            enable_overdrive = false;
+            enable_volume_sounds = false;
+          };
+
+          shell.mpris.blacklist = [ ];
+
+          brightness = {
+            enable_ddcutil = false;
+            minimum_brightness = 0.01;
+          };
+
+          theme = {
+            mode = "dark";
+            source = "builtin";
+            builtin = "Catppuccin";
+            sync_color_scheme = true;
+            templates = {
+              builtin_ids = [ ];
+              enable_builtin_templates = false;
+              enable_community_templates = false;
+            };
+          };
+
+          nightlight = {
             enabled = false;
-            id = "weather-card";
-          }
-        ];
-      };
-      systemMonitor = {
-        cpuWarningThreshold = 80;
-        cpuCriticalThreshold = 90;
-        tempWarningThreshold = 80;
-        tempCriticalThreshold = 90;
-        gpuWarningThreshold = 80;
-        gpuCriticalThreshold = 90;
-        memWarningThreshold = 80;
-        memCriticalThreshold = 90;
-        swapWarningThreshold = 80;
-        swapCriticalThreshold = 90;
-        diskWarningThreshold = 80;
-        diskCriticalThreshold = 90;
-        diskAvailWarningThreshold = 20;
-        diskAvailCriticalThreshold = 10;
-        batteryWarningThreshold = 20;
-        batteryCriticalThreshold = 5;
-        enableDgpuMonitoring = false;
-        useCustomColors = false;
-        warningColor = "#94e2d5";
-        criticalColor = "#f38ba8";
-        externalMonitor = "btop";
-      };
-      dock = {
-        enabled = false;
-      };
-      network = {
-        wifiEnabled = true;
-        airplaneModeEnabled = false;
-        bluetoothRssiPollingEnabled = false;
-        bluetoothRssiPollIntervalMs = 60000;
-        networkPanelView = "wifi";
-        wifiDetailsViewMode = "grid";
-        bluetoothDetailsViewMode = "grid";
-        bluetoothHideUnnamedDevices = false;
-        disableDiscoverability = false;
-        bluetoothAutoConnect = true;
-      };
-      osd = {
-        enabled = true;
-        location = "top_right";
-        autoHideMs = 2000;
-        overlayLayer = true;
-        backgroundOpacity = .85;
-        enabledTypes = [
-          0
-          1
-          2
-        ];
-        monitors = [ ];
-      };
-      audio = {
-        volumeStep = 5;
-        volumeOverdrive = false;
-        spectrumFrameRate = 30;
-        spectrumMirrored = true;
-        visualizerType = "linear";
-        mprisBlacklist = [ ];
-        preferredPlayer = "";
-        volumeFeedback = false;
-        volumeFeedbackSoundFile = "";
-      };
-      brightness = {
-        brightnessStep = 5;
-        enforceMinimum = true;
-        enableDdcSupport = false;
-        backlightDeviceMappings = [ ];
-      };
-      colorSchemes = {
-        useWallpaperColors = false;
-        predefinedScheme = "Catppuccin";
-        darkMode = true;
-        schedulingMode = "off";
-        manualSunrise = "06:30";
-        manualSunset = "18:30";
-        generationMethod = "tonal-spot";
-        monitorForColors = "";
-        syncGsettings = true;
-      };
-      templates = {
-        activeTemplates = [ ];
-        enableUserTheming = false;
-      };
-      nightLight = {
-        enabled = false;
-        forced = false;
-        autoSchedule = true;
-        nightTemp = "4000";
-        dayTemp = "6500";
-        manualSunrise = "06:30";
-        manualSunset = "18:30";
-      };
-      hooks = {
-        enabled = false;
-        wallpaperChange = "";
-        darkModeChange = "";
-        screenLock = "";
-        screenUnlock = "";
-        performanceModeEnabled = "";
-        performanceModeDisabled = "";
-        startup = "";
-        session = "";
-        colorGeneration = "";
-      };
-      idle = {
-        enabled = true;
-        screenOffTimeout = 300;
-        lockTimeout = 600;
-        suspendTimeout = 900;
-        fadeDuration = 5;
-        screenOffCommand = "";
-        lockCommand = "";
-        suspendCommand = "";
-        resumeScreenOffCommand = "";
-        resumeLockCommand = "";
-        resumeSuspendCommand = "";
-        customCommands = "[]";
-      };
-      noctaliaPerformance = {
-        disableWallpaper = true;
-        disableDesktopWidgets = true;
+            force = false;
+            temperature_night = 4000;
+            temperature_day = 6500;
+          };
+
+          idle = {
+            pre_action_fade_seconds = 5.0;
+            behavior = {
+              screen-off = {
+                action = "screen_off";
+                timeout = 300.0;
+                enabled = true;
+              };
+              lock = {
+                action = "lock";
+                timeout = 600.0;
+                enabled = true;
+              };
+              lock-and-suspend = {
+                action = "lock_and_suspend";
+                timeout = 900.0;
+                enabled = true;
+              };
+            };
+          };
+        };
       };
     };
-  };
 }

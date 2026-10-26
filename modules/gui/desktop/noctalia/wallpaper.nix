@@ -1,49 +1,34 @@
 { config, ... }: {
-  flake.wrappers.noctalia-shell.settings.wallpaper = {
-    enabled = true;
-    overviewEnabled = false;
-    directory = toString config.theme.wallpapers;
-    monitorDirectories = [ ];
-    enableMultiMonitorDirectories = false;
-    showHiddenFiles = false;
-    viewMode = "single";
-    setWallpaperOnAllMonitors = true;
-    linkLightAndDarkWallpapers = true;
-    fillMode = "crop";
-    fillColor = "#000000";
-    useSolidColor = false;
-    solidColor = "#1a1a2e";
-    automationEnabled = true;
-    wallpaperChangeMode = "random";
-    randomIntervalSec = 3600;
-    transitionDuration = 1500;
-    transitionType = [
-      "fade"
-      "disc"
-      "stripes"
-      "wipe"
-      "pixelate"
-      "honeycomb"
-    ];
-    skipStartupTransition = false;
-    transitionEdgeSmoothness = 0.05;
-    panelPosition = "follow_bar";
-    hideWallpaperFilenames = false;
-    useOriginalImages = false;
-    overviewBlur = 0.4;
-    overviewTint = 0.6;
-    useWallhaven = false;
-    wallhavenQuery = "";
-    wallhavenSorting = "relevance";
-    wallhavenOrder = "desc";
-    wallhavenCategories = "111";
-    wallhavenPurity = "100";
-    wallhavenRatios = "";
-    wallhavenApiKey = "";
-    wallhavenResolutionMode = "atleast";
-    wallhavenResolutionWidth = "";
-    wallhavenResolutionHeight = "";
-    sortOrder = "name";
-    favorites = [ ];
+  flake.wrappers.noctalia.settings = {
+    wallpaper = {
+      enabled = true;
+      directory = toString config.theme.wallpapers;
+      per_monitor_directories = false;
+      fill_mode = "crop";
+      fill_color = "#000000";
+      transition = [
+        "fade"
+        "disc"
+        "stripes"
+        "wipe"
+        "honeycomb"
+      ];
+      transition_duration = 1500.0;
+      transition_on_startup = true;
+      edge_smoothness = 0.05;
+
+      default.path = "${toString config.theme.wallpapers}/zombie-boy-smoking-digital-art-4k-wallpaper-uhdpaper.com-6933a.jpg";
+
+      automation = {
+        enabled = true;
+        order = "random";
+        interval_seconds = 3600;
+      };
+    };
+
+    shell.panel = {
+      wallpaper_placement = "attached";
+      wallpaper_show_names = true;
+    };
   };
 }
