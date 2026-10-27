@@ -50,12 +50,6 @@
           Movies = subtitleSettings;
           Music = lib.mkForce null;
         };
-
-      plugins = {
-        "Jellyfin Enhanced" = {
-          enable = true;
-        };
-      };
     };
   };
 }
