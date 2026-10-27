@@ -209,26 +209,6 @@
         "type": "github"
       }
     },
-    "hyprland-contrib": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792709073,
-        "narHash": "sha256-eiWcuJH3ft0epDVue6pkxsY6ekBa/s7Rwx+yI1g0VVQ=",
-        "owner": "hyprwm",
-        "repo": "contrib",
-        "rev": "a54daf843dcdf6f5ff86996ab011de6e86a1bd7c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hyprwm",
-        "repo": "contrib",
-        "type": "github"
-      }
-    },
     "import-tree": {
       "locked": {
         "lastModified": 1788467110,
@@ -481,7 +461,6 @@
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
-        "hyprland-contrib": "hyprland-contrib",
         "import-tree": "import-tree",
         "jovian": "jovian",
         "lanzaboote": "lanzaboote",

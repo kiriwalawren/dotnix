@@ -60,7 +60,6 @@
     { lib, pkgs, ... }:
     let
       pamixer = "${lib.getExe pkgs.pamixer}";
-      playerctl = "${lib.getExe pkgs.playerctl}";
 
       unmutemic = pkgs.writeShellScriptBin "unmutemic" ''
         ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
@@ -87,34 +86,5 @@
         togglemic
         pkgs.wiremix
       ];
-
-      wayland.windowManager.hyprland.settings = {
-        windowrule = [ "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on" ];
-
-        bind = [
-          ",XF86AudioMute,exec,${pamixer} -t"
-          ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
-
-          "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
-        ];
-
-        # Executes when key is released
-        bindr = [ "CTRL,Space,exec,${mutemic}/bin/mutemic" ];
-
-        # Repeats when held
-        binde = [
-          ",XF86AudioRaiseVolume,exec,${pamixer} -i 5"
-          ",XF86AudioLowerVolume,exec,${pamixer} -d 5"
-        ];
-
-        # Will also work when an input inhibitor (e.g. a lockscreen) is active
-        bindl = [
-          ",XF86AudioPlay,exec,${playerctl} play-pause"
-          ",XF86AudioPrev,exec,${playerctl} previous"
-          ",XF86AudioNext,exec,${playerctl} next"
-        ];
-
-        "exec-once" = [ "${mutemic}/bin/mutemic" ];
-      };
     };
 }

@@ -34,6 +34,4 @@
         "Mod+R".spawn = noctalia "wallpaper-random";
       };
     };
-
-  # TODO: bindings for hyperland should be replicated/moved here
 }
