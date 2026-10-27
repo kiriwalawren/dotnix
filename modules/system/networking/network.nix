@@ -12,11 +12,5 @@
     };
   };
 
-  flake.modules.homeManager.gui = { pkgs, ... }: {
-    home.packages = [ pkgs.impala ];
-
-    wayland.windowManager.hyprland.settings.windowrule = [
-      "match:class impala, float on, center on, size 1100 700, pin on, stay_focused on"
-    ];
-  };
+  flake.modules.homeManager.gui = { pkgs, ... }: { home.packages = [ pkgs.impala ]; };
 }
