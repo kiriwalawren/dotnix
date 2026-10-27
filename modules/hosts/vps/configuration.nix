@@ -6,10 +6,23 @@
       hostName = "vps";
       firewall.allowedTCPPorts = [ 443 ];
 
+      # https://docs.hetzner.com/cloud/servers/static-configuration/
+      defaultGateway = {
+        address = "172.31.1.1";
+        interface = "enp1s0";
+      };
+
       defaultGateway6 = {
         address = "fe80::1";
         interface = "enp1s0";
       };
+
+      interfaces.enp1s0.ipv4.addresses = [
+        {
+          address = inputs.secrets.ipv4.vps;
+          prefixLength = 32;
+        }
+      ];
 
       interfaces.enp1s0.ipv6.addresses = [
         {
