@@ -24,99 +24,33 @@
       };
 
       settings = {
-        plugin = {
-          prepend_preloaders = [
-            # Replace magick, image, video with mediainfo
-            {
-              mime = "{audio,video,image}/*";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/subrip";
-              run = "mediainfo";
-            }
-
-            # Adobe Photoshop is image/adobe.photoshop, already handled above
-            # Adobe Illustrator
-            {
-              mime = "application/postscript";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/illustrator";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/dvb.ait";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/vnd.adobe.illustrator";
-              run = "mediainfo";
-            }
-            {
-              mime = "image/x-eps";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/eps";
-              run = "mediainfo";
-            }
-
-            # Sometimes AI file is recognized as "application/pdf". Lmao.
-            # In this case use file extension instead:
-            {
-              url = "*.{ai,eps,ait}";
-              run = "mediainfo";
-            }
-          ];
-
-          prepend_previewers = [
-            # Replace magick, image, video with mediainfo
-            {
-              mime = "{audio,video,image}/*";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/subrip";
-              run = "mediainfo";
-            }
-
-            # Adobe Photoshop is image/adobe.photoshop, already handled above
-            # Adobe Illustrator
-            {
-              mime = "application/postscript";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/illustrator";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/dvb.ait";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/vnd.adobe.illustrator";
-              run = "mediainfo";
-            }
-            {
-              mime = "image/x-eps";
-              run = "mediainfo";
-            }
-            {
-              mime = "application/eps";
-              run = "mediainfo";
-            }
-
-            # Sometimes AI file is recognized as "application/pdf". Lmao.
-            # In this case use file extension instead:
-            {
-              url = "*.{ai,eps,ait}";
-              run = "mediainfo";
-            }
-          ];
-        };
+        plugin =
+          let
+            mediainfoRules = [
+              # Replace magick, image, video with mediainfo.
+              # Also covers Adobe Photoshop (image/adobe.photoshop) and image/x-eps
+              {
+                mime = "{audio,video,image}/*";
+                run = "mediainfo";
+              }
+              # Subtitles, plus Adobe Illustrator / EPS variants
+              {
+                mime = "application/{subrip,postscript,illustrator,dvb.ait,vnd.adobe.illustrator,eps}";
+                run = "mediainfo";
+              }
+              # Sometimes AI file is recognized as "application/pdf". Lmao.
+              # In this case use file extension instead:
+              {
+                url = "*.{ai,eps,ait}";
+                run = "mediainfo";
+              }
+            ];
+          in
+          {
+            # Yazi caps preloaders at 16 *including* its 8 built-in ones, so keep these rules merged.
+            prepend_preloaders = mediainfoRules;
+            prepend_previewers = mediainfoRules;
+          };
 
         tasks = {
           image_alloc = 1073741824; # 1024MB
