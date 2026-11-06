@@ -2,6 +2,7 @@
   flake.wrappers.niri =
     { pkgs, lib, ... }:
     let
+      bind = import ../niri/_bind.nix;
       noctalia =
         cmd:
         [
@@ -13,11 +14,11 @@
     {
       settings.binds = {
         # Core Noctalia Bindings
-        "Ctrl+Alt+Shift+Space".spawn = noctalia "panel-toggle launcher";
-        "Mod+Ctrl+Alt+Shift+S".spawn = noctalia "panel-toggle control-center";
-        "Mod+Ctrl+Alt+Shift+X".spawn = noctalia "panel-toggle session";
-        "Mod+Ctrl+Alt+Shift+Comma".spawn = noctalia "settings-toggle";
-        "Mod+Ctrl+Alt+Shift+B".spawn = noctalia "bar-toggle";
+        "Ctrl+Alt+Shift+Space" = bind "App launcher" { spawn = noctalia "panel-toggle launcher"; };
+        "Mod+Ctrl+Alt+Shift+S" = bind "Control center" { spawn = noctalia "panel-toggle control-center"; };
+        "Mod+Ctrl+Alt+Shift+X" = bind "Session menu" { spawn = noctalia "panel-toggle session"; };
+        "Mod+Ctrl+Alt+Shift+Comma" = bind "Noctalia settings" { spawn = noctalia "settings-toggle"; };
+        "Mod+Ctrl+Alt+Shift+B" = bind "Toggle bar" { spawn = noctalia "bar-toggle"; };
 
         # Media
         "XF86AudioPlay".spawn = noctalia "media toggle";
@@ -29,7 +30,7 @@
         "XF86MonBrightnessDown".spawn = noctalia "brightness-down";
 
         # Wallpaper
-        "Mod+Ctrl+Alt+Shift+R".spawn = noctalia "wallpaper-random";
+        "Mod+Ctrl+Alt+Shift+R" = bind "Random wallpaper" { spawn = noctalia "wallpaper-random"; };
       };
     };
 }

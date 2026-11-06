@@ -1,6 +1,11 @@
-# A toggleable, click-through overlay showing the active kanata layout,
-# implemented as a Nix-built Noctalia plugin (a `[[layer]]` surface).
-{ lib, self, ... }:
+# Noctalia plugin: click-through overlay of the active kanata layout, and a
+# which-key legend of niri binds while hyper/meh is held.
+{
+  config,
+  lib,
+  self,
+  ...
+}:
 let
   keyboard = import ../../../system/interfaces/kanata/_keyboard.nix { inherit lib; };
 
@@ -10,22 +15,58 @@ in
   flake.wrappers.noctalia =
     { pkgs, ... }:
     let
-      # Follows kanata: it sends the current layer as a `LayerChange` on
-      # connect, then broadcasts every layer change. Reconnects if kanata restarts.
-      # Loops only while Noctalia ($PPID) is alive: Noctalia kills the stream
-      # when it stops it, but not when Noctalia itself exits, and an orphaned
-      # loop reconnects every 2s forever. kanata leaks an fd per closed client,
-      # so that eventually crashed it with "Too many open files".
+      # Follows kanata's layer changes; stops when Noctalia ($PPID) exits, since an
+      # orphaned loop's reconnects leak fds in kanata until it crashes
       layerStream = "while kill -0 $PPID 2>/dev/null; do ${pkgs.socat}/bin/socat -u TCP:127.0.0.1:${toString keyboard.port} STDOUT; sleep 2; done";
+
+      # niri bind titles by combo; read from the wrapper module (the niri package
+      # depends on this one), and only `props` to avoid a cycle
+      bindTitles = lib.filterAttrs (_: title: title != null) (
+        lib.mapAttrs (
+          _: v: if builtins.isFunction v then (v null).props.hotkey-overlay-title or null else null
+        ) config.flake.wrappers.niri.settings.binds
+      );
+
+      # Display names for xkb key names
+      keyNames = {
+        Equal = "=";
+        Minus = "-";
+        Comma = ",";
+        Period = ".";
+        Slash = "/";
+        Return = "⏎";
+        Space = "Spc";
+      };
+
+      # Binds whose modifiers are exactly `prefix` (case-insensitive), sorted by title
+      legend =
+        prefix:
+        let
+          p = lib.toLower prefix + "+";
+        in
+        lib.sort (a: b: a.title < b.title) (
+          lib.concatLists (
+            lib.mapAttrsToList (
+              combo: title:
+              let
+                rest = lib.substring (lib.stringLength p) (-1) combo;
+              in
+              lib.optional (lib.hasPrefix p (lib.toLower combo) && !lib.hasInfix "+" rest) {
+                key = keyNames.${rest} or rest;
+                inherit title;
+              }
+            ) bindTitles
+          )
+        );
 
       generated = {
         order = keyboard.layers;
         stream = layerStream;
-        # Per layer: rows of `{ base, shifted, hold? }` labels
+        # Per layout: rows of `{ base, shifted, hold? }` labels
         labels = lib.genAttrs keyboard.layers (layer: map (map (k: k.${layer})) keyboard.rows);
-        # Per layer: the space-bar row (keys outside the letter grid)
+        # Per layout: the space-bar row
         extra = lib.genAttrs keyboard.layers (layer: map (k: k.${layer}) keyboard.extraKeys);
-        # Held layers, laid out like `labels`; `false` = transparent (show the base layer's key)
+        # Held layers laid out like `labels`; `false` = show the base key
         holds = lib.mapAttrs (
           _: mappings:
           map (map (
@@ -39,6 +80,8 @@ in
               false
           )) keyboard.rows
         ) keyboard.holdLayers;
+        # Modifier layers: lists of `{ key, title }` niri binds
+        legends = lib.mapAttrs (_: legend) keyboard.modLayers;
       };
 
       manifest = ''
@@ -47,7 +90,7 @@ in
         version     = "1.0.0"
         plugin_api  = 43
         author      = "dotnix"
-        description = "Toggleable overlay of the active kanata layout."
+        description = "Toggleable overlay of the active kanata layout, and a legend of niri binds while a modifier chord is held."
 
         [[service]]
         id    = "service"
@@ -62,40 +105,62 @@ in
         keyboard      = "none"
         click_through = true
         output        = "focused"
+
+        # Own surface: sharing `overlay`'s reused nodes squashed it to keycap sizes
+        [[layer]]
+        id            = "legend"
+        entry         = "legend.luau"
+        layer         = "overlay"
+        anchors       = ["bottom"]
+        margins       = { bottom = 48 }
+        keyboard      = "none"
+        click_through = true
+        output        = "focused"
       '';
 
       service = ''
         --!nonstrict
         local generated = require("./generated.luau")
-        -- `pinned`: toggled on with Hyper+O (Mod+Ctrl+Alt+Shift+O). `holding`: a hold layer is active.
-        -- The overlay shows while either is true.
+        -- Keymap shows while pinned (Hyper+O) or a hold layer is held; the legend
+        -- replaces it while hyper/meh is held
         local pinned = false
         local holding = false
+        local layer = nil
 
-        -- Debounce the automatic pop-up: a hold layer must stay active this
-        -- long before the overlay shows, so a hold that flickers on and off
-        -- during a fast roll never flashes it. Hiding is immediate.
+        -- Holds must last this long before popping up (no flashes on rolls); hiding is immediate
         local SHOW_DELAY_MS = 200
         local holdSince = nil -- nowMs() when the current hold started
-        local shown = false
+        local shown = { overlay = false, legend = false }
 
-        local function apply()
-          local want = pinned
-            or (holding and holdSince ~= nil and noctalia.nowMs() - holdSince >= SHOW_DELAY_MS)
-          if want ~= shown then
-            shown = want
+        local function setShown(id, want)
+          if want ~= shown[id] then
+            shown[id] = want
             if want then
-              noctalia.layer.show("overlay")
+              noctalia.layer.show(id)
             else
-              noctalia.layer.hide("overlay")
+              noctalia.layer.hide(id)
             end
           end
         end
 
-        -- Polls a pending hold; does nothing otherwise
+        local function apply()
+          local held = holding and holdSince ~= nil and noctalia.nowMs() - holdSince >= SHOW_DELAY_MS
+          local legend = held and generated.legends[layer] ~= nil
+          local keymap = not legend and (pinned or (held and generated.holds[layer] ~= nil))
+          -- Hide first so the two never show at once
+          if legend then
+            setShown("overlay", false)
+            setShown("legend", true)
+          else
+            setShown("legend", false)
+            setShown("overlay", keymap)
+          end
+        end
+
+        -- Polls a pending hold until its delay passes
         noctalia.setUpdateInterval(25)
         function update()
-          if holding and not shown then
+          if holding then
             apply()
           end
         end
@@ -104,20 +169,20 @@ in
           local msg = noctalia.json.decode(line)
           if msg and msg.LayerChange then
             local name = msg.LayerChange.new
-            -- kanata only reports the top layer; remember the base layer
-            -- underneath so held layers can be drawn on top of it
+            -- kanata reports only the top layer, so remember the base one
             if generated.labels[name] ~= nil then
               noctalia.state.set("base", name)
             end
             noctalia.state.set("layer", name)
+            layer = name
 
-            -- Pop up while a hold layer (symbols, numpad, ...) is active
-            local nowHolding = generated.holds[name] ~= nil
+            -- A hold layer or modifier chord is active
+            local nowHolding = generated.holds[name] ~= nil or generated.legends[name] ~= nil
             if nowHolding ~= holding then
               holding = nowHolding
               holdSince = nowHolding and noctalia.nowMs() or nil
-              apply()
             end
+            apply()
           end
         end)
 
@@ -148,8 +213,7 @@ in
         local SPACE_OFFSET = OFFSETS[4] + PITCH * 2
         local SPACE_WIDTH = PITCH * 5 - GAP
 
-        -- label = { base, shifted, hold? }: shifted on top, base in the middle,
-        -- the hold action (if any) underneath in the theme's secondary color
+        -- label = { base, shifted, hold? }: shifted, base, then hold in secondary
         local function keycap(label, held, width)
           return ui.column({
             width = width or KEY,
@@ -163,12 +227,12 @@ in
             ui.label({ text = label[2], fontSize = 9, color = "on_surface/0.6" }),
             ui.label({
               text = label[1],
-              -- Shrink longer labels (F10, Vol+, Bksp, ...) to fit the keycap
+              -- Shrink longer labels to fit
               fontSize = (utf8.len(label[1]) or 0) > 2 and 11 or 15,
               fontWeight = "bold",
               color = held and "on_primary_container" or "on_surface",
             }),
-            -- Always present (blank when there's no hold) so every key lines up
+            -- Always present so keys line up
             ui.label({ text = label[3] or " ", fontSize = 9, fontWeight = "bold", color = "secondary" }),
           })
         end
@@ -199,7 +263,7 @@ in
             table.insert(children, ui.row({ gap = GAP }, keys))
           end
 
-          -- Space bar row (held layers don't remap it, so always the base layer's)
+          -- Space bar (never remapped by held layers)
           local spaceRow = { ui.box({ width = SPACE_OFFSET, height = KEY }) }
           for _, label in ipairs(generated.extra[base]) do
             table.insert(spaceRow, keycap(label, false, SPACE_WIDTH))
@@ -214,12 +278,73 @@ in
         noctalia.state.watch("base", render)
       '';
 
+      # Which-key legend: columns of `[key] title`, ROWS per column
+      legendScript = ''
+        --!nonstrict
+        local generated = require("./generated.luau")
+
+        local ROWS = 8
+        local KEY = 40
+        local GAP = 4
+
+        local function entryRow(entry)
+          return ui.row({ gap = 8, align = "center" }, {
+            ui.column({
+              width = KEY,
+              height = 24,
+              radius = 6,
+              fill = "surface_container_high/0.85",
+              align = "center",
+              justify = "center",
+            }, {
+              ui.label({ text = entry.key, fontSize = 12, fontWeight = "bold", color = "primary" }),
+            }),
+            ui.label({ text = entry.title, fontSize = 12, color = "on_surface" }),
+          })
+        end
+
+        local function render()
+          local name = noctalia.state.get("layer")
+          local entries = generated.legends[name]
+          -- Empty until the service hides it after the chord ends
+          if entries == nil then
+            layer.render(ui.column({}, {}))
+            return
+          end
+
+          local columns = {}
+          for i, entry in ipairs(entries) do
+            local c = math.floor((i - 1) / ROWS) + 1
+            columns[c] = columns[c] or {}
+            table.insert(columns[c], entryRow(entry))
+          end
+          local row = {}
+          for _, column in ipairs(columns) do
+            table.insert(row, ui.column({ gap = GAP }, column))
+          end
+
+          layer.render(ui.column({ gap = 8, padding = 12, radius = 14, fill = "surface/0.6" }, {
+            ui.label({
+              text = name:sub(1, 1):upper() .. name:sub(2),
+              fontSize = 12,
+              fontWeight = "bold",
+              color = "primary",
+            }),
+            ui.row({ gap = 24, align = "start" }, row),
+          }))
+        end
+
+        render()
+        noctalia.state.watch("layer", render)
+      '';
+
       plugin = pkgs.runCommand "noctalia-plugin-keymap" { } ''
         dir=$out/keymap
         mkdir -p $dir
         cp ${pkgs.writeText "plugin.toml" manifest} $dir/plugin.toml
         cp ${pkgs.writeText "service.luau" service} $dir/service.luau
         cp ${pkgs.writeText "overlay.luau" overlay} $dir/overlay.luau
+        cp ${pkgs.writeText "legend.luau" legendScript} $dir/legend.luau
         cp ${pkgs.writeText "generated.luau" "return ${lib.generators.toLua { } generated}\n"} $dir/generated.luau
       '';
     in
@@ -238,13 +363,15 @@ in
     };
 
   flake.wrappers.niri = { pkgs, ... }: {
-    settings.binds."Mod+Ctrl+Alt+Shift+O".spawn = [
-      (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia)
-      "msg"
-      "plugin"
-      "${pluginId}:service"
-      "all"
-      "toggle"
-    ];
+    settings.binds."Mod+Ctrl+Alt+Shift+O" = import ../niri/_bind.nix "Keymap overlay" {
+      spawn = [
+        (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia)
+        "msg"
+        "plugin"
+        "${pluginId}:service"
+        "all"
+        "toggle"
+      ];
+    };
   };
 }

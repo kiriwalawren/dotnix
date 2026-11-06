@@ -2,6 +2,7 @@
   flake.wrappers.niri =
     { lib, pkgs, ... }:
     let
+      bind = import ../../gui/desktop/niri/_bind.nix;
       noctalia =
         cmd:
         [
@@ -16,7 +17,7 @@
           "XF86AudioRaiseVolume".spawn = noctalia "volume-up";
           "XF86AudioLowerVolume".spawn = noctalia "volume-down";
           "XF86AudioMute".spawn = noctalia "volume-mute";
-          "CTRL+Space".spawn = noctalia "mic-mute";
+          "CTRL+Space" = bind "Toggle mic mute" { spawn = noctalia "mic-mute"; };
         };
 
         window-rules = [

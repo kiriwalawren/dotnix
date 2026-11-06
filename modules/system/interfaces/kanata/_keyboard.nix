@@ -1,11 +1,7 @@
-# Single source of truth for the kanata layouts. Used to generate both the
-# kanata config (./default.nix) and the Noctalia layout overlay
-# (modules/gui/desktop/keyboard-overlay.nix).
+# Kanata layouts; source for the kanata config and the Noctalia keymap overlay.
 _:
 let
-  # A physical key. `qwerty`/`dvorak` are `[ base shifted ]` labels for the
-  # overlay; `action` is the kanata action for the dvorak layer (null = the
-  # key passes through unchanged).
+  # A physical key: overlay labels `[ base shifted hold? ]` per layout, plus its dvorak action.
   key = src: qwerty: action: dvorak: {
     inherit
       src
@@ -15,7 +11,7 @@ let
       ;
   };
 
-  # Letters: the shifted label is omitted (it's just the uppercase letter)
+  # Letter label (no shifted label)
   letter = l: [
     l
     ""
@@ -24,8 +20,7 @@ let
   # A qwerty letter key that types another letter in dvorak
   letterKey = src: target: key src (letter src) target (letter target);
 
-  # A key that does nothing in dvorak (`XX` is kanata's no-op), from
-  # `[ src qwertyBase qwertyShifted ]`
+  # A key that does nothing in dvorak, from `[ src qwertyBase qwertyShifted ]`
   blank =
     k:
     key (builtins.elemAt k 0) [ (builtins.elemAt k 1) (builtins.elemAt k 2) ] "XX" [
@@ -33,20 +28,16 @@ let
       ""
     ];
 
-  # A dvorak key with a hold action (a held layer or modifiers). Tapping types
-  # `tap`; `hold` activates when a key on the other hand (see `defhands` in
-  # ./default.nix) is pressed AND released while this one is held, or once it
-  # has been held for 200ms. Same-hand keys resolve as a tap. The `-release`
-  # variant keeps fast rolls like "on"/"no" (both hold keys, opposite hands)
-  # typing letters instead of triggering the hold.
-  # `holdLabel` is appended to the dvorak overlay label (shown under the key).
-  holdAction = tap: hold: "(tap-hold-opposite-hand-release 200 ${tap} ${hold} (timeout hold))";
+  # Hold on an other-hand press+release or after 200ms; always a tap mid-word (prior-idle 150)
+  holdAction =
+    tap: hold:
+    "(tap-hold-opposite-hand-release 200 ${tap} ${hold} (require-prior-idle 150) (timeout hold))";
+  # A dvorak tap-hold key; `holdLabel` is shown under it in the overlay
   holdKey =
     hold: holdLabel: src: qwerty: tap: dvorak:
     key src qwerty (holdAction tap hold) (dvorak ++ [ holdLabel ]);
 
-  # Give a key the same kind of modifier hold in the qwerty layer (tap types
-  # the key itself). Wraps a key built by any of the helpers above.
+  # Also give a key a modifier hold in qwerty (tap types the key itself)
   qwertyHold =
     hold: k:
     k
@@ -55,8 +46,7 @@ let
       qwerty = k.qwerty ++ [ modLabels.${hold} ];
     };
 
-  # Tap, then press and hold again within 200ms, to hold the tap key (so it
-  # repeats) instead of starting the hold decision. Wraps a dvorak hold key.
+  # Tap then re-hold within 200ms to hold (repeat) the tap key instead
   repeatOnRetap =
     k:
     k
@@ -88,7 +78,7 @@ let
     src: target: layer:
     holdKey "(layer-while-held ${layer})" layerLabels.${layer} src (letter src) target (letter target);
 
-  # A dvorak key that holds modifiers (`$meh`/`$hyper` are defvars in ./default.nix)
+  # A dvorak key that holds modifiers (`$meh`/`$hyper` are defvars)
   modTap = hold: holdKey hold modLabels.${hold};
 
   # A dvorak letter that holds modifiers
@@ -96,36 +86,35 @@ let
     src: target: hold:
     modTap hold src (letter src) target (letter target);
 
-  # A key in a held layer: the kanata action (US keysyms, which is what the OS
-  # layout is) and the overlay label
+  # A held-layer key: kanata action (US keysyms) and overlay label
   sym = action: label: { inherit action label; };
 
-  # A keypad key (labelled "kp" in the overlay). Keypad `.` needs Num Lock on,
-  # otherwise xkb's keypad map sends KP_Delete; niri turns it on (./default.nix).
+  # A keypad key, labelled "kp" (keypad `.` needs Num Lock, which niri turns on)
   kp = action: label: {
     inherit action label;
     sub = "kp";
   };
 
-  # A key in a held layer with a small secondary overlay label (e.g. the chord)
+  # A held-layer key with a small secondary label (e.g. the chord)
   labelled = action: label: sub: { inherit action label sub; };
 in
 {
-  # TCP port kanata listens on (localhost only, enforced by the nixpkgs module's sandbox)
+  # Empty layers held with `$hyper`/`$meh` so the overlay can show their niri binds (by prefix)
+  modLayers = {
+    hyper = "Mod+Ctrl+Alt+Shift";
+    meh = "Ctrl+Alt+Shift";
+  };
+
+  # kanata's TCP port (localhost only)
   port = 6666;
 
-  # Order matters: kanata always starts in the first layer defined in its
-  # config (it does not remember the last layer), and `cycle-layout` cycles
-  # through them in this order.
+  # Kanata boots into the first; `cycle-layout` cycles in this order
   layers = [
     "dvorak"
     "qwerty"
   ];
 
-  # Dvorak on a 3x5 grid per hand: only the index fingers leave their home
-  # column. Keys outside the grid (number row, outer pinky column) do nothing;
-  # symbols live on the `symbols` hold layer instead. Letter and punctuation
-  # placement follows Programmer Dvorak.
+  # Programmer Dvorak on a 3x5 grid per hand; keys outside it do nothing in dvorak
   rows = [
     (map blank [
       [
@@ -264,16 +253,8 @@ in
     ]
   ];
 
-  # Keys outside the letter grid with no hand assignment (the overlay draws
-  # them as a space-bar row). Having no hand, space is ignored by the
-  # opposite-hand hold keys' decision, so tapping space while a hold key is
-  # down never turns that key into a hold. Space can't use the opposite-hand
-  # logic itself, so it uses `tap-hold-release`: hyper only when another key
-  # is pressed AND released while space is held (or after 200ms), so fast
-  # "word<space>next" rolls still type a space. Tapping then re-holding space
-  # within 200ms holds a space (key repeat).
-  # Unlike the letter keys, these apply to every base layer (qwerty too), so
-  # both overlay labels show the hold.
+  # Keys outside the grid, in every base layer, with no hand (so they never trigger other holds).
+  # Space: hyper on any press+release while held, or after 200ms.
   extraKeys =
     let
       spaceLabel = [
@@ -284,14 +265,9 @@ in
     in
     [ (key "spc" spaceLabel "(tap-hold-release 200 200 spc $hyper)" spaceLabel) ];
 
-  # Layers that are only active while a key is held. They sit on top of the
-  # base layer (dvorak/qwerty): keys not listed here fall through to it.
-  # Keyed by the physical (qwerty) key name used in `rows`.
+  # Layers active while a key is held, keyed by physical key; unlisted keys fall through
   holdLayers = {
-    # Held with dvorak O or N (physical S/L). Home row is the resting position:
-    #   $ ~ * =     _ - / ?
-    #   { } ( )     [ ] + !
-    #   % @ | &     ` # \ ^
+    # Held with dvorak O or N
     symbols = {
       q = sym "S-4" "$";
       w = sym "S-grv" "~";
@@ -321,12 +297,7 @@ in
       "/" = sym "S-6" "^";
     };
 
-    # Held with dvorak E or T (physical D/K). F6 is the left index home key,
-    # 4 the right index home key:
-    #   F10 F11 F12                    kp*
-    #   F7  F8  F9      kp.  7  8  9  kp/
-    #   F4  F5  F6      kp=  4  5  6  kp-
-    #   F1  F2  F3        0  1  2  3  kp+
+    # Held with dvorak E or T
     numpad = {
       "2" = sym "f10" "F10";
       "3" = sym "f11" "F11";
@@ -362,13 +333,7 @@ in
       "/" = kp "kp+" "+";
     };
 
-    # Held with dvorak U or H (physical F/J). Brightness down is the left index
-    # home key, left arrow the right index home key:
-    #   Esc  C-S-Tab  C-Tab  .     .     |  Vol+  .     Up    .     Bksp
-    #   C-x  C-c      C-v    Br-   Br+   |  Vol-  Left  Down  Right Enter
-    #   .    .        .      .     .     |  Mute  Prev  Play  Next  .
-    # The media/volume/brightness keys send the same keycodes as the laptop's
-    # own keys, so the existing niri XF86* binds handle them.
+    # Held with dvorak U or H; media keys are handled by the niri XF86* binds
     shortcuts = {
       q = sym "esc" "Esc";
       w = labelled "C-S-tab" "Tab" "C-S";
