@@ -17,7 +17,10 @@ in
       generated = {
         order = keyboard.layers;
         stream = layerStream;
+        # Per layer: rows of `{ base, shifted, hold? }` labels
         labels = lib.genAttrs keyboard.layers (layer: map (map (k: k.${layer})) keyboard.rows);
+        # Per layer: the space-bar row (keys outside the letter grid)
+        extra = lib.genAttrs keyboard.layers (layer: map (k: k.${layer}) keyboard.extraKeys);
         # Held layers, laid out like `labels`; `false` = transparent (show the base layer's key)
         holds = lib.mapAttrs (
           _: mappings:
@@ -98,14 +101,20 @@ in
         --!nonstrict
         local generated = require("./generated.luau")
 
-        local KEY = 40
+        local KEY = 46
         local GAP = 4
-        -- Row stagger, roughly matching a physical keyboard
-        local OFFSETS = { 0, 22, 33, 55 }
+        local PITCH = KEY + GAP
+        -- Row stagger in key widths, roughly matching a physical keyboard
+        local OFFSETS = { 0, PITCH * 0.5, PITCH * 0.75, PITCH * 1.25 }
+        -- Space bar: starts under the bottom row's third key, five keys wide
+        local SPACE_OFFSET = OFFSETS[4] + PITCH * 2
+        local SPACE_WIDTH = PITCH * 5 - GAP
 
-        local function keycap(label, held)
+        -- label = { base, shifted, hold? }: shifted on top, base in the middle,
+        -- the hold action (if any) underneath in the theme's secondary color
+        local function keycap(label, held, width)
           return ui.column({
-            width = KEY,
+            width = width or KEY,
             height = KEY,
             radius = 6,
             fill = held and "primary_container/0.9" or "surface_container_high/0.85",
@@ -113,7 +122,7 @@ in
             justify = "center",
             gap = 0,
           }, {
-            ui.label({ text = label[2], fontSize = 10, color = "on_surface/0.6" }),
+            ui.label({ text = label[2], fontSize = 9, color = "on_surface/0.6" }),
             ui.label({
               text = label[1],
               -- Shrink longer labels (F10, Vol+, Bksp, ...) to fit the keycap
@@ -121,6 +130,8 @@ in
               fontWeight = "bold",
               color = held and "on_primary_container" or "on_surface",
             }),
+            -- Always present (blank when there's no hold) so every key lines up
+            ui.label({ text = label[3] or " ", fontSize = 9, fontWeight = "bold", color = "secondary" }),
           })
         end
 
@@ -149,6 +160,13 @@ in
             end
             table.insert(children, ui.row({ gap = GAP }, keys))
           end
+
+          -- Space bar row (held layers don't remap it, so always the base layer's)
+          local spaceRow = { ui.box({ width = SPACE_OFFSET, height = KEY }) }
+          for _, label in ipairs(generated.extra[base]) do
+            table.insert(spaceRow, keycap(label, false, SPACE_WIDTH))
+          end
+          table.insert(children, ui.row({ gap = GAP }, spaceRow))
 
           layer.render(ui.column({ gap = GAP, padding = 12, radius = 14, fill = "surface/0.6" }, children))
         end

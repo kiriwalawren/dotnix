@@ -33,17 +33,48 @@ let
       ""
     ];
 
-  # A dvorak letter that also activates a held layer. Tapping types the letter;
-  # the layer activates when a key on the other hand (see `defhands` in
+  # A dvorak key with a hold action (a held layer or modifiers). Tapping types
+  # `tap`; `hold` activates when a key on the other hand (see `defhands` in
   # ./default.nix) is pressed AND released while this one is held, or once it
   # has been held for 200ms. Same-hand keys resolve as a tap. The `-release`
-  # variant keeps fast rolls like "on"/"no" (both layer keys, opposite hands)
-  # typing letters instead of symbols.
+  # variant keeps fast rolls like "on"/"no" (both hold keys, opposite hands)
+  # typing letters instead of triggering the hold.
+  # `holdLabel` is appended to the dvorak overlay label (shown under the key).
+  holdKey =
+    hold: holdLabel: src: qwerty: tap: dvorak:
+    key src qwerty "(tap-hold-opposite-hand-release 200 ${tap} ${hold} (timeout hold))" (
+      dvorak ++ [ holdLabel ]
+    );
+
+  # Overlay labels for hold actions
+  layerLabels = {
+    symbols = "sym";
+    numpad = "num";
+    shortcuts = "shrt";
+  };
+  modLabels = {
+    lctl = "ctl";
+    rctl = "ctl";
+    lalt = "alt";
+    ralt = "alt";
+    lmet = "sup";
+    rmet = "sup";
+    "$meh" = "meh";
+    "$hyper" = "hyp";
+  };
+
+  # A dvorak letter that activates a held layer
   layerKey =
     src: target: layer:
-    key src (letter src)
-      "(tap-hold-opposite-hand-release 200 ${target} (layer-while-held ${layer}) (timeout hold))"
-      (letter target);
+    holdKey "(layer-while-held ${layer})" layerLabels.${layer} src (letter src) target (letter target);
+
+  # A dvorak key that holds modifiers (`$meh`/`$hyper` are defvars in ./default.nix)
+  modTap = hold: holdKey hold modLabels.${hold};
+
+  # A dvorak letter that holds modifiers
+  modKey =
+    src: target: hold:
+    modTap hold src (letter src) target (letter target);
 
   # A key in a held layer: the kanata action (US keysyms, which is what the OS
   # layout is) and the overlay label
@@ -148,20 +179,20 @@ in
         ";"
         ":"
       ])
-      (key "w" (letter "w") "comm" [
+      (modTap "lctl" "w" (letter "w") "comm" [
         ","
         "<"
       ])
-      (key "e" (letter "e") "." [
+      (modTap "lalt" "e" (letter "e") "." [
         "."
         ">"
       ])
-      (letterKey "r" "p")
+      (modKey "r" "p" "lmet")
       (letterKey "t" "y")
       (letterKey "y" "f")
-      (letterKey "u" "g")
-      (letterKey "i" "c")
-      (letterKey "o" "r")
+      (modKey "u" "g" "rmet")
+      (modKey "i" "c" "ralt")
+      (modKey "o" "r" "rctl")
       (letterKey "p" "l")
       (blank [
         "lbrc"
@@ -202,15 +233,29 @@ in
         "\""
       ])
       (letterKey "x" "q")
-      (letterKey "c" "j")
-      (letterKey "v" "k")
+      (modKey "c" "j" "$meh")
+      (modKey "v" "k" "$hyper")
       (letterKey "b" "x")
       (letterKey "n" "b")
-      (letterKey "m" "m")
-      (key "comm" [ "," "<" ] "w" (letter "w"))
+      (modKey "m" "m" "$hyper")
+      (modTap "$meh" "comm" [ "," "<" ] "w" (letter "w"))
       (key "." [ "." ">" ] "v" (letter "v"))
       (key "/" [ "/" "?" ] "z" (letter "z"))
     ]
+  ];
+
+  # Keys outside the letter grid with no hand assignment (the overlay draws
+  # them as a space-bar row). Space can't use the opposite-hand logic, so it
+  # uses `tap-hold-release`: hyper only when another key is pressed AND
+  # released while space is held (or after 200ms), so fast "word<space>next"
+  # rolls still type a space. Tapping then re-holding space within 200ms holds
+  # a space (key repeat).
+  extraKeys = [
+    (key "spc" [ "Space" "" ] "(tap-hold-release 200 200 spc $hyper)" [
+      "Space"
+      ""
+      modLabels."$hyper"
+    ])
   ];
 
   # Layers that are only active while a key is held. They sit on top of the

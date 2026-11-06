@@ -6,9 +6,10 @@ let
     layers
     rows
     holdLayers
+    extraKeys
     ;
 
-  keys = lib.flatten rows;
+  keys = lib.flatten rows ++ extraKeys;
 
   # Which hand types each physical key, for `tap-hold-opposite-hand`.
   # The first N keys of each row (number row: grv..5) are the left hand.
@@ -24,7 +25,9 @@ let
   }) leftCounts rows;
   handKeys = side: lib.concatMapStringsSep " " (k: k.src) (lib.concatMap (r: r.${side}) hands);
 
-  defsrc = lib.concatMapStringsSep "\n" (row: "  " + lib.concatMapStringsSep " " (k: k.src) row) rows;
+  defsrc = lib.concatMapStringsSep "\n" (row: "  " + lib.concatMapStringsSep " " (k: k.src) row) (
+    rows ++ [ extraKeys ]
+  );
 
   dvorakMappings = lib.concatMapStringsSep "\n" (k: "  ${k.src} ${k.action}") (
     lib.filter (k: k.action != null) keys
@@ -99,7 +102,8 @@ in
       enable = true;
       keyboards.main = {
         inherit port;
-        # Needed so `fork` can see shift/meta, which are not in defsrc
+        # Keys outside defsrc (shift, enter, ...) are otherwise invisible to
+        # tap-hold decisions (config.adoc, process-unmapped-keys)
         extraDefCfg = "process-unmapped-keys yes";
         config = ''
           (defsrc
@@ -111,7 +115,12 @@ in
           ;; defaults: 150ms double-tap (tap-repress) window, 200ms tap window.
           (defalias cesc (tap-hold-press 150 200 esc lctl))
 
-          ;; Physical hands, used by tap-hold-opposite-hand (the layer keys)
+          ;; Modifier combos held by the dvorak tap-hold keys
+          (defvar
+            meh (multi lalt lsft lctl)
+            hyper (multi lalt lsft lctl lmet))
+
+          ;; Physical hands, used by tap-hold-opposite-hand (the hold keys)
           (defhands
             (left ${handKeys "left"})
             (right ${handKeys "right"}))
