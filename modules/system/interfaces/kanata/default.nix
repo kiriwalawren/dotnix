@@ -111,10 +111,6 @@ in
           ;; defaults: 150ms double-tap (tap-repress) window, 200ms tap window.
           (defalias cesc (tap-hold-press 150 200 esc lctl))
 
-          ;; Number row: a symbol by default, a digit with shift (shift is released for the digit)
-          (deftemplate dvp (base shifted)
-            (fork $base (unshift $shifted) (lsft rsft)))
-
           ;; Physical hands, used by tap-hold-opposite-hand (the layer keys)
           (defhands
             (left ${handKeys "left"})
@@ -129,6 +125,10 @@ in
   };
 
   flake.wrappers.niri = { pkgs, ... }: {
+    # The numpad layer sends keypad keys; with Num Lock off xkb maps keypad `.`
+    # to KP_Delete. The Framework keyboard has no Num Lock key or keypad overlay.
+    settings.input.keyboard.numlock = _: { };
+
     settings.binds."Mod+I".spawn = [
       (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.cycle-layout)
     ];

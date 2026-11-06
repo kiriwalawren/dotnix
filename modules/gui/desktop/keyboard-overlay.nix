@@ -26,7 +26,7 @@ in
             if mappings ? ${k.src} then
               [
                 mappings.${k.src}.label
-                ""
+                (mappings.${k.src}.sub or "")
               ]
             else
               false

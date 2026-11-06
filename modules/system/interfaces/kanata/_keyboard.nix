@@ -24,6 +24,15 @@ let
   # A qwerty letter key that types another letter in dvorak
   letterKey = src: target: key src (letter src) target (letter target);
 
+  # A key that does nothing in dvorak (`XX` is kanata's no-op), from
+  # `[ src qwertyBase qwertyShifted ]`
+  blank =
+    k:
+    key (builtins.elemAt k 0) [ (builtins.elemAt k 1) (builtins.elemAt k 2) ] "XX" [
+      ""
+      ""
+    ];
+
   # A dvorak letter that also activates a held layer. Tapping types the letter;
   # the layer activates when a key on the other hand (see `defhands` in
   # ./default.nix) is pressed AND released while this one is held, or once it
@@ -39,6 +48,13 @@ let
   # A key in a held layer: the kanata action (US keysyms, which is what the OS
   # layout is) and the overlay label
   sym = action: label: { inherit action label; };
+
+  # A keypad key (labelled "kp" in the overlay). Keypad `.` needs Num Lock on,
+  # otherwise xkb's keypad map sends KP_Delete; niri turns it on (./default.nix).
+  kp = action: label: {
+    inherit action label;
+    sub = "kp";
+  };
 in
 {
   # TCP port kanata listens on (localhost only, enforced by the nixpkgs module's sandbox)
@@ -52,63 +68,78 @@ in
     "qwerty"
   ];
 
-  # Real Programmers Dvorak (ThePrimeagen's take on Programmer Dvorak),
-  # mirrors https://github.com/thePrimeagen/keyboards/blob/master/ubuntu/real-prog-dvorak
+  # Dvorak on a 3x5 grid per hand: only the index fingers leave their home
+  # column. Keys outside the grid (number row, outer pinky column) do nothing;
+  # symbols live on the `symbols` hold layer instead. Letter and punctuation
+  # placement follows Programmer Dvorak.
   rows = [
-    [
-      (key "grv" [ "`" "~" ] "(fork S-4 grv (lsft rsft))" [
-        "$"
-        "~"
-      ])
-      (key "1" [ "1" "!" ] "(t! dvp S-eql 1)" [
-        "+"
-        "1"
-      ])
-      (key "2" [ "2" "@" ] "(t! dvp lbrc 2)" [
-        "["
-        "2"
-      ])
-      (key "3" [ "3" "#" ] "(t! dvp S-lbrc 3)" [
-        "{"
-        "3"
-      ])
-      (key "4" [ "4" "$" ] "(t! dvp S-9 4)" [
-        "("
-        "4"
-      ])
-      (key "5" [ "5" "%" ] "(t! dvp S-7 5)" [
-        "&"
-        "5"
-      ])
-      (key "6" [ "6" "^" ] "(t! dvp eql 6)" [
-        "="
-        "6"
-      ])
-      (key "7" [ "7" "&" ] "(t! dvp S-0 7)" [
-        ")"
-        "7"
-      ])
-      (key "8" [ "8" "*" ] "(t! dvp S-rbrc 8)" [
-        "}"
-        "8"
-      ])
-      (key "9" [ "9" "(" ] "(t! dvp rbrc 9)" [
-        "]"
-        "9"
-      ])
-      (key "0" [ "0" ")" ] "(t! dvp S-8 0)" [
-        "*"
-        "0"
-      ])
-      (key "min" [ "-" "_" ] "(fork S-1 5 (lsft rsft))" [
-        "!"
-        "%"
-      ])
-      (key "eql" [ "=" "+" ] "(t! dvp S-bksl grv)" [
-        "|"
+    (map blank [
+      [
+        "grv"
         "`"
-      ])
-    ]
+        "~"
+      ]
+      [
+        "1"
+        "1"
+        "!"
+      ]
+      [
+        "2"
+        "2"
+        "@"
+      ]
+      [
+        "3"
+        "3"
+        "#"
+      ]
+      [
+        "4"
+        "4"
+        "$"
+      ]
+      [
+        "5"
+        "5"
+        "%"
+      ]
+      [
+        "6"
+        "6"
+        "^"
+      ]
+      [
+        "7"
+        "7"
+        "&"
+      ]
+      [
+        "8"
+        "8"
+        "*"
+      ]
+      [
+        "9"
+        "9"
+        "("
+      ]
+      [
+        "0"
+        "0"
+        ")"
+      ]
+      [
+        "min"
+        "-"
+        "_"
+      ]
+      [
+        "eql"
+        "="
+        "+"
+      ]
+    ])
     [
       (key "q" (letter "q") "scln" [
         ";"
@@ -129,33 +160,37 @@ in
       (letterKey "i" "c")
       (letterKey "o" "r")
       (letterKey "p" "l")
-      (key "lbrc" [ "[" "{" ] "/" [
-        "/"
-        "?"
+      (blank [
+        "lbrc"
+        "["
+        "{"
       ])
-      (key "rbrc" [ "]" "}" ] "(fork S-2 6 (lsft rsft))" [
-        "@"
-        "^"
+      (blank [
+        "rbrc"
+        "]"
+        "}"
       ])
-      (key "bksl" [ "\\" "|" ] "(fork bksl 3 (lsft rsft))" [
+      (blank [
+        "bksl"
         "\\"
-        "#"
+        "|"
       ])
     ]
     [
       (letterKey "a" "a")
       (layerKey "s" "o" "symbols")
-      (letterKey "d" "e")
+      (layerKey "d" "e" "numpad")
       (letterKey "f" "u")
       (letterKey "g" "i")
       (letterKey "h" "d")
       (letterKey "j" "h")
-      (letterKey "k" "t")
+      (layerKey "k" "t" "numpad")
       (layerKey "l" "n" "symbols")
       (key "scln" [ ";" ":" ] "s" (letter "s"))
-      (key "apos" [ "'" "\"" ] "min" [
-        "-"
-        "_"
+      (blank [
+        "apos"
+        "'"
+        "\""
       ])
     ]
     [
@@ -210,6 +245,47 @@ in
       comm = sym "S-3" "#";
       "." = sym "bksl" "\\";
       "/" = sym "S-6" "^";
+    };
+
+    # Held with dvorak E or T (physical D/K). F6 is the left index home key,
+    # 4 the right index home key:
+    #   F10 F11 F12                    kp*
+    #   F7  F8  F9      kp.  7  8  9  kp+
+    #   F4  F5  F6      kp=  4  5  6  kp-
+    #   F1  F2  F3        0  1  2  3  kp/
+    numpad = {
+      "2" = sym "f10" "F10";
+      "3" = sym "f11" "F11";
+      "4" = sym "f12" "F12";
+      "0" = kp "kp*" "*";
+
+      w = sym "f7" "F7";
+      e = sym "f8" "F8";
+      r = sym "f9" "F9";
+      y = kp "kp." ".";
+      u = sym "7" "7";
+      i = sym "8" "8";
+      o = sym "9" "9";
+      p = kp "kp+" "+";
+
+      s = sym "f4" "F4";
+      d = sym "f5" "F5";
+      f = sym "f6" "F6";
+      # `kp=` is kanata's name for Clear; keypad equals is `NumpadEqual`
+      h = kp "NumpadEqual" "=";
+      j = sym "4" "4";
+      k = sym "5" "5";
+      l = sym "6" "6";
+      scln = kp "kp-" "-";
+
+      x = sym "f1" "F1";
+      c = sym "f2" "F2";
+      v = sym "f3" "F3";
+      n = sym "0" "0";
+      m = sym "1" "1";
+      comm = sym "2" "2";
+      "." = sym "3" "3";
+      "/" = kp "kp/" "/";
     };
   };
 }
