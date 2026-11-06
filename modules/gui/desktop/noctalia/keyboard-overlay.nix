@@ -12,7 +12,11 @@ in
     let
       # Follows kanata: it sends the current layer as a `LayerChange` on
       # connect, then broadcasts every layer change. Reconnects if kanata restarts.
-      layerStream = "while :; do ${pkgs.socat}/bin/socat -u TCP:127.0.0.1:${toString keyboard.port} STDOUT; sleep 2; done";
+      # Loops only while Noctalia ($PPID) is alive: Noctalia kills the stream
+      # when it stops it, but not when Noctalia itself exits, and an orphaned
+      # loop reconnects every 2s forever. kanata leaks an fd per closed client,
+      # so that eventually crashed it with "Too many open files".
+      layerStream = "while kill -0 $PPID 2>/dev/null; do ${pkgs.socat}/bin/socat -u TCP:127.0.0.1:${toString keyboard.port} STDOUT; sleep 2; done";
 
       generated = {
         order = keyboard.layers;
@@ -71,7 +75,7 @@ in
         -- Debounce the automatic pop-up: a hold layer must stay active this
         -- long before the overlay shows, so a hold that flickers on and off
         -- during a fast roll never flashes it. Hiding is immediate.
-        local SHOW_DELAY_MS = 150
+        local SHOW_DELAY_MS = 200
         local holdSince = nil -- nowMs() when the current hold started
         local shown = false
 

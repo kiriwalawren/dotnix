@@ -105,6 +105,10 @@ in
   flake.modules.nixos.base = { pkgs, ... }: {
     environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.cycle-layout ];
 
+    # The nixpkgs unit doesn't restart kanata if it crashes, which leaves the
+    # keyboard unremapped. Bring it back automatically (unit is kanata-<keyboard>).
+    systemd.services.kanata-main.serviceConfig.Restart = "on-failure";
+
     services.kanata = {
       enable = true;
       keyboards.main = {
