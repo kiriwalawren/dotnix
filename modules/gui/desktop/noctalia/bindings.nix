@@ -13,13 +13,11 @@
     {
       settings.binds = {
         # Core Noctalia Bindings
-        "Mod+Space".spawn = noctalia "panel-toggle launcher";
-        "Mod+S".spawn = noctalia "panel-toggle control-center";
-        "Mod+X".spawn = noctalia "panel-toggle session";
-        "Mod+Comma".spawn = noctalia "settings-toggle";
-        "Mod+N".spawn = noctalia "session lock";
-        "Mod+Shift+N".spawn = noctalia "session lock-and-suspend";
-        "Mod+B".spawn = noctalia "bar-toggle";
+        "Ctrl+Alt+Shift+Space".spawn = noctalia "panel-toggle launcher";
+        "Mod+Ctrl+Alt+Shift+S".spawn = noctalia "panel-toggle control-center";
+        "Mod+Ctrl+Alt+Shift+X".spawn = noctalia "panel-toggle session";
+        "Mod+Ctrl+Alt+Shift+Comma".spawn = noctalia "settings-toggle";
+        "Mod+Ctrl+Alt+Shift+B".spawn = noctalia "bar-toggle";
 
         # Media
         "XF86AudioPlay".spawn = noctalia "media toggle";
@@ -31,7 +29,7 @@
         "XF86MonBrightnessDown".spawn = noctalia "brightness-down";
 
         # Wallpaper
-        "Mod+R".spawn = noctalia "wallpaper-random";
+        "Mod+Ctrl+Alt+Shift+R".spawn = noctalia "wallpaper-random";
       };
     };
 }
