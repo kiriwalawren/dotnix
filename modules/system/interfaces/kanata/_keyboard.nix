@@ -40,11 +40,20 @@ let
   # variant keeps fast rolls like "on"/"no" (both hold keys, opposite hands)
   # typing letters instead of triggering the hold.
   # `holdLabel` is appended to the dvorak overlay label (shown under the key).
+  holdAction = tap: hold: "(tap-hold-opposite-hand-release 200 ${tap} ${hold} (timeout hold))";
   holdKey =
     hold: holdLabel: src: qwerty: tap: dvorak:
-    key src qwerty "(tap-hold-opposite-hand-release 200 ${tap} ${hold} (timeout hold))" (
-      dvorak ++ [ holdLabel ]
-    );
+    key src qwerty (holdAction tap hold) (dvorak ++ [ holdLabel ]);
+
+  # Give a key the same kind of modifier hold in the qwerty layer (tap types
+  # the key itself). Wraps a key built by any of the helpers above.
+  qwertyHold =
+    hold: k:
+    k
+    // {
+      qwertyAction = holdAction k.src hold;
+      qwerty = k.qwerty ++ [ modLabels.${hold} ];
+    };
 
   # Overlay labels for hold actions
   layerLabels = {
@@ -233,7 +242,7 @@ in
         "\""
       ])
       (letterKey "x" "q")
-      (modKey "c" "j" "$meh")
+      (qwertyHold "$meh" (modKey "c" "j" "$meh"))
       (modKey "v" "k" "$hyper")
       (letterKey "b" "x")
       (letterKey "n" "b")
@@ -245,18 +254,24 @@ in
   ];
 
   # Keys outside the letter grid with no hand assignment (the overlay draws
-  # them as a space-bar row). Space can't use the opposite-hand logic, so it
-  # uses `tap-hold-release`: hyper only when another key is pressed AND
-  # released while space is held (or after 200ms), so fast "word<space>next"
-  # rolls still type a space. Tapping then re-holding space within 200ms holds
-  # a space (key repeat).
-  extraKeys = [
-    (key "spc" [ "Space" "" ] "(tap-hold-release 200 200 spc $hyper)" [
-      "Space"
-      ""
-      modLabels."$hyper"
-    ])
-  ];
+  # them as a space-bar row). Having no hand, space is ignored by the
+  # opposite-hand hold keys' decision, so tapping space while a hold key is
+  # down never turns that key into a hold. Space can't use the opposite-hand
+  # logic itself, so it uses `tap-hold-release`: hyper only when another key
+  # is pressed AND released while space is held (or after 200ms), so fast
+  # "word<space>next" rolls still type a space. Tapping then re-holding space
+  # within 200ms holds a space (key repeat).
+  # Unlike the letter keys, these apply to every base layer (qwerty too), so
+  # both overlay labels show the hold.
+  extraKeys =
+    let
+      spaceLabel = [
+        "Space"
+        ""
+        modLabels."$hyper"
+      ];
+    in
+    [ (key "spc" spaceLabel "(tap-hold-release 200 200 spc $hyper)" spaceLabel) ];
 
   # Layers that are only active while a key is held. They sit on top of the
   # base layer (dvorak/qwerty): keys not listed here fall through to it.

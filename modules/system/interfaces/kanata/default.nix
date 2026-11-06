@@ -9,7 +9,7 @@ let
     extraKeys
     ;
 
-  keys = lib.flatten rows ++ extraKeys;
+  keys = lib.flatten rows;
 
   # Which hand types each physical key, for `tap-hold-opposite-hand`.
   # The first N keys of each row (number row: grv..5) are the left hand.
@@ -33,16 +33,23 @@ let
     lib.filter (k: k.action != null) keys
   );
 
-  # Layer bodies; every layer also gets the Caps Lock tap-hold
+  extraMappings = lib.concatMapStringsSep "\n" (k: "  ${k.src} ${k.action}") extraKeys;
+
+  # Layer bodies; every base layer also gets the Caps Lock and extra-key
+  # (space) tap-holds
   layerBodies = {
     dvorak = dvorakMappings;
-    qwerty = "";
+    # Only keys given a qwerty hold (`qwertyHold` in ./_keyboard.nix)
+    qwerty = lib.concatMapStringsSep "\n" (k: "  ${k.src} ${k.qwertyAction}") (
+      lib.filter (k: k ? qwertyAction) keys
+    );
   };
 
   # Layers are emitted in `layers` order: kanata starts in the first one
   deflayers = lib.concatMapStringsSep "\n\n" (name: ''
     (deflayermap (${name})
       caps @cesc
+    ${extraMappings}
     ${layerBodies.${name}})'') layers;
 
   # Held layers come after the base layers so kanata still starts in the first
@@ -138,7 +145,7 @@ in
     # to KP_Delete. The Framework keyboard has no Num Lock key or keypad overlay.
     settings.input.keyboard.numlock = _: { };
 
-    settings.binds."Mod+I".spawn = [
+    settings.binds."Mod+Ctrl+Alt+Shift+I".spawn = [
       (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.cycle-layout)
     ];
   };

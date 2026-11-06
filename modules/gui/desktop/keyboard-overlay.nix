@@ -63,7 +63,18 @@ in
       service = ''
         --!nonstrict
         local generated = require("./generated.luau")
-        local visible = false
+        -- `pinned`: toggled on with Hyper+O (Mod+Ctrl+Alt+Shift+O). `holding`: a hold layer is active.
+        -- The overlay shows while either is true.
+        local pinned = false
+        local holding = false
+
+        local function update()
+          if pinned or holding then
+            noctalia.layer.show("overlay")
+          else
+            noctalia.layer.hide("overlay")
+          end
+        end
 
         noctalia.runStream(generated.stream, function(line)
           local msg = noctalia.json.decode(line)
@@ -75,25 +86,27 @@ in
               noctalia.state.set("base", name)
             end
             noctalia.state.set("layer", name)
+
+            -- Pop up while a hold layer (symbols, numpad, ...) is active
+            local nowHolding = generated.holds[name] ~= nil
+            if nowHolding ~= holding then
+              holding = nowHolding
+              update()
+            end
           end
         end)
 
         function onIpc(event, payload)
           if event == "toggle" then
-            visible = not visible
+            pinned = not pinned
           elseif event == "show" then
-            visible = true
+            pinned = true
           elseif event == "hide" then
-            visible = false
+            pinned = false
           else
             return
           end
-
-          if visible then
-            noctalia.layer.show("overlay")
-          else
-            noctalia.layer.hide("overlay")
-          end
+          update()
         end
       '';
 
@@ -200,7 +213,7 @@ in
     };
 
   flake.wrappers.niri = { pkgs, ... }: {
-    settings.binds."Mod+O".spawn = [
+    settings.binds."Mod+Ctrl+Alt+Shift+O".spawn = [
       (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia)
       "msg"
       "plugin"

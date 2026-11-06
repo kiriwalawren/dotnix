@@ -1,6 +1,6 @@
 { config, ... }: {
   flake.wrappers.niri = { pkgs, lib, ... }: {
-    settings.binds."Mod+Return".spawn = [ (lib.getExe pkgs.kitty) ];
+    settings.binds."Mod+Ctrl+Alt+Shift+Return".spawn = [ (lib.getExe pkgs.kitty) ];
   };
 
   flake.modules.homeManager.gui = {

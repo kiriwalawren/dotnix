@@ -29,8 +29,8 @@
     in
     {
       settings.binds = {
-        "Mod+C".spawn = [ (lib.getExe screenshot-copy) ];
-        "Mod+E".spawn = [ (lib.getExe screenshot-edit) ];
+        "Mod+Ctrl+Alt+Shift+C".spawn = [ (lib.getExe screenshot-copy) ];
+        "Mod+Ctrl+Alt+Shift+E".spawn = [ (lib.getExe screenshot-edit) ];
       };
     };
 }
