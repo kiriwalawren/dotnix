@@ -28,9 +28,15 @@
       '';
     in
     {
-      settings.binds = {
-        "Mod+C".spawn = [ (lib.getExe screenshot-copy) ];
-        "Mod+E".spawn = [ (lib.getExe screenshot-edit) ];
-      };
+      settings.binds =
+        let
+          bind = import ./_bind.nix;
+        in
+        {
+          "Mod+Ctrl+Alt+Shift+C" = bind "Screenshot to clipboard" {
+            spawn = [ (lib.getExe screenshot-copy) ];
+          };
+          "Mod+Ctrl+Alt+Shift+E" = bind "Screenshot and edit" { spawn = [ (lib.getExe screenshot-edit) ]; };
+        };
     };
 }

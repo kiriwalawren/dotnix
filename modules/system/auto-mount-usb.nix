@@ -12,14 +12,4 @@
       "--notify"
     ];
   };
-
-  flake.modules.homeManager.gui = { pkgs, lib, ... }: {
-
-    wayland.windowManager.hyprland.settings = {
-      "exec-once" = [
-        "${lib.getExe pkgs.udiskie}"
-        "--notify"
-      ];
-    };
-  };
 }

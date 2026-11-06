@@ -14,7 +14,7 @@ in
 
       displayName = lib.mkOption {
         type = lib.types.str;
-        default = "Kiri Carlson";
+        default = "Kiri Dillman";
         description = "The display name to use for the user.";
       };
 
@@ -45,6 +45,7 @@ in
           "video"
           "input"
           "tty"
+          "media" # For Nixflix
         ];
       };
     };
@@ -60,7 +61,7 @@ in
 
       displayName = lib.mkOption {
         type = lib.types.str;
-        default = "Kiri Carlson";
+        default = "Kiri Dillman";
         description = "The display name to use for the user.";
       };
     };

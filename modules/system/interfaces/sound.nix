@@ -1,23 +1,23 @@
-{
+{ self, ... }: {
   flake.wrappers.niri =
-    { lib, ... }:
+    { lib, pkgs, ... }:
     let
+      bind = import ../../gui/desktop/niri/_bind.nix;
       noctalia =
         cmd:
         [
-          "noctalia-shell"
-          "ipc"
-          "call"
+          (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia)
+          "msg"
         ]
         ++ (lib.splitString " " cmd);
     in
     {
       settings = {
         binds = {
-          "XF86AudioRaiseVolume".spawn = noctalia "volume increase";
-          "XF86AudioLowerVolume".spawn = noctalia "volume decrease";
-          "XF86AudioMute".spawn = noctalia "volume muteOutput";
-          "CTRL+Space".spawn = noctalia "volume muteInput";
+          "XF86AudioRaiseVolume".spawn = noctalia "volume-up";
+          "XF86AudioLowerVolume".spawn = noctalia "volume-down";
+          "XF86AudioMute".spawn = noctalia "volume-mute";
+          "CTRL+Space" = bind "Toggle mic mute" { spawn = noctalia "mic-mute"; };
         };
 
         window-rules = [
@@ -61,7 +61,6 @@
     { lib, pkgs, ... }:
     let
       pamixer = "${lib.getExe pkgs.pamixer}";
-      playerctl = "${lib.getExe pkgs.playerctl}";
 
       unmutemic = pkgs.writeShellScriptBin "unmutemic" ''
         ${pamixer} --list-sources | tail -n +2 | awk '{print $1}' | while read -r source; do
@@ -88,34 +87,5 @@
         togglemic
         pkgs.wiremix
       ];
-
-      wayland.windowManager.hyprland.settings = {
-        windowrule = [ "match:class wiremix, float on, center on, size 750 700, pin on, stay_focused on" ];
-
-        bind = [
-          ",XF86AudioMute,exec,${pamixer} -t"
-          ",XF86AudioMicMute,exec,${togglemic}/bin/togglemic"
-
-          "CTRL,Space,exec,${unmutemic}/bin/unmutemic"
-        ];
-
-        # Executes when key is released
-        bindr = [ "CTRL,Space,exec,${mutemic}/bin/mutemic" ];
-
-        # Repeats when held
-        binde = [
-          ",XF86AudioRaiseVolume,exec,${pamixer} -i 5"
-          ",XF86AudioLowerVolume,exec,${pamixer} -d 5"
-        ];
-
-        # Will also work when an input inhibitor (e.g. a lockscreen) is active
-        bindl = [
-          ",XF86AudioPlay,exec,${playerctl} play-pause"
-          ",XF86AudioPrev,exec,${playerctl} previous"
-          ",XF86AudioNext,exec,${playerctl} next"
-        ];
-
-        "exec-once" = [ "${mutemic}/bin/mutemic" ];
-      };
     };
 }

@@ -1,52 +1,36 @@
 {
-  flake.wrappers.noctalia-shell.settings = {
+  flake.wrappers.noctalia.settings = {
     plugins = {
-      autoUpdate = true;
-      notifyUpdates = true;
-      sources = [
+      enabled = [
+        "davemhammer/tailscale"
+        "noctalia/timer"
+        "noctalia/translator"
+      ];
+      auto_update = "all";
+
+      # Declaring any source replaces Noctalia's built-in defaults, so they are
+      # listed explicitly here (other modules append their own sources).
+      source = [
         {
+          name = "official";
+          kind = "git";
+          location = "https://github.com/noctalia-dev/official-plugins";
           enabled = true;
-          name = "Official Source";
-          url = "https://github.com/noctalia-dev/noctalia-plugins";
+        }
+        {
+          name = "community";
+          kind = "git";
+          location = "https://github.com/noctalia-dev/community-plugins";
+          enabled = true;
         }
       ];
-      states = {
-        tailscale = {
-          enabled = true;
-          sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-        };
-        timer = {
-          enabled = true;
-          sourceUrl = "https://github.com/noctalia-dev/noctalia-plugins";
-        };
-      };
-      version = 1;
     };
 
-    pluginSettings = {
-      tailscale = {
-        refreshInterval = 5000;
-        compactMode = false;
-        showIpAddress = true;
-        showPeerCount = true;
-        hideDisconnected = false;
-        hideMullvadExitNodes = true;
-        loginServer = "";
-        showSearchBar = false;
-        sshUsername = "";
-        taildropDownloadDir = "~/Downloads";
-        taildropEnabled = true;
-        taildropReceiveMode = "operator";
-        terminalCommand = "";
-        pingCount = 5;
-        defaultPeerAction = "copy-ip";
-      };
-
-      timer = {
-        defaultDuration = 0;
-        compactMode = false;
-        iconColor = "tertiary";
-        textColor = "tertiary";
+    plugin_settings = {
+      "davemhammer/tailscale" = {
+        refresh_interval = 5; # seconds
+        ssh_user = "";
+        admin_url = "https://headscale.walawren.com";
       };
     };
   };

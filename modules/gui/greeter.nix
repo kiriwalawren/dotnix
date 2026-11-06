@@ -8,10 +8,7 @@
     }:
     {
       options.services.greetd.cmd = lib.mkOption {
-        type = lib.types.enum [
-          "Hyprland"
-          "niri-session"
-        ];
+        type = lib.types.enum [ "niri-session" ];
         default = null;
       };
 

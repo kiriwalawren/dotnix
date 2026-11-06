@@ -8,12 +8,8 @@
     ];
 
     boot.initrd = {
-      # Enable systemd in initrd for TPM2 auto-unlock support
-      systemd = {
-        enable = true;
-        # Enable TPM2 support in initrd
-        tpm2.enable = true;
-      };
+      # Enable TPM2 support in initrd
+      systemd.tpm2.enable = true;
 
       # Add TPM kernel modules
       availableKernelModules = [

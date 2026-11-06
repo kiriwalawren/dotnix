@@ -1,32 +1,24 @@
 {
-  flake.wrappers.noctalia-shell = { lib, pkgs, ... }: {
-    settings.appLauncher = {
-      enableClipboardHistory = true;
-      autoPasteClipboard = false;
-      enableClipPreview = true;
-      clipboardWrapText = true;
-      enableClipboardSmartIcons = true;
-      enableClipboardChips = true;
-      clipboardWatchTextCommand = "wl-paste --type text --watch cliphist store";
-      clipboardWatchImageCommand = "wl-paste --type image --watch cliphist store";
-      position = "center";
-      pinnedApps = [ ];
-      useApp2Unit = false;
-      sortByMostUsed = true;
-      terminalCommand = "${lib.getExe pkgs.kitty} -e";
-      customLaunchPrefixEnabled = false;
-      customLaunchPrefix = "";
-      viewMode = "list";
-      showCategories = true;
-      iconMode = "tabler";
-      showIconBackground = false;
-      enableSettingsSearch = true;
-      enableWindowsSearch = true;
-      enableSessionSearch = true;
-      ignoreMouseInput = false;
-      screenshotAnnotationTool = "${lib.getExe pkgs.satty} -f -";
-      overviewLayer = true;
-      density = "default";
+  flake.wrappers.noctalia = { lib, pkgs, ... }: {
+    env.TERMINAL = lib.getExe pkgs.kitty;
+
+    settings.shell = {
+      clipboard_enabled = true;
+      clipboard_auto_paste = "off";
+      clipboard_image_action_command = "${lib.getExe pkgs.satty} -f -";
+
+      panel = {
+        launcher_placement = "floating";
+        launcher_position = "center";
+      };
+
+      launcher = {
+        pinned = [ ];
+        sort_by_usage = true;
+        app_grid = false;
+        categories = true;
+        compact = false;
+      };
     };
   };
 }

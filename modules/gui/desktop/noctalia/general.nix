@@ -1,54 +1,45 @@
 {
-  flake.wrappers.noctalia-shell.settings.general = {
-    avatarImage = "/home/walawren/.face";
-    dimmerOpacity = 0.2;
-    showScreenCorners = false;
-    forceBlackScreenCorners = false;
-    scaleRatio = 1;
-    radiusRatio = 1;
-    iRadiusRatio = 1;
-    boxRadiusRatio = 1;
-    screenRadiusRatio = 1;
-    animationSpeed = 1;
-    animationDisabled = true;
-    compactLockScreen = false;
-    lockScreenAnimations = true;
-    lockOnSuspend = true;
-    showSessionButtonsOnLockScreen = true;
-    showHibernateOnLockScreen = false;
-    enableShadows = false;
-    shadowDirection = "bottom_right";
-    shadowOffsetX = 2;
-    shadowOffsetY = 3;
-    language = "";
-    allowPanelsOnScreenWithoutBar = true;
-    showChangelogOnStartup = true;
-    telemetryEnabled = false;
-    enableLockScreenMediaControls = false;
-    enableBlurBehind = true;
-    enableLockScreenCountdown = true;
-    lockScreenCountdownDuration = 10000;
-    autoStartAuth = true;
-    allowPasswordWithFprintd = true;
-    clockStyle = "custom";
-    clockFormat = "hh\\nmm";
-    passwordChars = false;
-    lockScreenMonitors = [ ];
-    lockScreenBlur = 0;
-    lockScreenTint = 0.2;
-    keybinds = {
-      keyUp = [ "Up" ];
-      keyDown = [ "Down" ];
-      keyLeft = [ "Left" ];
-      keyRight = [ "Right" ];
-      keyEnter = [
-        "Return"
-        "Enter"
-      ];
-      keyEscape = [ "Esc" ];
-      keyRemove = [ "Del" ];
+  flake.wrappers.noctalia.settings = {
+    accessibility.ui_scale = 1.0;
+
+    shell = {
+      avatar_path = "/home/walawren/.face";
+      corner_radius_scale = 1.0;
+      screen_corners.enabled = false;
+      animation = {
+        enabled = false;
+        speed = 1.0;
+      };
+      popup_shadows = false;
+      panel.shadow = false;
+      password_style = "random";
     };
-    reverseScroll = false;
-    smoothScrollEnabled = true;
+
+    lockscreen = {
+      lock_before_suspend = true;
+      fingerprint = true;
+      blur_intensity = 0.0;
+      tint_intensity = 0.2;
+      monitors = [ ];
+    };
+
+    lockscreen_widgets = {
+      enabled = false;
+    };
+
+    desktop_widgets.enabled = false;
+
+    keybinds = {
+      up = [ "Up" ];
+      down = [ "Down" ];
+      left = [ "Left" ];
+      right = [ "Right" ];
+      validate = [
+        "Return"
+        "KP_Enter"
+      ];
+      cancel = [ "Escape" ];
+      delete = [ "Delete" ];
+    };
   };
 }

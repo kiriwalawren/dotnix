@@ -111,6 +111,7 @@ in
 
           binds =
             let
+              bind = import ./_bind.nix;
               niri =
                 cmd:
                 [
@@ -121,36 +122,42 @@ in
                 ++ (lib.splitString " " cmd);
             in
             {
-              "Mod+Q".spawn = niri "close-window";
-              "Mod+F".spawn = niri "maximize-column";
+              "Mod+Ctrl+Alt+Shift+Q" = bind "Close window" { spawn = niri "close-window"; };
+              "Mod+Ctrl+Alt+Shift+F" = bind "Maximize column" { spawn = niri "maximize-column"; };
 
               # Movement
-              "Mod+H".spawn = niri "focus-column-left";
-              "Mod+L".spawn = niri "focus-column-right";
-              "Mod+J".spawn = niri "focus-window-down";
-              "Mod+K".spawn = niri "focus-window-up";
+              "Mod+Ctrl+Alt+Shift+H" = bind "Focus column left" { spawn = niri "focus-column-left"; };
+              "Mod+Ctrl+Alt+Shift+L" = bind "Focus column right" { spawn = niri "focus-column-right"; };
+              "Mod+Ctrl+Alt+Shift+J" = bind "Focus window down" { spawn = niri "focus-window-down"; };
+              "Mod+Ctrl+Alt+Shift+K" = bind "Focus window up" { spawn = niri "focus-window-up"; };
 
-              "Mod+U".spawn = niri "focus-workspace-up";
-              "Mod+D".spawn = niri "focus-workspace-down";
+              "Mod+Ctrl+Alt+Shift+U" = bind "Focus workspace up" { spawn = niri "focus-workspace-up"; };
+              "Mod+Ctrl+Alt+Shift+D" = bind "Focus workspace down" { spawn = niri "focus-workspace-down"; };
 
-              "Mod+Shift+H".spawn = niri "move-column-left";
-              "Mod+Shift+L".spawn = niri "move-column-right";
-              "Mod+Shift+J".spawn = niri "move-window-down";
-              "Mod+Shift+K".spawn = niri "move-window-up";
+              "Ctrl+Alt+Shift+H" = bind "Move column left" { spawn = niri "move-column-left"; };
+              "Ctrl+Alt+Shift+L" = bind "Move column right" { spawn = niri "move-column-right"; };
+              "Ctrl+Alt+Shift+J" = bind "Move window down" { spawn = niri "move-window-down"; };
+              "Ctrl+Alt+Shift+K" = bind "Move window up" { spawn = niri "move-window-up"; };
 
-              "Mod+Shift+U".spawn = niri "move-column-to-workspace-up";
-              "Mod+Shift+D".spawn = niri "move-column-to-workspace-down";
+              "Ctrl+Alt+Shift+U" = bind "Move column to workspace up" {
+                spawn = niri "move-column-to-workspace-up";
+              };
+              "Ctrl+Alt+Shift+D" = bind "Move column to workspace down" {
+                spawn = niri "move-column-to-workspace-down";
+              };
 
               # Resize
-              "Mod+Equal".spawn = niri "set-column-width +10%";
-              "Mod+Minus".spawn = niri "set-column-width -10%";
+              "Mod+Ctrl+Alt+Shift+Equal" = bind "Widen column" { spawn = niri "set-column-width +10%"; };
+              "Mod+Ctrl+Alt+Shift+Minus" = bind "Narrow column" { spawn = niri "set-column-width -10%"; };
 
               # Color picker
               # Hyprpicker is better than niri's color picker
-              "Mod+P".spawn = [
-                "${pkgs.hyprpicker}/bin/hyprpicker"
-                "-a"
-              ];
+              "Mod+Ctrl+Alt+Shift+P" = bind "Color picker" {
+                spawn = [
+                  "${pkgs.hyprpicker}/bin/hyprpicker"
+                  "-a"
+                ];
+              };
             };
         };
     };

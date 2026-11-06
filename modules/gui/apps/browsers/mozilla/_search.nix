@@ -3,19 +3,21 @@
   default = "ddg";
   engines = {
     nix-packages = {
-      urls = [ { template = "https://search.nixos.org/packages?type=packages&query={searchTerms}"; } ];
+      urls = [
+        { template = "https://search.nixos.org/packages?channel=unstable&&query={searchTerms}"; }
+      ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@np" ];
     };
 
     nix-options = {
-      urls = [ { template = "https://search.nixos.org/options?type=packages&query={searchTerms}"; } ];
+      urls = [ { template = "https://search.nixos.org/options?channel=unstable&query={searchTerms}"; } ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@no" ];
     };
 
     nixpkgs-tracker = {
-      urls = [ { template = "https://nixpk.gs/pr-tracker.html?pr={searchTerms}"; } ];
+      urls = [ { template = "https://nixpkgs-tracker.ocfox.me/?pr={searchTerms}"; } ];
       icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
       definedAliases = [ "@nt" ];
     };

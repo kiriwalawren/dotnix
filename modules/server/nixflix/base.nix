@@ -32,6 +32,15 @@
       recyclarr = {
         enable = true;
         cleanupUnmanagedProfiles.enable = true;
+
+        # Overrides nixflix's mkDefault list; mirrors upstream except min_format_score
+        config.radarr.radarr.quality_profiles = [
+          {
+            trash_id = "0896c29d74de619df168d23b98104b22"; # [SQP] SQP-1 (1080p)
+            reset_unmatched_scores.enabled = true;
+            min_format_score = 100;
+          }
+        ];
       };
     };
   };

@@ -1,62 +1,64 @@
 {
-  flake.wrappers.noctalia-shell.settings.sessionMenu = {
-    enableCountdown = false;
-    countdownDuration = 5000;
-    position = "center";
-    showHeader = true;
-    showKeybinds = true;
-    largeButtonsStyle = false;
-    largeButtonsLayout = "grid";
-    powerOptions = [
-      {
-        action = "lock";
-        command = "";
-        countdownEnabled = true;
-        enabled = false;
-        keybind = "1";
-      }
-      {
-        action = "suspend";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "2";
-      }
-      {
-        action = "hibernate";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "3";
-      }
-      {
-        action = "reboot";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "4";
-      }
-      {
-        action = "logout";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "5";
-      }
-      {
-        action = "shutdown";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "6";
-      }
-      {
-        action = "rebootToUefi";
-        command = "";
-        countdownEnabled = true;
-        enabled = true;
-        keybind = "7";
-      }
-    ];
+  flake.wrappers.noctalia.settings.shell = {
+    panel = {
+      session_placement = "floating";
+      session_position = "center";
+    };
+
+    session = {
+      grid = false;
+      show_shortcuts = true;
+      actions = [
+        {
+          action = "lock";
+          enabled = false;
+          shortcut = "1";
+          countdown_seconds = 0.0;
+        }
+        {
+          action = "suspend";
+          enabled = true;
+          shortcut = "2";
+          countdown_seconds = 0.0;
+        }
+        {
+          action = "command";
+          command = "systemctl hibernate";
+          label = "Hibernate";
+          glyph = "zzz";
+          enabled = true;
+          shortcut = "3";
+          countdown_seconds = 0.0;
+        }
+        {
+          action = "reboot";
+          enabled = true;
+          shortcut = "4";
+          countdown_seconds = 0.0;
+        }
+        {
+          action = "logout";
+          enabled = true;
+          shortcut = "5";
+          countdown_seconds = 0.0;
+        }
+        {
+          action = "shutdown";
+          enabled = true;
+          shortcut = "6";
+          countdown_seconds = 0.0;
+          variant = "destructive";
+        }
+        {
+          action = "command";
+          command = "systemctl reboot --firmware-setup";
+          label = "Reboot to UEFI";
+          glyph = "cpu";
+          enabled = true;
+          shortcut = "7";
+          countdown_seconds = 0.0;
+        }
+      ];
+    };
   };
 }

@@ -67,6 +67,8 @@
               Type = "simple";
               Restart = "on-failure";
               RestartSec = "5s";
+              RuntimeDirectory = "qbittorrent-protonvpn-port-forward";
+              RuntimeDirectoryMode = "0700";
               ExecStart =
                 let
                   ns = config.systemd.services.qbittorrent.vpnConfinement.vpnNamespace;
@@ -77,12 +79,35 @@
                 pkgs.writeShellScript "qbittorrent-protonvpn-port-forward" ''
                   QB_HOST="${qbHost}"
                   QB_USER="${qbUser}"
-                  QB_PASS=$(cat ${qbPassFile})
+                  QB_COOKIES="$RUNTIME_DIRECTORY/cookies"
 
-                  QB_COOKIE=$(curl -s -c - --data "username=$QB_USER&password=$QB_PASS" \
-                    "$QB_HOST/api/v2/auth/login" | grep SID | awk '{print $NF}')
+                  login() {
+                    printf '%s' "$(cat ${qbPassFile})" | curl -s -c "$QB_COOKIES" \
+                      --data-urlencode "username=$QB_USER" \
+                      --data-urlencode "password@-" \
+                      "$QB_HOST/api/v2/auth/login"
+                  }
 
-                  CURRENT_PORT=$(curl -s -b "SID=$QB_COOKIE" \
+                  update_port() {
+                    local port status
+                    port="$1"
+                    login
+                    status=$(curl -s -o /dev/null -w '%{http_code}' -b "$QB_COOKIES" \
+                      --data "json={\"listen_port\":$port,\"random_port\":false}" \
+                      "$QB_HOST/api/v2/app/setPreferences")
+
+                    if [ "$status" != "200" ]; then
+                      echo "Failed to update qBittorrent listen port to $port (HTTP $status)" >&2
+                      return 1
+                    fi
+
+                    curl -s -b "$QB_COOKIES" \
+                      --data "hashes=all" \
+                      "$QB_HOST/api/v2/torrents/reannounce"
+                  }
+
+                  login
+                  CURRENT_PORT=$(curl -s -b "$QB_COOKIES" \
                     "$QB_HOST/api/v2/app/preferences" | jq '.listen_port')
 
                   while true; do
@@ -99,13 +124,9 @@
 
                     if [ "$PORT" != "$CURRENT_PORT" ]; then
                       echo "Port changed: $CURRENT_PORT -> $PORT, updating qBittorrent..."
-                      curl -s -b "SID=$QB_COOKIE" \
-                        --data "json={\"listen_port\":$PORT,\"random_port\":false}" \
-                        "$QB_HOST/api/v2/app/setPreferences"
-                      curl -s -b "SID=$QB_COOKIE" \
-                        --data "hashes=all" \
-                        "$QB_HOST/api/v2/torrents/reannounce"
-                      CURRENT_PORT=$PORT
+                      if update_port "$PORT"; then
+                        CURRENT_PORT=$PORT
+                      fi
                     fi
 
                     sleep 45

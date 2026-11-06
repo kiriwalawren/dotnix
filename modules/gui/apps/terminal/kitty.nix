@@ -1,9 +1,11 @@
 { config, ... }: {
   flake.wrappers.niri = { pkgs, lib, ... }: {
-    settings.binds."Mod+Return".spawn = [ (lib.getExe pkgs.kitty) ];
+    settings.binds."Mod+Ctrl+Alt+Shift+Return" = import ../../desktop/niri/_bind.nix "Terminal" {
+      spawn = [ (lib.getExe pkgs.kitty) ];
+    };
   };
 
-  flake.modules.homeManager.gui = { lib, pkgs, ... }: {
+  flake.modules.homeManager.gui = {
     catppuccin.kitty.enable = true;
 
     programs.kitty = {
@@ -21,7 +23,5 @@
         term = "xterm-256color";
       };
     };
-
-    wayland.windowManager.hyprland.settings.bind = [ "SUPER,Return,exec,${lib.getExe pkgs.kitty}" ];
   };
 }
