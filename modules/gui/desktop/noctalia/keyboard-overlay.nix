@@ -68,11 +68,31 @@ in
         local pinned = false
         local holding = false
 
-        local function update()
-          if pinned or holding then
-            noctalia.layer.show("overlay")
-          else
-            noctalia.layer.hide("overlay")
+        -- Debounce the automatic pop-up: a hold layer must stay active this
+        -- long before the overlay shows, so a hold that flickers on and off
+        -- during a fast roll never flashes it. Hiding is immediate.
+        local SHOW_DELAY_MS = 150
+        local holdSince = nil -- nowMs() when the current hold started
+        local shown = false
+
+        local function apply()
+          local want = pinned
+            or (holding and holdSince ~= nil and noctalia.nowMs() - holdSince >= SHOW_DELAY_MS)
+          if want ~= shown then
+            shown = want
+            if want then
+              noctalia.layer.show("overlay")
+            else
+              noctalia.layer.hide("overlay")
+            end
+          end
+        end
+
+        -- Polls a pending hold; does nothing otherwise
+        noctalia.setUpdateInterval(25)
+        function update()
+          if holding and not shown then
+            apply()
           end
         end
 
@@ -91,7 +111,8 @@ in
             local nowHolding = generated.holds[name] ~= nil
             if nowHolding ~= holding then
               holding = nowHolding
-              update()
+              holdSince = nowHolding and noctalia.nowMs() or nil
+              apply()
             end
           end
         end)
@@ -106,7 +127,7 @@ in
           else
             return
           end
-          update()
+          apply()
         end
       '';
 

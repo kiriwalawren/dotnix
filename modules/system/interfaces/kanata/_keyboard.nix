@@ -55,6 +55,17 @@ let
       qwerty = k.qwerty ++ [ modLabels.${hold} ];
     };
 
+  # Tap, then press and hold again within 200ms, to hold the tap key (so it
+  # repeats) instead of starting the hold decision. Wraps a dvorak hold key.
+  repeatOnRetap =
+    k:
+    k
+    // {
+      action =
+        builtins.replaceStrings [ "(timeout hold))" ] [ "(timeout hold) (tap-repress-timeout 200))" ]
+          k.action;
+    };
+
   # Overlay labels for hold actions
   layerLabels = {
     symbols = "sym";
@@ -223,7 +234,7 @@ in
       (letterKey "a" "a")
       (layerKey "s" "o" "symbols")
       (layerKey "d" "e" "numpad")
-      (layerKey "f" "u" "shortcuts")
+      (repeatOnRetap (layerKey "f" "u" "shortcuts"))
       (letterKey "g" "i")
       (letterKey "h" "d")
       (layerKey "j" "h" "shortcuts")
@@ -313,9 +324,9 @@ in
     # Held with dvorak E or T (physical D/K). F6 is the left index home key,
     # 4 the right index home key:
     #   F10 F11 F12                    kp*
-    #   F7  F8  F9      kp.  7  8  9  kp+
+    #   F7  F8  F9      kp.  7  8  9  kp/
     #   F4  F5  F6      kp=  4  5  6  kp-
-    #   F1  F2  F3        0  1  2  3  kp/
+    #   F1  F2  F3        0  1  2  3  kp+
     numpad = {
       "2" = sym "f10" "F10";
       "3" = sym "f11" "F11";
@@ -329,7 +340,7 @@ in
       u = sym "7" "7";
       i = sym "8" "8";
       o = sym "9" "9";
-      p = kp "kp+" "+";
+      p = kp "kp/" "/";
 
       s = sym "f4" "F4";
       d = sym "f5" "F5";
@@ -348,7 +359,7 @@ in
       m = sym "1" "1";
       comm = sym "2" "2";
       "." = sym "3" "3";
-      "/" = kp "kp/" "/";
+      "/" = kp "kp+" "+";
     };
 
     # Held with dvorak U or H (physical F/J). Brightness down is the left index
