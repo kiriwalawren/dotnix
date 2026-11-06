@@ -2,7 +2,7 @@
 # implemented as a Nix-built Noctalia plugin (a `[[layer]]` surface).
 { lib, self, ... }:
 let
-  keyboard = import ../../system/interfaces/kanata/_keyboard.nix { inherit lib; };
+  keyboard = import ../../../system/interfaces/kanata/_keyboard.nix { inherit lib; };
 
   pluginId = "dotnix/keymap";
 in

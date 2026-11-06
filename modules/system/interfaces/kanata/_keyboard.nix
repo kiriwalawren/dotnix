@@ -241,14 +241,14 @@ in
         "'"
         "\""
       ])
-      (letterKey "x" "q")
-      (qwertyHold "$meh" (modKey "c" "j" "$meh"))
-      (modKey "v" "k" "$hyper")
+      (qwertyHold "$meh" (modKey "x" "q" "$meh"))
+      (letterKey "c" "j")
+      (letterKey "v" "k")
       (letterKey "b" "x")
       (letterKey "n" "b")
-      (modKey "m" "m" "$hyper")
-      (modTap "$meh" "comm" [ "," "<" ] "w" (letter "w"))
-      (key "." [ "." ">" ] "v" (letter "v"))
+      (letterKey "m" "m")
+      (key "comm" [ "," "<" ] "w" (letter "w"))
+      (modTap "$meh" "." [ "." ">" ] "v" (letter "v"))
       (key "/" [ "/" "?" ] "z" (letter "z"))
     ]
   ];
