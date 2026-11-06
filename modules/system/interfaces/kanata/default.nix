@@ -1,9 +1,28 @@
 { lib, self, ... }:
 let
   keyboard = import ./_keyboard.nix { inherit lib; };
-  inherit (keyboard) port layers rows;
+  inherit (keyboard)
+    port
+    layers
+    rows
+    holdLayers
+    ;
 
   keys = lib.flatten rows;
+
+  # Which hand types each physical key, for `tap-hold-opposite-hand`.
+  # The first N keys of each row (number row: grv..5) are the left hand.
+  leftCounts = [
+    6
+    5
+    5
+    5
+  ];
+  hands = lib.zipListsWith (n: row: {
+    left = lib.take n row;
+    right = lib.drop n row;
+  }) leftCounts rows;
+  handKeys = side: lib.concatMapStringsSep " " (k: k.src) (lib.concatMap (r: r.${side}) hands);
 
   defsrc = lib.concatMapStringsSep "\n" (row: "  " + lib.concatMapStringsSep " " (k: k.src) row) rows;
 
@@ -22,6 +41,16 @@ let
     (deflayermap (${name})
       caps @cesc
     ${layerBodies.${name}})'') layers;
+
+  # Held layers come after the base layers so kanata still starts in the first
+  # base layer. Unmapped keys are transparent (fall through to the base layer).
+  defholdlayers = lib.concatStringsSep "\n\n" (
+    lib.mapAttrsToList (name: mappings: ''
+      (deflayermap (${name})
+      ${
+        lib.concatStringsSep "\n" (lib.mapAttrsToList (src: s: "  ${src} ${s.action}") mappings)
+      })'') holdLayers
+  );
 in
 {
   perSystem = { pkgs, ... }: {
@@ -86,7 +115,14 @@ in
           (deftemplate dvp (base shifted)
             (fork $base (unshift $shifted) (lsft rsft)))
 
+          ;; Physical hands, used by tap-hold-opposite-hand (the layer keys)
+          (defhands
+            (left ${handKeys "left"})
+            (right ${handKeys "right"}))
+
           ${deflayers}
+
+          ${defholdlayers}
         '';
       };
     };

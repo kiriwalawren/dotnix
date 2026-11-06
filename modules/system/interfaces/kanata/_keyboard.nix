@@ -23,6 +23,22 @@ let
 
   # A qwerty letter key that types another letter in dvorak
   letterKey = src: target: key src (letter src) target (letter target);
+
+  # A dvorak letter that also activates a held layer. Tapping types the letter;
+  # the layer activates when a key on the other hand (see `defhands` in
+  # ./default.nix) is pressed AND released while this one is held, or once it
+  # has been held for 200ms. Same-hand keys resolve as a tap. The `-release`
+  # variant keeps fast rolls like "on"/"no" (both layer keys, opposite hands)
+  # typing letters instead of symbols.
+  layerKey =
+    src: target: layer:
+    key src (letter src)
+      "(tap-hold-opposite-hand-release 200 ${target} (layer-while-held ${layer}) (timeout hold))"
+      (letter target);
+
+  # A key in a held layer: the kanata action (US keysyms, which is what the OS
+  # layout is) and the overlay label
+  sym = action: label: { inherit action label; };
 in
 {
   # TCP port kanata listens on (localhost only, enforced by the nixpkgs module's sandbox)
@@ -128,14 +144,14 @@ in
     ]
     [
       (letterKey "a" "a")
-      (letterKey "s" "o")
+      (layerKey "s" "o" "symbols")
       (letterKey "d" "e")
       (letterKey "f" "u")
       (letterKey "g" "i")
       (letterKey "h" "d")
       (letterKey "j" "h")
       (letterKey "k" "t")
-      (letterKey "l" "n")
+      (layerKey "l" "n" "symbols")
       (key "scln" [ ";" ":" ] "s" (letter "s"))
       (key "apos" [ "'" "\"" ] "min" [
         "-"
@@ -158,4 +174,42 @@ in
       (key "/" [ "/" "?" ] "z" (letter "z"))
     ]
   ];
+
+  # Layers that are only active while a key is held. They sit on top of the
+  # base layer (dvorak/qwerty): keys not listed here fall through to it.
+  # Keyed by the physical (qwerty) key name used in `rows`.
+  holdLayers = {
+    # Held with dvorak O or N (physical S/L). Home row is the resting position:
+    #   $ ~ * =     _ - / ?
+    #   { } ( )     [ ] + !
+    #   % @ | &     ` # \ ^
+    symbols = {
+      q = sym "S-4" "$";
+      w = sym "S-grv" "~";
+      e = sym "S-8" "*";
+      r = sym "eql" "=";
+      u = sym "S-min" "_";
+      i = sym "min" "-";
+      o = sym "/" "/";
+      p = sym "S-/" "?";
+
+      a = sym "S-lbrc" "{";
+      s = sym "S-rbrc" "}";
+      d = sym "S-9" "(";
+      f = sym "S-0" ")";
+      j = sym "lbrc" "[";
+      k = sym "rbrc" "]";
+      l = sym "S-eql" "+";
+      scln = sym "S-1" "!";
+
+      z = sym "S-5" "%";
+      x = sym "S-2" "@";
+      c = sym "S-bksl" "|";
+      v = sym "S-7" "&";
+      m = sym "grv" "`";
+      comm = sym "S-3" "#";
+      "." = sym "bksl" "\\";
+      "/" = sym "S-6" "^";
+    };
+  };
 }

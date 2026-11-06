@@ -18,6 +18,20 @@ in
         order = keyboard.layers;
         stream = layerStream;
         labels = lib.genAttrs keyboard.layers (layer: map (map (k: k.${layer})) keyboard.rows);
+        # Held layers, laid out like `labels`; `false` = transparent (show the base layer's key)
+        holds = lib.mapAttrs (
+          _: mappings:
+          map (map (
+            k:
+            if mappings ? ${k.src} then
+              [
+                mappings.${k.src}.label
+                ""
+              ]
+            else
+              false
+          )) keyboard.rows
+        ) keyboard.holdLayers;
       };
 
       manifest = ''
@@ -51,7 +65,13 @@ in
         noctalia.runStream(generated.stream, function(line)
           local msg = noctalia.json.decode(line)
           if msg and msg.LayerChange then
-            noctalia.state.set("layer", msg.LayerChange.new)
+            local name = msg.LayerChange.new
+            -- kanata only reports the top layer; remember the base layer
+            -- underneath so held layers can be drawn on top of it
+            if generated.labels[name] ~= nil then
+              noctalia.state.set("base", name)
+            end
+            noctalia.state.set("layer", name)
           end
         end)
 
@@ -83,34 +103,48 @@ in
         -- Row stagger, roughly matching a physical keyboard
         local OFFSETS = { 0, 22, 33, 55 }
 
-        local function keycap(label)
+        local function keycap(label, held)
           return ui.column({
             width = KEY,
             height = KEY,
             radius = 6,
-            fill = "surface_container_high/0.85",
+            fill = held and "primary_container/0.9" or "surface_container_high/0.85",
             align = "center",
             justify = "center",
             gap = 0,
           }, {
             ui.label({ text = label[2], fontSize = 10, color = "on_surface/0.6" }),
-            ui.label({ text = label[1], fontSize = 15, fontWeight = "bold", color = "on_surface" }),
+            ui.label({
+              text = label[1],
+              fontSize = 15,
+              fontWeight = "bold",
+              color = held and "on_primary_container" or "on_surface",
+            }),
           })
         end
 
-        local function render(name)
-          if generated.labels[name] == nil then
-            name = generated.order[1]
+        local function render()
+          local name = noctalia.state.get("layer")
+          local base = noctalia.state.get("base")
+          if generated.labels[base] == nil then
+            base = generated.order[1]
+          end
+          local hold = generated.holds[name]
+
+          local title = base
+          if hold ~= nil then
+            title = name .. " (on " .. base .. ")"
           end
 
           local children = {
-            ui.label({ text = name, fontSize = 12, fontWeight = "bold", color = "primary" }),
+            ui.label({ text = title, fontSize = 12, fontWeight = "bold", color = "primary" }),
           }
 
-          for i, row in ipairs(generated.labels[name]) do
+          for i, row in ipairs(generated.labels[base]) do
             local keys = { ui.box({ width = OFFSETS[i], height = KEY }) }
-            for _, label in ipairs(row) do
-              table.insert(keys, keycap(label))
+            for j, label in ipairs(row) do
+              local held = hold ~= nil and hold[i][j] or false
+              table.insert(keys, keycap(held or label, held ~= false))
             end
             table.insert(children, ui.row({ gap = GAP }, keys))
           end
@@ -118,8 +152,9 @@ in
           layer.render(ui.column({ gap = GAP, padding = 12, radius = 14, fill = "surface/0.6" }, children))
         end
 
-        render(noctalia.state.get("layer"))
+        render()
         noctalia.state.watch("layer", render)
+        noctalia.state.watch("base", render)
       '';
 
       plugin = pkgs.runCommand "noctalia-plugin-keymap" { } ''
