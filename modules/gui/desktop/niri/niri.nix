@@ -147,8 +147,8 @@ in
               };
 
               # Resize
-              "Mod+Ctrl+Alt+Shift+Equal" = bind "Widen column" { spawn = niri "set-column-width +10%"; };
-              "Mod+Ctrl+Alt+Shift+Minus" = bind "Narrow column" { spawn = niri "set-column-width -10%"; };
+              "Ctrl+Alt+Shift+B" = bind "Widen column" { spawn = niri "set-column-width +10%"; };
+              "Ctrl+Alt+Shift+S" = bind "Narrow column" { spawn = niri "set-column-width -10%"; };
 
               # Color picker
               # Hyprpicker is better than niri's color picker
