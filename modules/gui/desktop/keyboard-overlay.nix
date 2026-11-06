@@ -116,7 +116,8 @@ in
             ui.label({ text = label[2], fontSize = 10, color = "on_surface/0.6" }),
             ui.label({
               text = label[1],
-              fontSize = 15,
+              -- Shrink longer labels (F10, Vol+, Bksp, ...) to fit the keycap
+              fontSize = (utf8.len(label[1]) or 0) > 2 and 11 or 15,
               fontWeight = "bold",
               color = held and "on_primary_container" or "on_surface",
             }),

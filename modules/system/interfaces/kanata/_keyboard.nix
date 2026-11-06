@@ -55,6 +55,9 @@ let
     inherit action label;
     sub = "kp";
   };
+
+  # A key in a held layer with a small secondary overlay label (e.g. the chord)
+  labelled = action: label: sub: { inherit action label sub; };
 in
 {
   # TCP port kanata listens on (localhost only, enforced by the nixpkgs module's sandbox)
@@ -180,10 +183,10 @@ in
       (letterKey "a" "a")
       (layerKey "s" "o" "symbols")
       (layerKey "d" "e" "numpad")
-      (letterKey "f" "u")
+      (layerKey "f" "u" "shortcuts")
       (letterKey "g" "i")
       (letterKey "h" "d")
-      (letterKey "j" "h")
+      (layerKey "j" "h" "shortcuts")
       (layerKey "k" "t" "numpad")
       (layerKey "l" "n" "symbols")
       (key "scln" [ ";" ":" ] "s" (letter "s"))
@@ -286,6 +289,38 @@ in
       comm = sym "2" "2";
       "." = sym "3" "3";
       "/" = kp "kp/" "/";
+    };
+
+    # Held with dvorak U or H (physical F/J). Brightness down is the left index
+    # home key, left arrow the right index home key:
+    #   Esc  C-S-Tab  C-Tab  .     .     |  Vol+  .     Up    .     Bksp
+    #   C-x  C-c      C-v    Br-   Br+   |  Vol-  Left  Down  Right Enter
+    #   .    .        .      .     .     |  Mute  Prev  Play  Next  .
+    # The media/volume/brightness keys send the same keycodes as the laptop's
+    # own keys, so the existing niri XF86* binds handle them.
+    shortcuts = {
+      q = sym "esc" "Esc";
+      w = labelled "C-S-tab" "Tab" "C-S";
+      e = labelled "C-tab" "Tab" "C";
+      y = sym "volu" "Vol+";
+      i = sym "up" "↑";
+      p = sym "bspc" "Bksp";
+
+      a = labelled "C-x" "Cut" "C-x";
+      s = labelled "C-c" "Cpy" "C-c";
+      d = labelled "C-v" "Pst" "C-v";
+      f = sym "brdn" "Br-";
+      g = sym "brup" "Br+";
+      h = sym "vold" "Vol-";
+      j = sym "lft" "←";
+      k = sym "down" "↓";
+      l = sym "rght" "→";
+      scln = sym "ret" "Ent";
+
+      n = sym "mute" "Mute";
+      m = sym "prev" "Prev";
+      comm = sym "pp" "Play";
+      "." = sym "next" "Next";
     };
   };
 }
