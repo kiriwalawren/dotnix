@@ -59,10 +59,13 @@
 
         settings = {
           shell = {
-            font_family = "Sans Serif";
             card_borders = false;
-            telemetry_enabled = false;
+            font_family = "Sans Serif";
+            mpris.blacklist = [ ];
+            password_style = "random";
             polkit_agent = true;
+            show_location = true;
+            telemetry_enabled = false;
           };
 
           location = {
@@ -130,11 +133,10 @@
           };
 
           audio = {
+            enable_sounds = false;
             enable_overdrive = false;
             enable_volume_sounds = false;
           };
-
-          shell.mpris.blacklist = [ ];
 
           brightness = {
             enable_ddcutil = false;
