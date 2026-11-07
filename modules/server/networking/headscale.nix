@@ -206,6 +206,11 @@
               value = config.tailscale.ips.homelab;
             }
             {
+              name = "ai.${config.system.ddns.domain}";
+              type = "A";
+              value = config.tailscale.ips.homelab;
+            }
+            {
               name = "dns.${config.system.ddns.domain}";
               type = "A";
               value = config.tailscale.ips.vps;
