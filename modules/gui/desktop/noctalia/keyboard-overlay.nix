@@ -66,7 +66,7 @@ in
         labels = lib.genAttrs keyboard.layers (layer: map (map (k: k.${layer})) keyboard.rows);
         # Per layout: the space-bar row
         extra = lib.genAttrs keyboard.layers (layer: map (k: k.${layer}) keyboard.extraKeys);
-        # Held layers laid out like `labels`; `false` = show the base key
+        # Held layers laid out like `labels` plus the space-bar row; `false` = show the base key
         holds = lib.mapAttrs (
           _: mappings:
           map (map (
@@ -78,7 +78,7 @@ in
               ]
             else
               false
-          )) keyboard.rows
+          )) (keyboard.rows ++ [ keyboard.extraKeys ])
         ) keyboard.holdLayers;
         # Modifier layers: lists of `{ key, title }` niri binds
         legends = lib.mapAttrs (_: legend) keyboard.modLayers;
@@ -263,10 +263,12 @@ in
             table.insert(children, ui.row({ gap = GAP }, keys))
           end
 
-          -- Space bar (never remapped by held layers)
+          -- Space bar; its held labels follow the grid rows in `hold`
           local spaceRow = { ui.box({ width = SPACE_OFFSET, height = KEY }) }
-          for _, label in ipairs(generated.extra[base]) do
-            table.insert(spaceRow, keycap(label, false, SPACE_WIDTH))
+          local spaceHold = hold ~= nil and hold[#generated.labels[base] + 1] or nil
+          for j, label in ipairs(generated.extra[base]) do
+            local held = spaceHold ~= nil and spaceHold[j] or false
+            table.insert(spaceRow, keycap(held or label, held ~= false, SPACE_WIDTH))
           end
           table.insert(children, ui.row({ gap = GAP }, spaceRow))
 

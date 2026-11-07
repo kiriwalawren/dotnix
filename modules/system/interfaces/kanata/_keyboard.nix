@@ -331,6 +331,8 @@ in
       comm = sym "2" "2";
       "." = sym "3" "3";
       "/" = kp "kp+" "+";
+
+      spc = kp "kp0" "0";
     };
 
     # Held with dvorak U or H; media keys are handled by the niri XF86* binds
