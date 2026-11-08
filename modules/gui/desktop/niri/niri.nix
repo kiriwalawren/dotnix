@@ -77,6 +77,7 @@ in
                 { app-id = "rapidraw"; }
                 { app-id = "zen"; }
                 { app-id = "zen-beta"; }
+                { app-id = "blender"; }
               ];
               opacity = .85;
             }
