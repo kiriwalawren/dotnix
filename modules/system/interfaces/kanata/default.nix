@@ -78,13 +78,12 @@ let
   );
 in
 {
-  perSystem = { pkgs, ... }: {
+  perSystem = { pkgs, self', ... }: {
     packages.cycle-layout = pkgs.writeShellApplication {
       name = "cycle-layout";
       runtimeInputs = [
         pkgs.jq
-        pkgs.libnotify
-        pkgs.util-linux # flock
+        self'.packages.notify-replace
       ];
       text = ''
         exec 3<>/dev/tcp/127.0.0.1/${toString port}
@@ -115,20 +114,7 @@ in
         fi
 
         echo "Keyboard layout: $next"
-        # Only notify in a graphical session
-        if [[ -n "''${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
-          # Replace the previous notification so only the latest shows; flock avoids races
-          id_file="''${XDG_RUNTIME_DIR:-/tmp}/cycle-layout.notification-id"
-          exec 4>"$id_file.lock"
-          flock 4
-          replace=()
-          if [[ -r "$id_file" ]] && [[ "$(<"$id_file")" =~ ^[0-9]+$ ]]; then
-            replace=(--replace-id="$(<"$id_file")")
-          fi
-          if id=$(notify-send --app-name=kanata --print-id "''${replace[@]}" "Keyboard layout" "$next"); then
-            printf '%s\n' "$id" >"$id_file"
-          fi
-        fi
+        notify-replace cycle-layout --app-name=kanata "Keyboard layout" "$next"
       '';
     };
   };

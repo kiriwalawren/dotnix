@@ -1,7 +1,12 @@
-{ config, ... }: {
+{ config, ... }:
+let
+  bind = import ../../desktop/niri/_bind.nix;
+in
+{
   flake.wrappers.niri = { pkgs, lib, ... }: {
-    settings.binds."Mod+Ctrl+Alt+Shift+Return" = import ../../desktop/niri/_bind.nix "Terminal" {
-      spawn = [ (lib.getExe pkgs.kitty) ];
+    settings.binds = {
+      "Mod+Ctrl+Alt+Shift+Return" = bind "Terminal" { spawn = [ (lib.getExe pkgs.kitty) ]; };
+      "Mod+Return" = bind "Terminal" { spawn = [ (lib.getExe pkgs.kitty) ]; };
     };
   };
 
