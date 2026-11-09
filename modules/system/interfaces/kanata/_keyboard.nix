@@ -184,10 +184,12 @@ in
       ]
     ])
     [
-      (key "q" (letter "q") "scln" [
-        ";"
-        ":"
-      ])
+      (qwertyHold "$meh" (
+        modTap "$meh" "q" (letter "q") "scln" [
+          ";"
+          ":"
+        ]
+      ))
       (modTap "lctl" "w" (letter "w") "comm" [
         ","
         "<"
@@ -202,7 +204,7 @@ in
       (modKey "u" "g" "rmet")
       (modKey "i" "c" "ralt")
       (modKey "o" "r" "rctl")
-      (letterKey "p" "l")
+      (qwertyHold "$meh" (modKey "p" "l" "$meh"))
       (blank [
         "lbrc"
         "["
@@ -241,7 +243,7 @@ in
         "'"
         "\""
       ])
-      (qwertyHold "$meh" (modKey "x" "q" "$meh"))
+      (letterKey "x" "q")
       (letterKey "c" "j")
       (letterKey "v" "k")
       (letterKey "b" "x")
