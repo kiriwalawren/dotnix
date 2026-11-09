@@ -5,6 +5,8 @@
       base
       bluetooth
       docker
+      encryption
+      expose-ssh # TODO: remove after reinstall
       fingerprint
       gui
       laptop

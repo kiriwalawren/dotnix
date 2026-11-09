@@ -26,6 +26,7 @@
 
       disks."/" = {
         devices = [ "/dev/nvme0n1" ];
+        encrypt = true;
       };
 
       tailscale.exitNode.enable = true;
