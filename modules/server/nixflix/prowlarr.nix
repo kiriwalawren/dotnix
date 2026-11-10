@@ -62,7 +62,7 @@
             baseUrl = "https://yts.bz/";
           }
           {
-            enable = false;
+            enable = true;
             name = "C411";
             apikey._secret = config.sops.secrets."indexer-api-keys/C411".path;
           }
