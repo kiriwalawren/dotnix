@@ -125,6 +125,7 @@ in
             {
               "Mod+Ctrl+Alt+Shift+Q" = bind "Close window" { spawn = niri "close-window"; };
               "Mod+Ctrl+Alt+Shift+F" = bind "Maximize column" { spawn = niri "maximize-column"; };
+              "Ctrl+Alt+Shift+F" = bind "Maximize column" { spawn = niri "maximize-column"; };
 
               # Movement
               "Mod+Ctrl+Alt+Shift+H" = bind "Focus column left" { spawn = niri "focus-column-left"; };
