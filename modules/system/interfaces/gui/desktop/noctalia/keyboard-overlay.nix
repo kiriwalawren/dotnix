@@ -7,7 +7,7 @@
   ...
 }:
 let
-  keyboard = import ../../../system/interfaces/kanata/_keyboard.nix { inherit lib; };
+  keyboard = import ../../../keyboard/_keyboard.nix;
 
   pluginId = "dotnix/keymap";
 in
