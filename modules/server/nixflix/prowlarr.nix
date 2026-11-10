@@ -13,6 +13,8 @@
 
     system.backup.paths = [ config.nixflix.prowlarr.dataDir ];
 
+    nixflix.flaresolverr.enable = true;
+
     nixflix.prowlarr = {
       enable = true;
       subdomain = "indexers";
@@ -67,19 +69,22 @@
             apikey._secret = config.sops.secrets."indexer-api-keys/C411".path;
           }
           {
-            enable = false;
+            enable = config.nixflix.flaresolverr.enable;
             name = "The Pirate Bay";
             baseUrl = "https://thepiratebay.org/";
+            tags = [ "flaresolverr" ];
           }
           {
-            enable = false;
+            enable = config.nixflix.flaresolverr.enable;
             name = "LimeTorrents";
             baseUrl = "https://www.limetorrents.fun/";
+            tags = [ "flaresolverr" ];
           }
           {
-            enable = false;
+            enable = config.nixflix.flaresolverr.enable;
             name = "TorrentDownload";
             baseUrl = "https://www.torrentdownload.info/";
+            tags = [ "flaresolverr" ];
           }
         ];
       };
