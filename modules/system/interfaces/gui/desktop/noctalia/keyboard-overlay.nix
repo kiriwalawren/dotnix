@@ -7,7 +7,7 @@
   ...
 }:
 let
-  keyboard = import ../../../keyboard/_keyboard.nix;
+  keyboard = import ../../../keyboard/_keyboard.nix { inherit lib; };
 
   pluginId = "dotnix/keymap";
 in

@@ -169,7 +169,7 @@ in
     settings.input.keyboard.numlock = _: { };
 
     settings.binds."Mod+Ctrl+Alt+Shift+I" =
-      import ../../../gui/desktop/niri/_bind.nix "Cycle keyboard layout"
+      import ../gui/desktop/niri/_bind.nix "Cycle keyboard layout"
         { spawn = [ (lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.cycle-layout) ]; };
   };
 }

@@ -2,7 +2,7 @@
   flake.wrappers.niri =
     { lib, pkgs, ... }:
     let
-      bind = import ../../gui/desktop/niri/_bind.nix;
+      bind = import ./gui/desktop/niri/_bind.nix;
       noctalia =
         cmd:
         [
