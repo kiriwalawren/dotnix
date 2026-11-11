@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{ inputs, ... }: {
   flake.modules.nixos.homelab = { config, ... }: {
     imports = [ inputs.nixflix.nixosModules.default ];
     sops.secrets."wireguard-confs/protonvpn-homelab-confinement" = { };

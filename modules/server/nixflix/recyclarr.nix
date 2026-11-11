@@ -1,4 +1,4 @@
-{ inputs, ... }:
+_:
 let
   # Recyclarr `qualities` entries, highest priority first; setting `qualities` replaces the guide
   # profile's list, while its cutoff (1080p for all three) and custom format scores still apply
@@ -11,7 +11,7 @@ let
   offGroup = name: qualities: (group name qualities) // { enabled = false; };
 in
 {
-  flake.modules.nixos.homelab = { config, ... }: {
+  flake.modules.nixos.homelab = _: {
     nixflix.recyclarr = {
       enable = true;
       cleanupUnmanagedProfiles.enable = true;
