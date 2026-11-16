@@ -8,7 +8,7 @@
     system.backup.paths = [ config.nixflix.lidarr.dataDir ];
 
     nixflix.lidarr = {
-      enable = true;
+      enable = false;
       subdomain = "music";
 
       config = {

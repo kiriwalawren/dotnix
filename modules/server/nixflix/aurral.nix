@@ -10,6 +10,7 @@
     nixflix.aurral = {
       enable = true;
       subdomain = "aurral";
+      apiKey._secret = config.sops.secrets."aurral/api-key".path;
 
       settings = {
         users.admin = {
@@ -25,6 +26,11 @@
             deleteAlbum = true;
             deleteTrack = true;
           };
+        };
+
+        lastfm = {
+          apiKey._secret = config.sops.secrets."lastfm/api-key".path;
+          apiSecret._secret = config.sops.secrets."lastfm/shared-secret".path;
         };
       };
 
