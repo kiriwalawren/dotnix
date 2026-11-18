@@ -28,6 +28,14 @@ let
       ""
     ];
 
+  # A number key that types its digit in dvorak too, from `[ digit shifted ]`
+  digit =
+    k:
+    let
+      d = builtins.elemAt k 0;
+    in
+    key d k d k;
+
   # Hold on an other-hand press+release or after 200ms; always a tap mid-word (prior-idle 150)
   holdAction =
     tap: hold:
@@ -114,75 +122,71 @@ in
     "qwerty"
   ];
 
-  # Programmer Dvorak on a 3x5 grid per hand; keys outside it do nothing in dvorak
+  # Programmer Dvorak on a 3x5 grid per hand plus the digits; other keys do nothing in dvorak
   rows = [
-    (map blank [
+    (
       [
-        "grv"
-        "`"
-        "~"
+        (blank [
+          "grv"
+          "`"
+          "~"
+        ])
       ]
-      [
-        "1"
-        "1"
-        "!"
+      ++ map digit [
+        [
+          "1"
+          "!"
+        ]
+        [
+          "2"
+          "@"
+        ]
+        [
+          "3"
+          "#"
+        ]
+        [
+          "4"
+          "$"
+        ]
+        [
+          "5"
+          "%"
+        ]
+        [
+          "6"
+          "^"
+        ]
+        [
+          "7"
+          "&"
+        ]
+        [
+          "8"
+          "*"
+        ]
+        [
+          "9"
+          "("
+        ]
+        [
+          "0"
+          ")"
+        ]
       ]
-      [
-        "2"
-        "2"
-        "@"
+      ++ map blank [
+        [
+          "min"
+          "-"
+          "_"
+        ]
+        [
+          "eql"
+          "="
+          "+"
+        ]
       ]
-      [
-        "3"
-        "3"
-        "#"
-      ]
-      [
-        "4"
-        "4"
-        "$"
-      ]
-      [
-        "5"
-        "5"
-        "%"
-      ]
-      [
-        "6"
-        "6"
-        "^"
-      ]
-      [
-        "7"
-        "7"
-        "&"
-      ]
-      [
-        "8"
-        "8"
-        "*"
-      ]
-      [
-        "9"
-        "9"
-        "("
-      ]
-      [
-        "0"
-        "0"
-        ")"
-      ]
-      [
-        "min"
-        "-"
-        "_"
-      ]
-      [
-        "eql"
-        "="
-        "+"
-      ]
-    ])
+    )
     [
       (qwertyHold "$meh" (
         modTap "$meh" "q" (letter "q") "scln" [
