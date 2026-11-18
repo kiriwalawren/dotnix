@@ -2,11 +2,11 @@
   options.theme = {
     defaultWallpaper = lib.mkOption {
       type = lib.types.path;
-      default = ./_wallpapers/nixppuccin.png;
+      default = ./wallpapers/nixppuccin.png;
     };
     wallpapers = lib.mkOption {
       type = lib.types.path;
-      default = ./_wallpapers;
+      default = ./wallpapers;
     };
   };
 }

@@ -12,13 +12,7 @@
       enable = true;
       autoStart = true;
 
-      desktopSession =
-        if config.programs.niri.enable or false then
-          "niri"
-        else if config.programs.hyprland.enable or false then
-          "hyprland"
-        else
-          "gamescope-wayland";
+      desktopSession = if config.programs.niri.enable or false then "niri" else "gamescope-wayland";
     };
 
     services.greetd.enable = lib.mkForce false;
