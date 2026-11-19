@@ -17,7 +17,7 @@ Usage:
         --server https://your-navidrome-url \
         --user your_username \
         --password your_password \
-        [--csv "./_liked-songs.csv.csv"] \
+        [--csv "./liked-songs.csv.csv"] \
         [--dry-run] [--threshold 0.82] [--workers 12]
 
 Notes:
@@ -163,7 +163,7 @@ def main():
     parser.add_argument(
         "--csv",
         default=os.environ.get(
-            "LIKE_MY_SONGS_CSV", os.path.join(os.getcwd(), "_liked-songs.csv")
+            "LIKE_MY_SONGS_CSV", os.path.join(os.getcwd(), "liked-songs.csv")
         ),
         help="Path to Exportify CSV export (defaults to the bundled copy when packaged via Nix)",
     )
