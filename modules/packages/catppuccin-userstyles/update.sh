@@ -16,13 +16,13 @@ rev=$(jq -r '.rev' <<<"$prefetch")
 hash=$(jq -r '.hash' <<<"$prefetch")
 
 if [ "$rev" = "$current_rev" ]; then
-  echo "catppuccin-userstyles already up to date (rev $rev)"
-  exit 0
+	echo "catppuccin-userstyles already up to date (rev $rev)"
+	exit 0
 fi
 
 sed -i \
-  -e "s|rev ? \"[^\"]*\"|rev ? \"$rev\"|" \
-  -e "s|hash ? \"[^\"]*\"|hash ? \"$hash\"|" \
-  "$DEFAULT_NIX"
+	-e "s|rev ? \"[^\"]*\"|rev ? \"$rev\"|" \
+	-e "s|hash ? \"[^\"]*\"|hash ? \"$hash\"|" \
+	"$DEFAULT_NIX"
 
 echo "Updated catppuccin-userstyles: $current_rev -> $rev"
