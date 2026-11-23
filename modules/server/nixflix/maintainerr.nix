@@ -70,7 +70,7 @@
             arrAction = "DELETE";
             sonarrServerName = "Sonarr";
             collection = {
-              deleteAfterDays = 14;
+              deleteAfterDays = 2;
               overlayEnabled = true;
             };
             rules = [
@@ -179,7 +179,7 @@
             arrAction = "DELETE";
             sonarrServerName = "Sonarr Anime";
             collection = {
-              deleteAfterDays = 14;
+              deleteAfterDays = 2;
               overlayEnabled = true;
             };
             rules = [
