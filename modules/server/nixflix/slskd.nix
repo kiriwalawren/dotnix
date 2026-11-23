@@ -20,7 +20,7 @@
       vpnNamespaces.${vpnNamespace} = {
         enable = config.nixflix.slskd.enable;
         wireguardConfigFile = config.sops.secrets."wireguard-confs/protonvpn-slskd".path;
-        inherit (config.vpnNamespaces.wg) accessibleFrom;
+        inherit (config.vpnNamespaces.wg) allowedIngress;
 
         # Must differ from the "wg" namespace's addresses (both default to
         # 192.168.15.1/192.168.15.5 in VPN-Confinement).
